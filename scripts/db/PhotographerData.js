@@ -8,7 +8,9 @@ class PhotographerData {
     }
     PhotographerData.instance = this
     this._data = data
-    this.searchParams = new URLSearchParams(document.location.search).get('user')
+    this.searchParams = new URLSearchParams(document.location.search).get(
+      'user',
+    )
   }
 
   /**
@@ -23,7 +25,7 @@ class PhotographerData {
    */
   get dataPhotographer() {
     return this._data.photographers.find(
-      (element) => element.name === this.searchParams
+      (element) => element.name === this.searchParams,
     )
   }
 
@@ -32,7 +34,7 @@ class PhotographerData {
    */
   get mediaPhotographer() {
     return this._data.media.filter(
-      (element) => element.photographerId === this.dataPhotographer.id
+      (element) => element.photographerId === this.dataPhotographer.id,
     )
   }
 }

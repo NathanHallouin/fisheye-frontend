@@ -14,6 +14,8 @@ class Lightbox {
     this.keyUpHandler = this.handleKeyPress.bind(this)
     this._index = 0
     this._indexLenght = 0
+    this._isFullscreen = false
+    this._fullscreenChangeHandler = this._handleFullscreenChange.bind(this)
   }
 
   /**
@@ -28,9 +30,15 @@ class Lightbox {
    */
   createLightbox(index) {
     const lightboxCreate = `
-        <button onclick="lightbox.closeLightbox()" class="lightbox-close">
-        <span class="sr-only">Fermer le caroussel</span>
-        </button>
+        <div class="lightbox-controls">
+          <button onclick="lightbox.toggleFullscreen()" class="lightbox-fullscreen" aria-label="Plein écran">
+            <span class="lightbox-fullscreen__icon" aria-hidden="true"></span>
+            <span class="sr-only">Activer/désactiver le plein écran</span>
+          </button>
+          <button onclick="lightbox.closeLightbox()" class="lightbox-close">
+            <span class="sr-only">Fermer le caroussel</span>
+          </button>
+        </div>
         <div class="lightbox">
           <button class="lightbox-prev" onclick="lightbox.prevMedia()">
               <span class="sr-only">Image précédente</span>
@@ -48,6 +56,9 @@ class Lightbox {
     this.$mainDom.appendChild(this.$wrapper)
     this.createMediaFormat(index)
     this.openLightbox()
+
+    // Écouter les changements de fullscreen
+    document.addEventListener('fullscreenchange', this._fullscreenChangeHandler)
   }
 
   /**
@@ -65,7 +76,16 @@ class Lightbox {
   /**
    * Ferme la lightbox, restaure l'état du DOM et retire les écouteurs d'événements.
    */
-  closeLightbox() {
+  async closeLightbox() {
+    // Quitter le fullscreen si actif
+    if (this._getFullscreenElement()) {
+      try {
+        await this._exitFullscreen()
+      } catch (error) {
+        // Ignorer l'erreur
+      }
+    }
+
     const $lightbox = document.querySelector('.lightbox-container')
     if ($lightbox) {
       $lightbox.remove()
@@ -75,6 +95,7 @@ class Lightbox {
     this.$body.classList.remove('no-scroll')
     this.$mainDom.setAttribute('aria-hidden', 'false')
     document.removeEventListener('keydown', this.keyUpHandler)
+    document.removeEventListener('fullscreenchange', this._fullscreenChangeHandler)
   }
 
   /**
@@ -205,5 +226,115 @@ class Lightbox {
    */
   attachWindow() {
     window.lightbox = this
+  }
+
+  // ============================================
+  // Fullscreen API
+  // ============================================
+
+  /**
+   * Vérifie si l'API Fullscreen est supportée.
+   * @returns {boolean} True si supportée.
+   */
+  _isFullscreenSupported() {
+    return !!(
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.msFullscreenEnabled
+    )
+  }
+
+  /**
+   * Retourne l'élément actuellement en plein écran.
+   * @returns {Element|null} L'élément en fullscreen ou null.
+   */
+  _getFullscreenElement() {
+    return (
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    )
+  }
+
+  /**
+   * Demande le passage en plein écran pour un élément.
+   * @param {Element} element - L'élément à mettre en plein écran.
+   * @returns {Promise} Promise résolue quand le fullscreen est activé.
+   */
+  _requestFullscreen(element) {
+    if (element.requestFullscreen) {
+      return element.requestFullscreen()
+    } else if (element.webkitRequestFullscreen) {
+      return element.webkitRequestFullscreen()
+    } else if (element.mozRequestFullScreen) {
+      return element.mozRequestFullScreen()
+    } else if (element.msRequestFullscreen) {
+      return element.msRequestFullscreen()
+    }
+    return Promise.reject(new Error('Fullscreen not supported'))
+  }
+
+  /**
+   * Quitte le mode plein écran.
+   * @returns {Promise} Promise résolue quand le fullscreen est désactivé.
+   */
+  _exitFullscreen() {
+    if (document.exitFullscreen) {
+      return document.exitFullscreen()
+    } else if (document.webkitExitFullscreen) {
+      return document.webkitExitFullscreen()
+    } else if (document.mozCancelFullScreen) {
+      return document.mozCancelFullScreen()
+    } else if (document.msExitFullscreen) {
+      return document.msExitFullscreen()
+    }
+    return Promise.reject(new Error('Exit fullscreen not supported'))
+  }
+
+  /**
+   * Bascule le mode plein écran.
+   */
+  async toggleFullscreen() {
+    if (!this._isFullscreenSupported()) {
+      console.warn('Fullscreen API non supportée')
+      return
+    }
+
+    try {
+      if (this._getFullscreenElement()) {
+        await this._exitFullscreen()
+      } else {
+        const $lightbox = document.querySelector('.lightbox-container')
+        if ($lightbox) {
+          await this._requestFullscreen($lightbox)
+        }
+      }
+    } catch (error) {
+      console.error('Erreur fullscreen:', error)
+    }
+  }
+
+  /**
+   * Gère les changements d'état du fullscreen.
+   * @private
+   */
+  _handleFullscreenChange() {
+    this._isFullscreen = !!this._getFullscreenElement()
+
+    const $lightbox = document.querySelector('.lightbox-container')
+    const $fullscreenBtn = document.querySelector('.lightbox-fullscreen')
+
+    if ($lightbox) {
+      $lightbox.classList.toggle('lightbox-container--fullscreen', this._isFullscreen)
+    }
+
+    if ($fullscreenBtn) {
+      $fullscreenBtn.setAttribute(
+        'aria-label',
+        this._isFullscreen ? 'Quitter le plein écran' : 'Plein écran'
+      )
+    }
   }
 }

@@ -19,7 +19,9 @@ class CreateVideoCard {
     video.src = photographer.picture
     video.tabIndex = 0
     video.classList.add('media-card__img')
-    video.onclick = function() { lightbox.listenerLightbox(this) }
+    video.onclick = function () {
+      lightbox.listenerLightbox(this)
+    }
     video.autoplay = true
     video.innerHTML = `Votre navigateur ne permet pas de lire les vidéos. Mais vous pouvez toujours <a href="${photographer.picture}">la télécharger</a> !`
     const textDiv = document.createElement('div')

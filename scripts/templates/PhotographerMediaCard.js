@@ -7,7 +7,8 @@ class PhotographerMediaCard {
     this._likeId = 0
     this._totalLikes = 0
     this._localStorageKey = `listLikes${this._photographer[0]._photographerId}`
-    this._arrayStorage = JSON.parse(localStorage.getItem(this._localStorageKey)) || []
+    this._arrayStorage =
+      JSON.parse(localStorage.getItem(this._localStorageKey)) || []
     this.$mediaContainer = document.querySelector('.media-container')
   }
 
@@ -33,14 +34,15 @@ class PhotographerMediaCard {
       this._totalLikes += element.likes
       this.createLikes(index)
     })
-    const $pictureCard = this.$mediaContainer.querySelectorAll('.media-card__img')
+    const $pictureCard =
+      this.$mediaContainer.querySelectorAll('.media-card__img')
     $pictureCard.forEach((image) =>
       image.addEventListener('keyup', (e) => {
         if (e.key === 'Enter') {
           lightbox.listenerLightbox(image)
           e.preventDefault
         }
-      })
+      }),
     )
     this.updateLike()
   }
@@ -105,7 +107,9 @@ class PhotographerMediaCard {
     const $likeTextContent = document.getElementById(`nbrLike${index}`)
     label.addEventListener('change', () => {
       if (this._arrayStorage.includes(this._photographer[index].id)) {
-        const indexToRemove = this._arrayStorage.indexOf(this._photographer[index].id)
+        const indexToRemove = this._arrayStorage.indexOf(
+          this._photographer[index].id,
+        )
         this._arrayStorage.splice(indexToRemove, 1)
         this.removeLike($likeTextContent)
         displayNewTotalLikes.updateInfo(this.totalLikes)
@@ -114,7 +118,10 @@ class PhotographerMediaCard {
         this.addLike($likeTextContent)
         displayNewTotalLikes.updateInfo(this.totalLikes)
       }
-      localStorage.setItem(this._localStorageKey, JSON.stringify(this._arrayStorage))
+      localStorage.setItem(
+        this._localStorageKey,
+        JSON.stringify(this._arrayStorage),
+      )
     })
   }
 
@@ -136,13 +143,18 @@ class PhotographerMediaCard {
           this.addLike($likeTextContent)
           displayNewTotalLikes.updateInfo(this.totalLikes)
         } else {
-          const indexToRemove = this._arrayStorage.indexOf(this._photographer[index].id)
+          const indexToRemove = this._arrayStorage.indexOf(
+            this._photographer[index].id,
+          )
           this._arrayStorage.splice(indexToRemove, 1)
           this.removeLike($likeTextContent)
           displayNewTotalLikes.updateInfo(this.totalLikes)
         }
       }
-      localStorage.setItem(this._localStorageKey, JSON.stringify(this._arrayStorage))
+      localStorage.setItem(
+        this._localStorageKey,
+        JSON.stringify(this._arrayStorage),
+      )
     })
   }
 }

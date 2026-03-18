@@ -33,10 +33,17 @@
 
 <body>
   <header class="main-header" role="banner">
-    <nav aria-label="Navigation principale">
+    <nav aria-label="Navigation principale" class="main-nav">
       <a href="#" aria-current="page" aria-label="Navigation vers la page d'accueil">
         <img src="assets/images/logo.webp" class="logo" alt="Fisheye Home page" />
       </a>
+      <div class="main-nav__links">
+        <a href="./stats.html" class="nav-link" aria-label="Voir les statistiques">
+          <span class="nav-link__icon" aria-hidden="true">📊</span>
+          <span class="nav-link__text">Stats</span>
+        </a>
+        <div id="favorites-counter-container"></div>
+      </div>
     </nav>
     <h1>Nos photographes</h1>
   </header>
@@ -49,7 +56,26 @@
   <script src="scripts/api/Api.js"></script>
   <script src="scripts/factories/PhotographersFactory.js"></script>
   <script src="scripts/models/PhotographerProfil.js"></script>
+  <script src="scripts/utils/LazyLoader.js"></script>
+  <script src="scripts/utils/CacheManager.js"></script>
+  <script src="scripts/utils/ParallelLoader.js"></script>
+  <script src="scripts/utils/FavoritesManager.js"></script>
+  <script src="scripts/templates/FavoriteButton.js"></script>
   <script src="scripts/templates/PhotographerCard.js"></script>
+  <script src="scripts/templates/TagFilter.js"></script>
+  <script src="scripts/utils/debounce.js"></script>
+  <script src="scripts/templates/SearchBar.js"></script>
+  <script src="scripts/utils/UrlStateManager.js"></script>
+  <script src="scripts/templates/ShareButton.js"></script>
+  <script src="scripts/utils/EventBus.js"></script>
+  <script src="scripts/utils/LikeManager.js"></script>
+  <script src="scripts/utils/DragDropManager.js"></script>
+  <script src="scripts/utils/KeyboardShortcutManager.js"></script>
+  <script src="scripts/utils/Validator.js"></script>
+  <script src="scripts/utils/FormAutoSave.js"></script>
+  <script src="scripts/utils/Toast.js"></script>
+  <script src="scripts/utils/throttle.js"></script>
+  <script src="scripts/utils/PageVisibilityManager.js"></script>
 
   <script src="scripts/App.js"></script>
 </body>

@@ -20,7 +20,9 @@ class CreateImageCard {
     img.alt = `Photo ${photographer.title}`
     img.classList.add('media-card__img')
     img.tabIndex = 0
-    img.onclick = function() { lightbox.listenerLightbox(this) }
+    img.onclick = function () {
+      lightbox.listenerLightbox(this)
+    }
     const textDiv = document.createElement('div')
     textDiv.classList.add('media-card__text')
     const title = document.createElement('h3')

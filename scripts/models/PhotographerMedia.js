@@ -40,10 +40,10 @@ class PhotographerMedia {
   get picture() {
     // On force l'extension .webp pour les images, sinon on garde la vidéo
     if (this._formatPicture === 'image') {
-      const base = this._picture.replace(/\.[^/.]+$/, "");
-      return `./assets/media/${this._photographerId}/${base}.webp`;
+      const base = this._picture.replace(/\.[^/.]+$/, '')
+      return `./assets/media/${this._photographerId}/${base}.webp`
     }
-    return `./assets/media/${this._photographerId}/${this._picture}`;
+    return `./assets/media/${this._photographerId}/${this._picture}`
   }
 
   /**

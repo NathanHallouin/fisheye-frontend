@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <link href="css/style.css" rel="stylesheet" type="text/css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Fisheye – Retrouvez vos photographes favoris sauvegardés. Gérez votre liste de favoris et accédez rapidement à leurs portfolios." />
+  <link rel="canonical" href="https://www.fisheye.com/favorites.html" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap"
+    rel="stylesheet" />
+  <title>Fisheye - Mes Favoris</title>
+</head>
+
+<body>
+  <header class="main-header" role="banner">
+    <nav aria-label="Navigation principale" class="main-nav">
+      <a href="./index.html" aria-label="Navigation vers la page d'accueil">
+        <img src="assets/images/logo.webp" class="logo" alt="Fisheye Home page" />
+      </a>
+      <div class="main-nav__links">
+        <a href="./stats.html" class="nav-link" aria-label="Voir les statistiques">
+          <span class="nav-link__icon" aria-hidden="true">📊</span>
+          <span class="nav-link__text">Stats</span>
+        </a>
+        <div id="favorites-counter-container"></div>
+      </div>
+    </nav>
+    <h1>Mes Favoris</h1>
+  </header>
+  <main id="main">
+    <section class="favorites-section" aria-label="Liste des photographes favoris">
+      <div class="favorites-header">
+        <p class="favorites-count"></p>
+        <button class="favorites-clear" type="button" aria-label="Supprimer tous les favoris">
+          Tout supprimer
+        </button>
+      </div>
+      <div class="favorites-list"></div>
+      <div class="favorites-empty" hidden>
+        <p>Vous n'avez pas encore de favoris.</p>
+        <a href="./index.html" class="favorites-empty__link">Découvrir nos photographes</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="scripts/utils/FavoritesManager.js"></script>
+  <script src="scripts/models/PhotographerProfil.js"></script>
+  <script src="scripts/templates/FavoriteButton.js"></script>
+  <script src="scripts/templates/PhotographerCard.js"></script>
+  <script src="scripts/pages/favorites.js"></script>
+</body>
+
+</html>
