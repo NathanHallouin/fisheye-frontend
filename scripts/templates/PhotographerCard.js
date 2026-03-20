@@ -1,11 +1,11 @@
 /**
- * Classe représentant la carte d'un photographe.
+ * Class representing a photographer's card.
  *
  * @description
- * Affiche les informations d'un photographe avec :
- * - Photo de profil cliquable
- * - Nom, localisation, tagline et prix
- * - Bouton favori (coeur)
+ * Displays a photographer's information with:
+ * - Clickable profile picture
+ * - Name, location, tagline and price
+ * - Favorite button (heart)
  */
 class PhotographerCard {
   constructor(photographer) {
@@ -19,37 +19,37 @@ class PhotographerCard {
   }
 
   /**
-   * Crée la carte du photographe avec bouton favori.
+   * Creates the photographer card with favorite button.
    * @returns {HTMLElement}
    */
   createPhotographerCard() {
     const article = document.createElement('article')
     article.classList.add('user-card')
 
-    // Header avec lien et bouton favori
+    // Header with link and favorite button
     const header = document.createElement('header')
     header.classList.add('user-card__header')
 
-    // Lien vers la page du photographe
+    // Link to photographer's page
     const link = document.createElement('a')
     link.href = this._photographer.url
     link.classList.add('user-card__link')
     link.setAttribute(
       'aria-label',
-      `Voir le portfolio de ${this._photographer.name}`,
+      `View ${this._photographer.name}'s portfolio`,
     )
 
-    // Image avec lazy loading
+    // Image with lazy loading
     const img = document.createElement('img')
     img.classList.add('user-card__picture', 'lazy')
-    // Placeholder : image transparente 1x1 pixel
+    // Placeholder: transparent 1x1 pixel image
     img.src =
       'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-    // URL réelle stockée dans data-src pour lazy loading
+    // Actual URL stored in data-src for lazy loading
     img.dataset.src = this._photographer.portrait
-    img.alt = `Photo de ${this._photographer.name}`
+    img.alt = `Photo of ${this._photographer.name}`
 
-    // Observer l'image pour lazy loading
+    // Observe the image for lazy loading
     const lazyLoader = LazyLoader.getInstance()
     lazyLoader.observe(img)
 
@@ -61,13 +61,13 @@ class PhotographerCard {
     link.appendChild(h2)
     header.appendChild(link)
 
-    // Bouton favori
+    // Favorite button
     const favoriteBtn = new FavoriteButton(this._photographer)
     header.appendChild(favoriteBtn.createButton())
 
     article.appendChild(header)
 
-    // Section informations
+    // Information section
     const section = document.createElement('section')
     section.classList.add('user-card__paragraph')
 
@@ -81,7 +81,7 @@ class PhotographerCard {
 
     const pPrice = document.createElement('p')
     pPrice.classList.add('user-card__price')
-    pPrice.textContent = `${this._photographer.price}€/jour`
+    pPrice.textContent = `${this._photographer.price}€/day`
 
     section.appendChild(pLoc)
     section.appendChild(pTag)

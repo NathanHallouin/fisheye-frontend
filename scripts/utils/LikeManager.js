@@ -1,45 +1,45 @@
 /**
- * Gestionnaire de likes avec délégation d'événements.
+ * Like manager with event delegation.
  *
  * @description
- * Gère les likes sur les médias avec :
- * - Event Delegation : un seul listener pour tous les boutons
- * - Optimistic UI : mise à jour immédiate avant confirmation
- * - Persistance localStorage
- * - Animation de feedback
+ * Manages likes on media with:
+ * - Event Delegation: a single listener for all buttons
+ * - Optimistic UI: immediate update before confirmation
+ * - localStorage persistence
+ * - Feedback animation
  *
- * CONCEPT CLÉ : Event Delegation
- * Au lieu d'attacher un listener à CHAQUE bouton like,
- * on attache UN SEUL listener au conteneur parent.
- * Le listener identifie ensuite quel bouton a été cliqué.
+ * KEY CONCEPT: Event Delegation
+ * Instead of attaching a listener to EACH like button,
+ * we attach ONE SINGLE listener to the parent container.
+ * The listener then identifies which button was clicked.
  *
- * Avantages :
- * - Performance : moins de listeners = moins de mémoire
- * - Dynamique : fonctionne avec les éléments ajoutés après
- * - Simplicité : un seul endroit pour gérer la logique
+ * Advantages:
+ * - Performance: fewer listeners = less memory
+ * - Dynamic: works with elements added later
+ * - Simplicity: one place to handle the logic
  */
 class LikeManager {
   /**
-   * Instance unique (Singleton).
+   * Unique instance (Singleton).
    * @type {LikeManager|null}
    */
   static _instance = null
 
   /**
-   * Clé de stockage localStorage.
+   * localStorage storage key.
    * @type {string}
    */
   static STORAGE_KEY = 'fisheye_likes'
 
   /**
-   * Nom de l'événement émis lors des changements.
+   * Name of the event emitted on changes.
    * @type {string}
    */
   static CHANGE_EVENT = 'likes-changed'
 
   /**
-   * Retourne l'instance unique du LikeManager.
-   * @returns {LikeManager} L'instance unique.
+   * Returns the unique instance of LikeManager.
+   * @returns {LikeManager} The unique instance.
    */
   static getInstance() {
     if (!LikeManager._instance) {
@@ -49,7 +49,7 @@ class LikeManager {
   }
 
   /**
-   * Crée une instance de LikeManager.
+   * Creates a LikeManager instance.
    */
   constructor() {
     this._likes = this._load()
@@ -57,9 +57,9 @@ class LikeManager {
   }
 
   /**
-   * Charge les likes depuis localStorage.
+   * Loads likes from localStorage.
    *
-   * @returns {Object} Les likes { mediaId: likeCount }.
+   * @returns {Object} The likes { mediaId: likeCount }.
    * @private
    */
   _load() {
@@ -67,50 +67,50 @@ class LikeManager {
       const data = localStorage.getItem(LikeManager.STORAGE_KEY)
       return data ? JSON.parse(data) : {}
     } catch (error) {
-      console.error('LikeManager: Erreur de chargement', error)
+      console.error('LikeManager: Loading error', error)
       return {}
     }
   }
 
   /**
-   * Sauvegarde les likes dans localStorage.
+   * Saves likes to localStorage.
    * @private
    */
   _save() {
     try {
       localStorage.setItem(LikeManager.STORAGE_KEY, JSON.stringify(this._likes))
     } catch (error) {
-      console.error('LikeManager: Erreur de sauvegarde', error)
+      console.error('LikeManager: Saving error', error)
     }
   }
 
   /**
-   * Attache la délégation d'événements à un conteneur.
+   * Attaches event delegation to a container.
    *
    * @description
-   * CONCEPT : Event Delegation
+   * CONCEPT: Event Delegation
    *
-   * On attache le listener au CONTENEUR, pas aux boutons.
-   * Quand un clic se produit, l'événement "bubble" (remonte)
-   * jusqu'au conteneur où on le capture.
+   * We attach the listener to the CONTAINER, not to the buttons.
+   * When a click occurs, the event "bubbles" (rises)
+   * up to the container where we capture it.
    *
-   * e.target = l'élément cliqué (peut être le bouton ou un enfant)
-   * e.target.closest() = trouve l'ancêtre correspondant au sélecteur
+   * e.target = the clicked element (can be the button or a child)
+   * e.target.closest() = finds the ancestor matching the selector
    *
-   * @param {HTMLElement} container - Le conteneur à observer.
+   * @param {HTMLElement} container - The container to observe.
    */
   attachToContainer(container) {
     if (this._containers.has(container)) return
 
     /**
-     * CONCEPT : Event Delegation avec closest()
+     * CONCEPT: Event Delegation with closest()
      *
-     * closest() remonte le DOM pour trouver l'ancêtre qui match.
-     * Si le clic est sur l'icône SVG à l'intérieur du bouton,
-     * closest('[data-like-id]') trouve le bouton parent.
+     * closest() climbs up the DOM to find the matching ancestor.
+     * If the click is on the SVG icon inside the button,
+     * closest('[data-like-id]') finds the parent button.
      */
     container.addEventListener('click', (e) => {
-      // Trouver le bouton like le plus proche (ou null si clic ailleurs)
+      // Find the closest like button (or null if clicked elsewhere)
       const likeBtn = e.target.closest('[data-like-id]')
 
       if (likeBtn) {
@@ -123,25 +123,25 @@ class LikeManager {
   }
 
   /**
-   * Gère le clic sur un bouton like.
+   * Handles click on a like button.
    *
    * @description
-   * CONCEPT : Optimistic UI
+   * CONCEPT: Optimistic UI
    *
-   * On met à jour l'interface IMMÉDIATEMENT, avant même
-   * de sauvegarder. L'utilisateur voit le feedback instantanément.
+   * We update the interface IMMEDIATELY, even before
+   * saving. The user sees the feedback instantly.
    *
-   * Si la sauvegarde échoue, on pourrait rollback (non implémenté ici).
+   * If saving fails, we could rollback (not implemented here).
    *
-   * @param {HTMLElement} button - Le bouton cliqué.
+   * @param {HTMLElement} button - The clicked button.
    * @private
    */
   _handleLikeClick(button) {
     /**
-     * CONCEPT : data-* attributes
+     * CONCEPT: data-* attributes
      *
-     * Les attributs data-* permettent de stocker des données
-     * directement dans le HTML, accessibles via dataset.
+     * The data-* attributes allow storing data
+     * directly in HTML, accessible via dataset.
      *
      * <button data-like-id="123" data-base-likes="42">
      * button.dataset.likeId = "123"
@@ -150,38 +150,38 @@ class LikeManager {
     const mediaId = button.dataset.likeId
     const baseLikes = parseInt(button.dataset.baseLikes, 10) || 0
 
-    // Toggle le like
+    // Toggle the like
     const isLiked = this.toggle(mediaId)
 
-    // Mise à jour OPTIMISTE de l'UI (avant sauvegarde)
+    // OPTIMISTIC UI update (before saving)
     this._updateButtonUI(button, isLiked, baseLikes)
 
-    // Animation de feedback
+    // Feedback animation
     this._animateButton(button)
 
-    // Sauvegarder (async en arrière-plan)
+    // Save (async in background)
     this._save()
 
-    // Émettre l'événement de changement
+    // Emit change event
     this._emitChange(mediaId, isLiked)
   }
 
   /**
-   * Met à jour l'apparence du bouton.
+   * Updates the button appearance.
    *
-   * @param {HTMLElement} button - Le bouton à mettre à jour.
-   * @param {boolean} isLiked - Si le média est liké.
-   * @param {number} baseLikes - Nombre de likes de base.
+   * @param {HTMLElement} button - The button to update.
+   * @param {boolean} isLiked - Whether the media is liked.
+   * @param {number} baseLikes - Base number of likes.
    * @private
    */
   _updateButtonUI(button, isLiked, baseLikes) {
-    // Mettre à jour la classe
+    // Update the class
     button.classList.toggle('like-btn--liked', isLiked)
 
-    // Mettre à jour aria-pressed pour l'accessibilité
+    // Update aria-pressed for accessibility
     button.setAttribute('aria-pressed', isLiked.toString())
 
-    // Mettre à jour le compteur
+    // Update the counter
     const counter = button.querySelector('.like-btn__count')
     if (counter) {
       const totalLikes = baseLikes + (isLiked ? 1 : 0)
@@ -190,30 +190,30 @@ class LikeManager {
   }
 
   /**
-   * Anime le bouton après un clic.
+   * Animates the button after a click.
    *
-   * @param {HTMLElement} button - Le bouton à animer.
+   * @param {HTMLElement} button - The button to animate.
    * @private
    */
   _animateButton(button) {
-    // Ajouter la classe d'animation
+    // Add the animation class
     button.classList.add('like-btn--pulse')
 
-    // Retirer après l'animation
+    // Remove after animation
     button.addEventListener(
       'animationend',
       () => {
         button.classList.remove('like-btn--pulse')
       },
-      { once: true }, // Listener supprimé automatiquement après
+      { once: true }, // Listener automatically removed after
     )
   }
 
   /**
-   * Émet un événement personnalisé de changement.
+   * Emits a custom change event.
    *
-   * @param {string} mediaId - L'ID du média.
-   * @param {boolean} isLiked - Si le média est liké.
+   * @param {string} mediaId - The media ID.
+   * @param {boolean} isLiked - Whether the media is liked.
    * @private
    */
   _emitChange(mediaId, isLiked) {
@@ -229,10 +229,10 @@ class LikeManager {
   }
 
   /**
-   * Toggle le like d'un média.
+   * Toggles the like of a media.
    *
-   * @param {string} mediaId - L'ID du média.
-   * @returns {boolean} True si liké après le toggle.
+   * @param {string} mediaId - The media ID.
+   * @returns {boolean} True if liked after toggle.
    */
   toggle(mediaId) {
     if (this._likes[mediaId]) {
@@ -245,38 +245,38 @@ class LikeManager {
   }
 
   /**
-   * Vérifie si un média est liké.
+   * Checks if a media is liked.
    *
-   * @param {string} mediaId - L'ID du média.
-   * @returns {boolean} True si liké.
+   * @param {string} mediaId - The media ID.
+   * @returns {boolean} True if liked.
    */
   isLiked(mediaId) {
     return !!this._likes[mediaId]
   }
 
   /**
-   * Retourne le nombre total de likes.
+   * Returns the total number of likes.
    *
-   * @returns {number} Le total.
+   * @returns {number} The total.
    */
   getTotalLikes() {
     return Object.keys(this._likes).length
   }
 
   /**
-   * Retourne tous les médias likés.
+   * Returns all liked media.
    *
-   * @returns {string[]} Les IDs des médias likés.
+   * @returns {string[]} The IDs of liked media.
    */
   getLikedMediaIds() {
     return Object.keys(this._likes)
   }
 
   /**
-   * Écoute les changements de likes.
+   * Listens to like changes.
    *
-   * @param {Function} callback - La fonction à appeler.
-   * @returns {Function} Fonction pour arrêter l'écoute.
+   * @param {Function} callback - The function to call.
+   * @returns {Function} Function to stop listening.
    */
   onChange(callback) {
     const handler = (e) => callback(e.detail)
@@ -285,12 +285,12 @@ class LikeManager {
   }
 
   /**
-   * Crée un bouton like pour un média.
+   * Creates a like button for a media.
    *
-   * @param {Object} media - Les données du média.
-   * @param {string|number} media.id - L'ID du média.
-   * @param {number} media.likes - Le nombre de likes de base.
-   * @returns {HTMLElement} Le bouton créé.
+   * @param {Object} media - The media data.
+   * @param {string|number} media.id - The media ID.
+   * @param {number} media.likes - The base number of likes.
+   * @returns {HTMLElement} The created button.
    */
   createLikeButton(media) {
     const isLiked = this.isLiked(String(media.id))
@@ -303,15 +303,15 @@ class LikeManager {
       button.classList.add('like-btn--liked')
     }
 
-    // data-* attributes pour Event Delegation
+    // data-* attributes for Event Delegation
     button.dataset.likeId = media.id
     button.dataset.baseLikes = media.likes
 
-    // Accessibilité
-    button.setAttribute('aria-label', `Liker ce média`)
+    // Accessibility
+    button.setAttribute('aria-label', `Like this media`)
     button.setAttribute('aria-pressed', isLiked.toString())
 
-    // Contenu
+    // Content
     button.innerHTML = `
       <svg class="like-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>

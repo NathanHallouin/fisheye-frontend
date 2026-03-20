@@ -1,10 +1,10 @@
 /**
- * Contrôleur pour la page des statistiques.
+ * Controller for the statistics page.
  *
  * @description
- * Charge les données et initialise le dashboard de statistiques.
- * Démontre l'utilisation d'async/await avec le chargement de données
- * et l'intégration de StatsCalculator.
+ * Loads data and initializes the statistics dashboard.
+ * Demonstrates the use of async/await with data loading
+ * and StatsCalculator integration.
  */
 class StatsPage {
   constructor() {
@@ -13,13 +13,13 @@ class StatsPage {
   }
 
   /**
-   * Initialise la page.
+   * Initializes the page.
    *
    * @async
    */
   async init() {
     try {
-      // Charger les données
+      // Load data
       const data = await this._api.get()
 
       if (!data) {
@@ -27,20 +27,20 @@ class StatsPage {
         return
       }
 
-      // Créer le calculateur de statistiques
+      // Create the statistics calculator
       const statsCalculator = new StatsCalculator(
         data.photographers,
         data.media,
       )
 
-      // Créer le dashboard
+      // Create the dashboard
       const dashboard = new StatsDashboard(statsCalculator)
 
-      // Afficher le dashboard
+      // Display the dashboard
       this.$container.innerHTML = ''
       this.$container.appendChild(dashboard.createDashboard())
 
-      // Initialiser le compteur de favoris dans le header
+      // Initialize the favorites counter in the header
       this._initFavoritesCounter()
     } catch (error) {
       console.error('Erreur lors du chargement des statistiques:', error)
@@ -49,7 +49,7 @@ class StatsPage {
   }
 
   /**
-   * Initialise le compteur de favoris dans le header.
+   * Initializes the favorites counter in the header.
    *
    * @private
    */
@@ -62,9 +62,9 @@ class StatsPage {
   }
 
   /**
-   * Affiche un message d'erreur.
+   * Displays an error message.
    *
-   * @param {string} message - Le message d'erreur.
+   * @param {string} message - The error message.
    * @private
    */
   _showError(message) {
@@ -94,6 +94,6 @@ class StatsPage {
   }
 }
 
-// Initialiser la page
+// Initialize the page
 const statsPage = new StatsPage()
 statsPage.init()

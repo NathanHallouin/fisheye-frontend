@@ -1,49 +1,49 @@
 # ROADMAP - Fisheye Frontend
 
-## Objectif
+## Objective
 
-Pratiquer les concepts clés de JavaScript à travers des features concrètes.
+Practice key JavaScript concepts through concrete features.
 
-## Documentation des concepts
+## Concepts Documentation
 
-Tous les concepts JavaScript sont documentés individuellement dans le dossier [docs/concepts/](docs/concepts/README.md).
+All JavaScript concepts are documented individually in the [docs/concepts/](docs/concepts/README.md) folder.
 
 ---
 
-## Phase 1 : Fondamentaux ✅
+## Phase 1: Fundamentals ✅
 
-### 1.1 Système de filtres par tags ✅
+### 1.1 Tag Filter System ✅
 **Concepts**: `Array.filter()`, `Array.map()`, `Array.includes()`, `Set`, event listeners, DOM manipulation
 
-**Description**: Ajouter des tags aux photographes (Portrait, Événements, Mode, etc.) et permettre le filtrage.
+**Description**: Add tags to photographers (Portrait, Events, Fashion, etc.) and enable filtering.
 
-**Fichiers**: `scripts/templates/TagFilter.js`
+**Files**: `scripts/templates/TagFilter.js`
 
-**Tâches**:
-- [x] Ajouter les tags dans `photographers.json`
-- [x] Créer les boutons de filtre dynamiquement
-- [x] Filtrer les photographes au clic
-- [x] Gérer les filtres multiples (intersection/union)
-- [x] Ajouter un bouton "Réinitialiser"
+**Tasks**:
+- [x] Add tags in `photographers.json`
+- [x] Create filter buttons dynamically
+- [x] Filter photographers on click
+- [x] Handle multiple filters (intersection/union)
+- [x] Add a "Reset" button
 
 ---
 
-### 1.2 Barre de recherche avec auto-complétion ✅
+### 1.2 Search Bar with Auto-completion ✅
 **Concepts**: `String.includes()`, `String.toLowerCase()`, debounce, closures, input events
 
-**Description**: Rechercher des photographes par nom, ville ou tagline avec suggestions.
+**Description**: Search photographers by name, city, or tagline with suggestions.
 
-**Fichiers**: `scripts/templates/SearchBar.js`, `scripts/utils/debounce.js`
+**Files**: `scripts/templates/SearchBar.js`, `scripts/utils/debounce.js`
 
-**Tâches**:
-- [x] Créer l'input de recherche
-- [x] Implémenter le debounce (éviter trop de requêtes)
-- [x] Filtrer les résultats en temps réel
-- [x] Afficher les suggestions dans une dropdown
-- [x] Gérer la navigation clavier dans les suggestions (ArrowUp/Down, Enter)
+**Tasks**:
+- [x] Create the search input
+- [x] Implement debounce (avoid too many requests)
+- [x] Filter results in real time
+- [x] Display suggestions in a dropdown
+- [x] Handle keyboard navigation in suggestions (ArrowUp/Down, Enter)
 
 ```javascript
-// Concept: Debounce avec closure
+// Concept: Debounce with closure
 function debounce(fn, delay) {
   let timeoutId
   return function(...args) {
@@ -55,40 +55,40 @@ function debounce(fn, delay) {
 
 ---
 
-### 1.3 Tri des médias amélioré ✅
-**Concepts**: `Array.sort()`, fonctions de comparaison, spread operator, immutabilité, Strategy pattern
+### 1.3 Enhanced Media Sorting ✅
+**Concepts**: `Array.sort()`, comparison functions, spread operator, immutability, Strategy pattern
 
-**Description**: Trier les médias par popularité, date, titre (ascendant/descendant).
+**Description**: Sort media by popularity, date, title (ascending/descending).
 
-**Fichiers**: `scripts/templates/SortFilters.js`, `scripts/templates/MediaFilter.js`
+**Files**: `scripts/templates/SortFilters.js`, `scripts/templates/MediaFilter.js`
 
-**Tâches**:
-- [x] Créer un composant dropdown personnalisé accessible
-- [x] Implémenter le tri multi-critères
-- [x] Conserver l'ordre original (copie avec spread)
-- [x] Ajouter l'ordre ascendant/descendant
-- [ ] Animer la réorganisation des cartes
+**Tasks**:
+- [x] Create a custom accessible dropdown component
+- [x] Implement multi-criteria sorting
+- [x] Preserve original order (copy with spread)
+- [x] Add ascending/descending order
+- [ ] Animate card reorganization
 
 ---
 
-## Phase 2 : Manipulation avancée des données ✅
+## Phase 2: Advanced Data Manipulation ✅
 
-### 2.1 Système de favoris avec LocalStorage ✅
+### 2.1 Favorites System with LocalStorage ✅
 **Concepts**: `localStorage`, `JSON.parse()`, `JSON.stringify()`, `Array.find()`, Singleton pattern, Observer pattern
 
-**Description**: Permettre aux utilisateurs de sauvegarder leurs photographes/médias favoris.
+**Description**: Allow users to save their favorite photographers/media.
 
-**Fichiers**: `scripts/utils/FavoritesManager.js`, `scripts/templates/FavoriteButton.js`, `favorites.html`
+**Files**: `scripts/utils/FavoritesManager.js`, `scripts/templates/FavoriteButton.js`, `favorites.html`
 
-**Tâches**:
-- [x] Créer une classe `FavoritesManager`
-- [x] Sauvegarder/charger depuis localStorage
-- [x] Ajouter des boutons coeur sur les cartes
-- [x] Créer une page "Mes favoris"
-- [x] Synchroniser l'état entre les pages
+**Tasks**:
+- [x] Create a `FavoritesManager` class
+- [x] Save/load from localStorage
+- [x] Add heart buttons on cards
+- [x] Create a "My favorites" page
+- [x] Synchronize state between pages
 
 ```javascript
-// Concept: Classe avec localStorage
+// Concept: Class with localStorage
 class FavoritesManager {
   constructor(storageKey) {
     this._key = storageKey
@@ -118,22 +118,22 @@ class FavoritesManager {
 
 ---
 
-### 2.2 Statistiques avec Array.reduce() ✅
-**Concepts**: `Array.reduce()`, `Object.entries()`, `Object.keys()`, agrégation de données
+### 2.2 Statistics with Array.reduce() ✅
+**Concepts**: `Array.reduce()`, `Object.entries()`, `Object.keys()`, data aggregation
 
-**Description**: Afficher des statistiques sur les photographes et leurs médias.
+**Description**: Display statistics about photographers and their media.
 
-**Fichiers**: `scripts/utils/StatsCalculator.js`, `scripts/templates/StatsDashboard.js`, `stats.html`
+**Files**: `scripts/utils/StatsCalculator.js`, `scripts/templates/StatsDashboard.js`, `stats.html`
 
-**Tâches**:
-- [x] Calculer le total de likes par photographe
-- [x] Calculer la moyenne des prix
-- [x] Grouper les médias par catégorie
-- [x] Trouver le photographe le plus populaire
-- [x] Afficher un dashboard de stats
+**Tasks**:
+- [x] Calculate total likes per photographer
+- [x] Calculate average prices
+- [x] Group media by category
+- [x] Find the most popular photographer
+- [x] Display a stats dashboard
 
 ```javascript
-// Concept: reduce pour grouper
+// Concept: reduce to group
 const mediaByCategory = media.reduce((acc, item) => {
   const category = item.category || 'other'
   acc[category] = acc[category] || []
@@ -144,18 +144,18 @@ const mediaByCategory = media.reduce((acc, item) => {
 
 ---
 
-### 2.3 Historique de navigation avec History API ✅
-**Concepts**: `history.pushState()`, `popstate` event, `URLSearchParams`, état de l'application, Singleton
+### 2.3 Navigation History with History API ✅
+**Concepts**: `history.pushState()`, `popstate` event, `URLSearchParams`, application state, Singleton
 
-**Description**: Permettre la navigation arrière/avant et les URLs partageables.
+**Description**: Enable back/forward navigation and shareable URLs.
 
-**Fichiers**: `scripts/utils/UrlStateManager.js`
+**Files**: `scripts/utils/UrlStateManager.js`
 
-**Tâches**:
-- [x] Sauvegarder les filtres dans l'URL
-- [x] Restaurer l'état depuis l'URL au chargement
-- [x] Gérer le bouton retour du navigateur
-- [x] Créer des URLs partageables pour les filtres
+**Tasks**:
+- [x] Save filters in the URL
+- [x] Restore state from URL on load
+- [x] Handle browser back button
+- [x] Create shareable URLs for filters
 
 ```javascript
 // Concept: History API
@@ -173,21 +173,21 @@ window.addEventListener('popstate', (e) => {
 
 ---
 
-## Phase 3 : Programmation asynchrone ✅
+## Phase 3: Asynchronous Programming ✅
 
-### 3.1 Chargement paresseux des images (Lazy Loading) ✅
+### 3.1 Lazy Loading Images ✅
 **Concepts**: `IntersectionObserver`, callbacks, async loading, Singleton, performance
 
-**Description**: Charger les images uniquement quand elles sont visibles.
+**Description**: Load images only when they are visible.
 
-**Fichiers**: `scripts/utils/LazyLoader.js`
+**Files**: `scripts/utils/LazyLoader.js`
 
-**Tâches**:
-- [x] Utiliser `data-src` au lieu de `src`
-- [x] Créer un IntersectionObserver
-- [x] Charger l'image quand elle entre dans le viewport
-- [x] Ajouter un placeholder/skeleton pendant le chargement
-- [x] Gérer les erreurs de chargement
+**Tasks**:
+- [x] Use `data-src` instead of `src`
+- [x] Create an IntersectionObserver
+- [x] Load image when it enters the viewport
+- [x] Add a placeholder/skeleton during loading
+- [x] Handle loading errors
 
 ```javascript
 // Concept: IntersectionObserver
@@ -217,36 +217,36 @@ class LazyLoader {
 ---
 
 ### 3.2 Infinite Scroll / Pagination ✅
-**Concepts**: `IntersectionObserver`, `Promise`, état de chargement, throttle
+**Concepts**: `IntersectionObserver`, `Promise`, loading state, throttle
 
-**Description**: Charger plus de médias au scroll au lieu de tout afficher.
+**Description**: Load more media on scroll instead of displaying everything.
 
-**Fichiers**: `scripts/utils/InfiniteScroll.js`
+**Files**: `scripts/utils/InfiniteScroll.js`
 
-**Tâches**:
-- [x] Limiter l'affichage initial (ex: 9 médias)
-- [x] Détecter le scroll vers le bas
-- [x] Charger le batch suivant
-- [x] Afficher un loader pendant le chargement
-- [x] Gérer la fin des données
+**Tasks**:
+- [x] Limit initial display (e.g., 9 media)
+- [x] Detect scroll to bottom
+- [x] Load next batch
+- [x] Display a loader during loading
+- [x] Handle end of data
 
 ---
 
-### 3.3 Cache des données avec Promise ✅
+### 3.3 Data Cache with Promise ✅
 **Concepts**: `Promise`, `Map`, memoization, Singleton pattern
 
-**Description**: Mettre en cache les appels API pour éviter les requêtes redondantes.
+**Description**: Cache API calls to avoid redundant requests.
 
-**Fichiers**: `scripts/utils/CacheManager.js`
+**Files**: `scripts/utils/CacheManager.js`
 
-**Tâches**:
-- [x] Créer une classe `CacheManager`
-- [x] Stocker les promesses (pas les résultats)
-- [x] Définir une durée d'expiration
-- [x] Invalider le cache manuellement
+**Tasks**:
+- [x] Create a `CacheManager` class
+- [x] Store promises (not results)
+- [x] Define an expiration duration
+- [x] Manually invalidate cache
 
 ```javascript
-// Concept: Cache de Promises
+// Concept: Promise Cache
 class CacheManager {
   constructor(ttl = 60000) {
     this._cache = new Map()
@@ -268,21 +268,21 @@ class CacheManager {
 
 ---
 
-### 3.4 Chargement parallèle avec Promise.all ✅
-**Concepts**: `Promise.all()`, `Promise.allSettled()`, gestion d'erreurs multiples
+### 3.4 Parallel Loading with Promise.all ✅
+**Concepts**: `Promise.all()`, `Promise.allSettled()`, multiple error handling
 
-**Description**: Charger les données de plusieurs photographes en parallèle.
+**Description**: Load data from multiple photographers in parallel.
 
-**Fichiers**: `scripts/utils/ParallelLoader.js`
+**Files**: `scripts/utils/ParallelLoader.js`
 
-**Tâches**:
-- [x] Charger tous les médias en parallèle
-- [ ] Afficher une barre de progression globale
-- [x] Gérer les erreurs individuelles sans bloquer
-- [x] Utiliser `Promise.allSettled()` pour la résilience
+**Tasks**:
+- [x] Load all media in parallel
+- [ ] Display a global progress bar
+- [x] Handle individual errors without blocking
+- [x] Use `Promise.allSettled()` for resilience
 
 ```javascript
-// Concept: Promise.allSettled pour la résilience
+// Concept: Promise.allSettled for resilience
 async function loadAllMedia(photographerIds) {
   const promises = photographerIds.map(id =>
     fetchMedia(id).catch(err => ({ error: err, id }))
@@ -300,21 +300,21 @@ async function loadAllMedia(photographerIds) {
 
 ---
 
-## Phase 4 : Événements et interactions ✅
+## Phase 4: Events and Interactions ✅
 
-### 4.1 Système de likes optimiste ✅
-**Concepts**: Event delegation, `data-*` attributes, optimistic UI, état local, localStorage
+### 4.1 Optimistic Like System ✅
+**Concepts**: Event delegation, `data-*` attributes, optimistic UI, local state, localStorage
 
-**Description**: Liker les médias avec feedback immédiat.
+**Description**: Like media with immediate feedback.
 
-**Fichiers**: `scripts/utils/LikeManager.js`, `scripts/templates/PhotographerMediaCard.js`
+**Files**: `scripts/utils/LikeManager.js`, `scripts/templates/PhotographerMediaCard.js`
 
-**Tâches**:
-- [x] Utiliser la délégation d'événements (un seul listener)
-- [x] Mettre à jour l'UI immédiatement (optimistic)
-- [x] Persister dans localStorage
-- [x] Animer le coeur au clic
-- [x] Mettre à jour le compteur total
+**Tasks**:
+- [x] Use event delegation (single listener)
+- [x] Update UI immediately (optimistic)
+- [x] Persist in localStorage
+- [x] Animate the heart on click
+- [x] Update total counter
 
 ```javascript
 // Concept: Event delegation
@@ -336,19 +336,19 @@ class LikeManager {
 
 ---
 
-### 4.2 Drag & Drop pour réorganiser ✅
+### 4.2 Drag & Drop to Reorganize ✅
 **Concepts**: Drag events (`dragstart`, `dragover`, `drop`), `dataTransfer`, DOM reorder
 
-**Description**: Réorganiser les médias par glisser-déposer.
+**Description**: Reorganize media by drag and drop.
 
-**Fichiers**: `scripts/utils/DragDropManager.js`
+**Files**: `scripts/utils/DragDropManager.js`
 
-**Tâches**:
-- [x] Rendre les cartes draggable
-- [x] Gérer les événements drag
-- [x] Afficher un indicateur de drop zone
-- [x] Réorganiser le DOM
-- [ ] Sauvegarder l'ordre personnalisé
+**Tasks**:
+- [x] Make cards draggable
+- [x] Handle drag events
+- [x] Display a drop zone indicator
+- [x] Reorganize DOM
+- [ ] Save custom order
 
 ```javascript
 // Concept: Drag & Drop
@@ -361,24 +361,24 @@ container.addEventListener('drop', (e) => {
   e.preventDefault()
   const mediaId = e.dataTransfer.getData('text/plain')
   const dropTarget = e.target.closest('.media-card')
-  // Réorganiser...
+  // Reorganize...
 })
 ```
 
 ---
 
-### 4.3 Custom Events pour communication ✅
-**Concepts**: `CustomEvent`, `dispatchEvent`, Observer pattern, Singleton, découplage
+### 4.3 Custom Events for Communication ✅
+**Concepts**: `CustomEvent`, `dispatchEvent`, Observer pattern, Singleton, decoupling
 
-**Description**: Créer un système d'événements personnalisés pour la communication entre composants.
+**Description**: Create a custom events system for component communication.
 
-**Fichiers**: `scripts/utils/EventBus.js`
+**Files**: `scripts/utils/EventBus.js`
 
-**Tâches**:
-- [x] Créer un EventBus singleton
-- [x] Émettre des événements lors des actions (like, filter, sort)
-- [x] Écouter les événements dans les composants concernés
-- [x] Mettre à jour le compteur de likes global via events
+**Tasks**:
+- [x] Create a singleton EventBus
+- [x] Emit events on actions (like, filter, sort)
+- [x] Listen to events in relevant components
+- [x] Update global likes counter via events
 
 ```javascript
 // Concept: EventBus (Observer Pattern)
@@ -410,60 +410,60 @@ class EventBus {
 
 ---
 
-### 4.4 Raccourcis clavier globaux ✅
-**Concepts**: `keydown` events, `KeyboardEvent`, Map, combinaisons (Ctrl+K), accessibilité
+### 4.4 Global Keyboard Shortcuts ✅
+**Concepts**: `keydown` events, `KeyboardEvent`, Map, combinations (Ctrl+K), accessibility
 
-**Description**: Ajouter des raccourcis clavier pour la navigation rapide.
+**Description**: Add keyboard shortcuts for quick navigation.
 
-**Fichiers**: `scripts/utils/KeyboardShortcutManager.js`
+**Files**: `scripts/utils/KeyboardShortcutManager.js`
 
-**Tâches**:
-- [x] Ctrl+K : Ouvrir la recherche
-- [x] Escape : Fermer modals/lightbox
-- [x] J/K : Naviguer entre les médias
-- [x] L : Liker le média actif
-- [x] Afficher une aide des raccourcis (?)
+**Tasks**:
+- [x] Ctrl+K: Open search
+- [x] Escape: Close modals/lightbox
+- [x] J/K: Navigate between media
+- [x] L: Like active media
+- [x] Display shortcuts help (?)
 
 ---
 
-## Phase 5 : Formulaires et validation ✅
+## Phase 5: Forms and Validation ✅
 
-### 5.1 Validation de formulaire avancée ✅
-**Concepts**: Regex, `FormData`, validation custom, feedback utilisateur
+### 5.1 Advanced Form Validation ✅
+**Concepts**: Regex, `FormData`, custom validation, user feedback
 
-**Description**: Valider le formulaire de contact avec règles personnalisées.
+**Description**: Validate the contact form with custom rules.
 
-**Fichiers**: `scripts/utils/Validator.js`, `scripts/utils/contactForm.js`
+**Files**: `scripts/utils/Validator.js`, `scripts/utils/contactForm.js`
 
-**Tâches**:
-- [x] Valider l'email avec regex
-- [x] Valider la longueur du message
-- [x] Afficher les erreurs en temps réel
-- [x] Désactiver le submit si invalide
-- [x] Créer une classe `Validator`
+**Tasks**:
+- [x] Validate email with regex
+- [x] Validate message length
+- [x] Display errors in real time
+- [x] Disable submit if invalid
+- [x] Create a `Validator` class
 
 ```javascript
-// Concept: Validation avec Regex
+// Concept: Validation with Regex
 class Validator {
   static email(value) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return {
       valid: regex.test(value),
-      message: 'Email invalide'
+      message: 'Invalid email'
     }
   }
 
   static minLength(value, min) {
     return {
       valid: value.length >= min,
-      message: `Minimum ${min} caractères`
+      message: `Minimum ${min} characters`
     }
   }
 
   static required(value) {
     return {
       valid: value.trim().length > 0,
-      message: 'Champ requis'
+      message: 'Required field'
     }
   }
 }
@@ -471,50 +471,50 @@ class Validator {
 
 ---
 
-### 5.2 Auto-save du formulaire ✅
-**Concepts**: `sessionStorage`, `input` event, debounce, restoration d'état
+### 5.2 Form Auto-save ✅
+**Concepts**: `sessionStorage`, `input` event, debounce, state restoration
 
-**Description**: Sauvegarder automatiquement le brouillon du formulaire.
+**Description**: Automatically save the form draft.
 
-**Fichiers**: `scripts/utils/FormAutoSave.js`, `scripts/utils/contactForm.js`
+**Files**: `scripts/utils/FormAutoSave.js`, `scripts/utils/contactForm.js`
 
-**Tâches**:
-- [x] Sauvegarder chaque champ au blur ou après debounce
-- [x] Restaurer les valeurs au chargement
-- [x] Afficher "Brouillon sauvegardé"
-- [x] Effacer après envoi réussi
+**Tasks**:
+- [x] Save each field on blur or after debounce
+- [x] Restore values on load
+- [x] Display "Draft saved"
+- [x] Clear after successful submission
 
 ---
 
-## Phase 6 : Performance et optimisation (En cours)
+## Phase 6: Performance and Optimization (In Progress)
 
 ### 6.1 Virtual Scrolling
-**Concepts**: DOM recycling, calculs de position, `requestAnimationFrame`, performance
+**Concepts**: DOM recycling, position calculations, `requestAnimationFrame`, performance
 
-**Description**: Afficher uniquement les éléments visibles pour de grandes listes.
+**Description**: Display only visible elements for large lists.
 
-**Tâches**:
-- [ ] Calculer les éléments visibles selon le scroll
-- [ ] Recycler les éléments DOM
-- [ ] Maintenir la hauteur du conteneur
-- [ ] Gérer le scroll fluide
+**Tasks**:
+- [ ] Calculate visible elements based on scroll
+- [ ] Recycle DOM elements
+- [ ] Maintain container height
+- [ ] Handle smooth scrolling
 
 ---
 
-### 6.2 Web Workers pour le tri/filtrage ✅
-**Concepts**: `Worker`, `postMessage`, transfert de données, thread séparé
+### 6.2 Web Workers for Sorting/Filtering ✅
+**Concepts**: `Worker`, `postMessage`, data transfer, separate thread
 
-**Description**: Déplacer les calculs lourds dans un Web Worker.
+**Description**: Move heavy calculations to a Web Worker.
 
-**Fichiers**: `scripts/workers/sortWorker.js`, `scripts/utils/WorkerManager.js`
+**Files**: `scripts/workers/sortWorker.js`, `scripts/utils/WorkerManager.js`
 
-**Tâches**:
-- [x] Créer un worker pour le tri
-- [x] Envoyer les données au worker
-- [x] Recevoir les résultats triés
-- [x] Ajouter filtrage et recherche
-- [x] Ajouter agrégation de données
-- [x] Créer WorkerManager avec Promises
+**Tasks**:
+- [x] Create a worker for sorting
+- [x] Send data to the worker
+- [x] Receive sorted results
+- [x] Add filtering and search
+- [x] Add data aggregation
+- [x] Create WorkerManager with Promises
 
 ```javascript
 // Concept: Web Worker
@@ -538,17 +538,17 @@ self.onmessage = (e) => {
 
 ---
 
-### 6.3 Throttle pour le scroll ✅
-**Concepts**: Throttle vs debounce, `requestAnimationFrame`, performance scroll
+### 6.3 Throttle for Scroll ✅
+**Concepts**: Throttle vs debounce, `requestAnimationFrame`, scroll performance
 
-**Description**: Optimiser les handlers de scroll.
+**Description**: Optimize scroll handlers.
 
-**Fichiers**: `scripts/utils/throttle.js`
+**Files**: `scripts/utils/throttle.js`
 
-**Tâches**:
-- [x] Implémenter une fonction throttle
-- [x] Appliquer au scroll listener
-- [x] Comparer avec requestAnimationFrame (rafThrottle implémenté)
+**Tasks**:
+- [x] Implement a throttle function
+- [x] Apply to scroll listener
+- [x] Compare with requestAnimationFrame (rafThrottle implemented)
 
 ```javascript
 // Concept: Throttle
@@ -566,22 +566,22 @@ function throttle(fn, limit) {
 
 ---
 
-## Phase 7 : Patterns avancés ✅
+## Phase 7: Advanced Patterns ✅
 
 ### 7.1 State Management (Mini Redux) ✅
-**Concepts**: Singleton, immutabilité, reducers, subscribers, flux unidirectionnel
+**Concepts**: Singleton, immutability, reducers, subscribers, unidirectional flow
 
-**Description**: Créer un store centralisé pour l'état de l'application.
+**Description**: Create a centralized store for application state.
 
-**Fichiers**: `scripts/utils/Store.js`
+**Files**: `scripts/utils/Store.js`
 
-**Tâches**:
-- [x] Créer une classe `Store`
-- [x] Implémenter `getState()`, `dispatch()`, `subscribe()`
-- [x] Ajouter `subscribeToSelector()` pour optimiser les re-renders
-- [x] Ajouter système de middlewares
-- [x] Créer helpers: `combineReducers`, `createReducer`, `createAction`
-- [x] Ajouter `loggerMiddleware` et `thunkMiddleware`
+**Tasks**:
+- [x] Create a `Store` class
+- [x] Implement `getState()`, `dispatch()`, `subscribe()`
+- [x] Add `subscribeToSelector()` to optimize re-renders
+- [x] Add middleware system
+- [x] Create helpers: `combineReducers`, `createReducer`, `createAction`
+- [x] Add `loggerMiddleware` and `thunkMiddleware`
 
 ```javascript
 // Concept: Mini Store
@@ -612,22 +612,22 @@ class Store {
 
 ---
 
-### 7.2 Composants réutilisables (En cours)
+### 7.2 Reusable Components (In Progress)
 **Concepts**: Composition, slots, props, lifecycle, encapsulation
 
-**Description**: Créer des composants UI génériques réutilisables.
+**Description**: Create generic reusable UI components.
 
-**Fichiers**: `scripts/utils/Toast.js`
+**Files**: `scripts/utils/Toast.js`
 
-**Tâches**:
-- [ ] Créer `Modal` générique
-- [ ] Créer `Dropdown` accessible
-- [x] Créer `Toast` notifications
-- [ ] Créer `Skeleton` loader
-- [ ] Documenter l'API de chaque composant
+**Tasks**:
+- [ ] Create generic `Modal`
+- [ ] Create accessible `Dropdown`
+- [x] Create `Toast` notifications
+- [ ] Create `Skeleton` loader
+- [ ] Document API for each component
 
 ```javascript
-// Concept: Composant réutilisable
+// Concept: Reusable component
 class Modal {
   constructor({ title, content, onClose, onConfirm }) {
     this._title = title
@@ -637,15 +637,15 @@ class Modal {
   }
 
   render() {
-    // Créer le DOM du modal
+    // Create modal DOM
   }
 
   open() {
-    // Afficher et focus trap
+    // Display and focus trap
   }
 
   close() {
-    // Fermer et cleanup
+    // Close and cleanup
     this._onClose?.()
   }
 }
@@ -653,20 +653,20 @@ class Modal {
 
 ---
 
-### 7.3 Decorator Pattern pour le logging ✅
+### 7.3 Decorator Pattern for Logging ✅
 **Concepts**: Higher-order functions, decorators, AOP, debugging
 
-**Description**: Ajouter du logging automatique aux méthodes.
+**Description**: Add automatic logging to methods.
 
-**Fichiers**: `scripts/utils/withLogging.js`
+**Files**: `scripts/utils/withLogging.js`
 
-**Tâches**:
-- [x] Créer un decorator `withLogging`
-- [x] Logger les appels de méthodes
-- [x] Logger les erreurs automatiquement
-- [x] Mesurer le temps d'exécution
-- [x] Créer `withTiming`, `withErrorHandling`, `withMemoization`, `withRateLimit`, `withValidation`
-- [x] Créer `compose` pour chaîner les decorators
+**Tasks**:
+- [x] Create a `withLogging` decorator
+- [x] Log method calls
+- [x] Log errors automatically
+- [x] Measure execution time
+- [x] Create `withTiming`, `withErrorHandling`, `withMemoization`, `withRateLimit`, `withValidation`
+- [x] Create `compose` to chain decorators
 
 ```javascript
 // Concept: Decorator function
@@ -687,29 +687,29 @@ function withLogging(fn, name) {
 
 ---
 
-## Phase 8 : APIs Web modernes
+## Phase 8: Modern Web APIs
 
 ### 8.1 Share API ✅
 **Concepts**: `navigator.share()`, feature detection, Clipboard API, fallback
 
-**Description**: Partager un photographe ou média sur les réseaux sociaux.
+**Description**: Share a photographer or media on social networks.
 
-**Fichiers**: `scripts/templates/ShareButton.js`
+**Files**: `scripts/templates/ShareButton.js`
 
-**Tâches**:
-- [x] Détecter le support de l'API
-- [x] Créer un bouton de partage
-- [x] Partager avec titre, texte et URL
-- [x] Fallback: copier le lien dans le presse-papier
+**Tasks**:
+- [x] Detect API support
+- [x] Create a share button
+- [x] Share with title, text, and URL
+- [x] Fallback: copy link to clipboard
 
 ```javascript
-// Concept: Share API avec fallback
+// Concept: Share API with fallback
 async function share(data) {
   if (navigator.share) {
     await navigator.share(data)
   } else {
     await navigator.clipboard.writeText(data.url)
-    showToast('Lien copié !')
+    showToast('Link copied!')
   }
 }
 ```
@@ -719,43 +719,43 @@ async function share(data) {
 ### 8.2 Clipboard API ✅
 **Concepts**: `navigator.clipboard`, Permissions API, async clipboard, fallback
 
-**Description**: Copier les informations d'un photographe.
+**Description**: Copy photographer information.
 
-**Fichiers**: `scripts/templates/ShareButton.js`, `scripts/utils/UrlStateManager.js`
+**Files**: `scripts/templates/ShareButton.js`, `scripts/utils/UrlStateManager.js`
 
-**Tâches**:
-- [ ] Bouton "Copier l'email"
-- [x] Bouton "Copier le lien"
-- [x] Feedback visuel après copie
+**Tasks**:
+- [ ] "Copy email" button
+- [x] "Copy link" button
+- [x] Visual feedback after copy
 
 ---
 
 ### 8.3 Fullscreen API ✅
-**Concepts**: `requestFullscreen()`, `fullscreenchange` event, préfixes navigateurs
+**Concepts**: `requestFullscreen()`, `fullscreenchange` event, browser prefixes
 
-**Description**: Voir la lightbox en plein écran.
+**Description**: View lightbox in fullscreen.
 
-**Fichiers**: `scripts/utils/lightbox.js`, `css/photographer.css`
+**Files**: `scripts/utils/lightbox.js`, `css/photographer.css`
 
-**Tâches**:
-- [x] Ajouter un bouton fullscreen à la lightbox
-- [x] Gérer les préfixes navigateurs
-- [x] Écouter les changements de fullscreen
-- [x] Adapter l'UI en mode fullscreen
+**Tasks**:
+- [x] Add a fullscreen button to lightbox
+- [x] Handle browser prefixes
+- [x] Listen to fullscreen changes
+- [x] Adapt UI in fullscreen mode
 
 ---
 
 ### 8.4 Page Visibility API ✅
-**Concepts**: `visibilitychange`, `document.hidden`, optimisation ressources
+**Concepts**: `visibilitychange`, `document.hidden`, resource optimization
 
-**Description**: Pauser les vidéos quand l'onglet n'est pas visible.
+**Description**: Pause videos when tab is not visible.
 
-**Fichiers**: `scripts/utils/PageVisibilityManager.js`
+**Files**: `scripts/utils/PageVisibilityManager.js`
 
-**Tâches**:
-- [x] Détecter le changement de visibilité
-- [x] Pauser les vidéos en lecture
-- [x] Reprendre quand l'onglet redevient visible
+**Tasks**:
+- [x] Detect visibility change
+- [x] Pause playing videos
+- [x] Resume when tab becomes visible again
 
 ```javascript
 // Concept: Page Visibility
@@ -771,22 +771,22 @@ document.addEventListener('visibilitychange', () => {
 
 ---
 
-## Phase 9 : Gestion d'erreurs ✅
+## Phase 9: Error Handling ✅
 
 ### 9.1 Error Boundary Pattern ✅
-**Concepts**: `try/catch`, error recovery, graceful degradation, UX d'erreur
+**Concepts**: `try/catch`, error recovery, graceful degradation, error UX
 
-**Description**: Gérer les erreurs de manière élégante.
+**Description**: Handle errors elegantly.
 
-**Fichiers**: `scripts/utils/ErrorBoundary.js`
+**Files**: `scripts/utils/ErrorBoundary.js`
 
-**Tâches**:
-- [x] Créer une classe `ErrorBoundary`
-- [x] Afficher un message d'erreur user-friendly
-- [x] Logger les erreurs pour debug
-- [x] Permettre de réessayer
-- [x] Ajouter `withRetry` avec backoff exponentiel
-- [x] Configurer gestionnaire global d'erreurs
+**Tasks**:
+- [x] Create an `ErrorBoundary` class
+- [x] Display a user-friendly error message
+- [x] Log errors for debug
+- [x] Allow retry
+- [x] Add `withRetry` with exponential backoff
+- [x] Configure global error handler
 
 ```javascript
 // Concept: Error handling wrapper
@@ -802,7 +802,7 @@ class ErrorBoundary {
   }
 
   static _logError(error) {
-    // Envoyer à un service de monitoring
+    // Send to monitoring service
   }
 }
 ```
@@ -812,17 +812,17 @@ class ErrorBoundary {
 ### 9.2 Custom Error Classes ✅
 **Concepts**: `extends Error`, error types, stack traces, instanceof
 
-**Description**: Créer des erreurs typées pour mieux les gérer.
+**Description**: Create typed errors for better handling.
 
-**Fichiers**: `scripts/utils/CustomErrors.js`
+**Files**: `scripts/utils/CustomErrors.js`
 
-**Tâches**:
-- [x] Créer `NetworkError`
-- [x] Créer `ValidationError`
-- [x] Créer `NotFoundError`
-- [x] Gérer différemment selon le type
-- [x] Créer `AppError`, `ConfigError`, `TimeoutError`, `UnsupportedError`, `PermissionError`
-- [x] Créer `ErrorHandler` pour gestion centralisée
+**Tasks**:
+- [x] Create `NetworkError`
+- [x] Create `ValidationError`
+- [x] Create `NotFoundError`
+- [x] Handle differently based on type
+- [x] Create `AppError`, `ConfigError`, `TimeoutError`, `UnsupportedError`, `PermissionError`
+- [x] Create `ErrorHandler` for centralized management
 
 ```javascript
 // Concept: Custom Errors
@@ -845,18 +845,18 @@ class ValidationError extends Error {
 
 ---
 
-## Phase 10 : Modules et architecture
+## Phase 10: Modules and Architecture
 
-### 10.1 Migration vers ES Modules
-**Concepts**: `import`, `export`, `export default`, modules dynamiques
+### 10.1 Migration to ES Modules
+**Concepts**: `import`, `export`, `export default`, dynamic modules
 
-**Description**: Convertir les scripts en modules ES6.
+**Description**: Convert scripts to ES6 modules.
 
-**Tâches**:
-- [ ] Ajouter `type="module"` au script principal
-- [ ] Convertir chaque fichier en module
-- [ ] Gérer les dépendances avec import/export
-- [ ] Utiliser les imports dynamiques pour le lazy loading
+**Tasks**:
+- [ ] Add `type="module"` to main script
+- [ ] Convert each file to module
+- [ ] Manage dependencies with import/export
+- [ ] Use dynamic imports for lazy loading
 
 ```javascript
 // Concept: ES Modules
@@ -867,32 +867,32 @@ export class PhotographerApi extends Api { ... }
 // App.js
 import { PhotographerApi } from './api/Api.js'
 
-// Dynamic import pour lazy loading
+// Dynamic import for lazy loading
 const { Lightbox } = await import('./utils/lightbox.js')
 ```
 
 ---
 
-### 10.2 Architecture MVC explicite
-**Concepts**: Séparation des responsabilités, MVC, couplage faible
+### 10.2 Explicit MVC Architecture
+**Concepts**: Separation of concerns, MVC, loose coupling
 
-**Description**: Restructurer le code en Model-View-Controller.
+**Description**: Restructure code into Model-View-Controller.
 
-**Tâches**:
-- [ ] Séparer clairement les Models (données)
-- [ ] Séparer les Views (affichage)
-- [ ] Créer des Controllers (logique)
-- [ ] Documenter les responsabilités
+**Tasks**:
+- [ ] Clearly separate Models (data)
+- [ ] Separate Views (display)
+- [ ] Create Controllers (logic)
+- [ ] Document responsibilities
 
 ---
 
-## Récapitulatif des concepts
+## Concepts Summary
 
-| Concept | Features associées |
+| Concept | Associated Features |
 |---------|-------------------|
 | Array methods | 1.1, 1.3, 2.1, 2.2 |
 | Async/Await | 3.1, 3.2, 3.3, 3.4 |
-| Classes ES6 | Toutes |
+| ES6 Classes | All |
 | Closures | 1.2, 3.3 |
 | Custom Events | 4.3 |
 | Debounce/Throttle | 1.2, 6.3 |
@@ -901,7 +901,7 @@ const { Lightbox } = await import('./utils/lightbox.js')
 | Error handling | 9.1, 9.2 |
 | ES Modules | 10.1 |
 | Event delegation | 4.1 |
-| Fetch API | Déjà implémenté |
+| Fetch API | Already implemented |
 | History API | 2.3 |
 | IntersectionObserver | 3.1, 3.2 |
 | LocalStorage | 2.1, 5.2 |
@@ -913,9 +913,9 @@ const { Lightbox } = await import('./utils/lightbox.js')
 
 ---
 
-## Ordre suggéré
+## Suggested Order
 
-1. **Débutant**: 1.1 → 1.2 → 1.3 → 2.1
-2. **Intermédiaire**: 2.2 → 3.1 → 4.1 → 5.1
-3. **Avancé**: 3.3 → 4.3 → 7.1 → 10.1
+1. **Beginner**: 1.1 → 1.2 → 1.3 → 2.1
+2. **Intermediate**: 2.2 → 3.1 → 4.1 → 5.1
+3. **Advanced**: 3.3 → 4.3 → 7.1 → 10.1
 4. **Expert**: 6.1 → 6.2 → 7.3 → 9.1

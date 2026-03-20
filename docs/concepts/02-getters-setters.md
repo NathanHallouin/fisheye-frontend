@@ -1,40 +1,40 @@
-# Getters et Setters
+# Getters and Setters
 
 ## Concept
 
-Les getters et setters sont des méthodes spéciales qui permettent de contrôler l'accès aux propriétés d'un objet. Ils permettent d'encapsuler la logique d'accès et de modification des données.
+Getters and setters are special methods that allow you to control access to an object's properties. They enable encapsulation of data access and modification logic.
 
-## Syntaxe
+## Syntax
 
 ```javascript
-class Exemple {
-  constructor(valeur) {
-    this._valeur = valeur
+class Example {
+  constructor(value) {
+    this._value = value
   }
 
-  // Getter - accès en lecture
-  get valeur() {
-    return this._valeur
+  // Getter - read access
+  get value() {
+    return this._value
   }
 
-  // Setter - accès en écriture
-  set valeur(nouvelleValeur) {
-    if (nouvelleValeur >= 0) {
-      this._valeur = nouvelleValeur
+  // Setter - write access
+  set value(newValue) {
+    if (newValue >= 0) {
+      this._value = newValue
     }
   }
 }
 
-const obj = new Exemple(10)
-console.log(obj.valeur)  // 10 (appelle le getter)
-obj.valeur = 20          // Appelle le setter
+const obj = new Example(10)
+console.log(obj.value)  // 10 (calls the getter)
+obj.value = 20          // Calls the setter
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Getters simples - PhotographerProfil
+### Simple Getters - PhotographerProfil
 
-**Fichier**: [scripts/models/PhotographerProfil.js](../../scripts/models/PhotographerProfil.js)
+**File**: [scripts/models/PhotographerProfil.js](../../scripts/models/PhotographerProfil.js)
 
 ```javascript
 class PhotographerProfil {
@@ -71,7 +71,7 @@ class PhotographerProfil {
 }
 ```
 
-### Getter calculé - location
+### Computed Getter - location
 
 ```javascript
 get location() {
@@ -79,9 +79,9 @@ get location() {
 }
 ```
 
-Ce getter **calcule** une valeur à partir de plusieurs propriétés. Il n'y a pas de `_location` stockée.
+This getter **computes** a value from multiple properties. There is no stored `_location`.
 
-### Getter avec transformation - portrait
+### Getter with Transformation - portrait
 
 ```javascript
 get portrait() {
@@ -89,11 +89,11 @@ get portrait() {
 }
 ```
 
-Ce getter **transforme** la valeur stockée en ajoutant le chemin complet.
+This getter **transforms** the stored value by adding the full path.
 
-### Getters dans PhotographerMediaCard
+### Getters in PhotographerMediaCard
 
-**Fichier**: [scripts/templates/PhotographerMediaCard.js](../../scripts/templates/PhotographerMediaCard.js)
+**File**: [scripts/templates/PhotographerMediaCard.js](../../scripts/templates/PhotographerMediaCard.js)
 
 ```javascript
 class PhotographerMediaCard {
@@ -116,21 +116,21 @@ class PhotographerMediaCard {
 }
 ```
 
-## Avantages des getters
+## Advantages of Getters
 
 ### 1. Encapsulation
-Les propriétés internes (`_name`) sont protégées. L'accès se fait via le getter.
+Internal properties (`_name`) are protected. Access is through the getter.
 
 ```javascript
-// Sans getter
-console.log(photographer._name)  // Accès direct (déconseillé)
+// Without getter
+console.log(photographer._name)  // Direct access (not recommended)
 
-// Avec getter
-console.log(photographer.name)   // Accès contrôlé
+// With getter
+console.log(photographer.name)   // Controlled access
 ```
 
-### 2. Propriétés calculées
-Les getters peuvent retourner des valeurs calculées à la volée.
+### 2. Computed Properties
+Getters can return values calculated on the fly.
 
 ```javascript
 get fullInfo() {
@@ -138,19 +138,19 @@ get fullInfo() {
 }
 ```
 
-### 3. Validation dans les setters
+### 3. Validation in Setters
 
 ```javascript
 set price(value) {
   if (typeof value !== 'number' || value < 0) {
-    throw new Error('Le prix doit être un nombre positif')
+    throw new Error('Price must be a positive number')
   }
   this._price = value
 }
 ```
 
-### 4. Lazy loading
-Calculer une valeur seulement quand elle est demandée.
+### 4. Lazy Loading
+Calculate a value only when it's requested.
 
 ```javascript
 get expensiveCalculation() {
@@ -161,53 +161,53 @@ get expensiveCalculation() {
 }
 ```
 
-## Comparaison avec les méthodes
+## Comparison with Methods
 
-| Aspect | Getter | Méthode |
-|--------|--------|---------|
-| Syntaxe d'appel | `obj.property` | `obj.method()` |
-| Peut prendre des arguments | Non | Oui |
-| Intention | Accéder à une valeur | Effectuer une action |
-| Usage recommandé | Propriétés dérivées | Opérations avec side effects |
+| Aspect | Getter | Method |
+|--------|--------|--------|
+| Call syntax | `obj.property` | `obj.method()` |
+| Can take arguments | No | Yes |
+| Intent | Access a value | Perform an action |
+| Recommended usage | Derived properties | Operations with side effects |
 
-### Quand utiliser un getter vs une méthode ?
+### When to Use a Getter vs a Method?
 
 ```javascript
-// Getter - retourne une valeur, pas de side effect
+// Getter - returns a value, no side effect
 get fullName() {
   return `${this._firstName} ${this._lastName}`
 }
 
-// Méthode - effectue une action
+// Method - performs an action
 formatForDisplay() {
   return `${this._name.toUpperCase()} (${this._city})`
 }
 ```
 
-## Bonnes pratiques
+## Best Practices
 
-1. **Nommer le getter comme la propriété** - `get name()` pour `this._name`
-2. **Pas de side effects** - Un getter ne doit pas modifier l'état
-3. **Retourner rapidement** - Les getters doivent être légers
-4. **Documenter avec JSDoc** - Indiquer le type de retour
+1. **Name the getter like the property** - `get name()` for `this._name`
+2. **No side effects** - A getter should not modify state
+3. **Return quickly** - Getters should be lightweight
+4. **Document with JSDoc** - Indicate the return type
 
 ```javascript
 /**
- * Retourne le nom complet du photographe.
- * @returns {string} Le nom du photographe
+ * Returns the photographer's full name.
+ * @returns {string} The photographer's name
  */
 get name() {
   return this._name
 }
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Créer une classe `Product` avec :
-- Propriétés `_price` et `_quantity`
-- Getter `price` et `quantity`
-- Setter `quantity` avec validation (>= 0)
-- Getter calculé `total` qui retourne `price * quantity`
+Create a `Product` class with:
+- Properties `_price` and `_quantity`
+- Getter `price` and `quantity`
+- Setter `quantity` with validation (>= 0)
+- Computed getter `total` that returns `price * quantity`
 
 ```javascript
 class Product {
@@ -226,7 +226,7 @@ class Product {
 
   set quantity(value) {
     if (value < 0) {
-      throw new Error('La quantité ne peut pas être négative')
+      throw new Error('Quantity cannot be negative')
     }
     this._quantity = value
   }

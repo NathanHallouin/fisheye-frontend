@@ -1,28 +1,28 @@
-# Classes ES6
+# ES6 Classes
 
 ## Concept
 
-Les classes ES6 sont une syntaxe moderne pour créer des objets et gérer l'héritage en JavaScript. Elles offrent une approche plus claire et plus lisible que les fonctions constructeurs traditionnelles.
+ES6 classes are a modern syntax for creating objects and managing inheritance in JavaScript. They offer a clearer and more readable approach than traditional constructor functions.
 
-## Syntaxe de base
+## Basic Syntax
 
 ```javascript
-class NomClasse {
+class ClassName {
   constructor(param) {
     this._privateProperty = param
   }
 
-  methode() {
+  method() {
     return this._privateProperty
   }
 }
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Classe de données - PhotographerProfil
+### Data Class - PhotographerProfil
 
-**Fichier**: [scripts/models/PhotographerProfil.js](../../scripts/models/PhotographerProfil.js)
+**File**: [scripts/models/PhotographerProfil.js](../../scripts/models/PhotographerProfil.js)
 
 ```javascript
 class PhotographerProfil {
@@ -45,13 +45,13 @@ class PhotographerProfil {
     return this._name
   }
 
-  // ... autres getters
+  // ... other getters
 }
 ```
 
-### Classe utilitaire - FavoritesManager
+### Utility Class - FavoritesManager
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 class FavoritesManager {
@@ -71,36 +71,36 @@ class FavoritesManager {
   }
 
   toggle(photographerId, photographerData) {
-    // Logique de toggle
+    // Toggle logic
   }
 }
 ```
 
-## Caractéristiques clés
+## Key Features
 
-### 1. Constructeur
-Le `constructor` est appelé automatiquement lors de la création d'une instance avec `new`.
+### 1. Constructor
+The `constructor` is automatically called when creating an instance with `new`.
 
-### 2. Propriétés privées (convention)
-Le préfixe `_` indique une propriété privée par convention (pas vraiment privée en JS).
+### 2. Private Properties (convention)
+The `_` prefix indicates a private property by convention (not truly private in JS).
 
 ```javascript
-this._name = data.name  // Convention: propriété privée
+this._name = data.name  // Convention: private property
 ```
 
-### 3. Méthodes
-Les méthodes sont définies directement dans le corps de la classe sans le mot-clé `function`.
+### 3. Methods
+Methods are defined directly in the class body without the `function` keyword.
 
 ```javascript
 class Example {
-  maMethode() {
-    return 'résultat'
+  myMethod() {
+    return 'result'
   }
 }
 ```
 
-### 4. Propriétés et méthodes statiques
-Accessibles sur la classe elle-même, pas sur les instances.
+### 4. Static Properties and Methods
+Accessible on the class itself, not on instances.
 
 ```javascript
 class Counter {
@@ -115,9 +115,9 @@ Counter.increment()
 console.log(Counter.count) // 1
 ```
 
-## Héritage avec extends
+## Inheritance with extends
 
-**Fichier**: [scripts/api/Api.js](../../scripts/api/Api.js)
+**File**: [scripts/api/Api.js](../../scripts/api/Api.js)
 
 ```javascript
 class Api {
@@ -142,36 +142,36 @@ class PhotographerApi extends Api {
 }
 ```
 
-### Mot-clé `super`
-- `super()` appelle le constructeur de la classe parente
-- `super.methode()` appelle une méthode de la classe parente
+### The `super` Keyword
+- `super()` calls the parent class constructor
+- `super.method()` calls a method from the parent class
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Classe | Rôle | Fichier |
-|--------|------|---------|
-| `PhotographerProfil` | Modèle de données photographe | models/PhotographerProfil.js |
-| `PhotographerMedia` | Modèle de données média | models/PhotographerMedia.js |
-| `Api` | Classe de base pour les appels API | api/Api.js |
-| `FavoritesManager` | Gestion des favoris | utils/FavoritesManager.js |
-| `EventBus` | Communication entre composants | utils/EventBus.js |
-| `LazyLoader` | Chargement paresseux | utils/LazyLoader.js |
-| `CacheManager` | Cache des données | utils/CacheManager.js |
+| Class | Role | File |
+|-------|------|------|
+| `PhotographerProfil` | Photographer data model | models/PhotographerProfil.js |
+| `PhotographerMedia` | Media data model | models/PhotographerMedia.js |
+| `Api` | Base class for API calls | api/Api.js |
+| `FavoritesManager` | Favorites management | utils/FavoritesManager.js |
+| `EventBus` | Communication between components | utils/EventBus.js |
+| `LazyLoader` | Lazy loading | utils/LazyLoader.js |
+| `CacheManager` | Data caching | utils/CacheManager.js |
 
-## Bonnes pratiques
+## Best Practices
 
-1. **Un fichier = une classe** - Chaque classe dans son propre fichier
-2. **Nommage PascalCase** - `PhotographerCard`, pas `photographerCard`
-3. **Préfixe `_` pour le privé** - `this._data` pour les propriétés internes
-4. **Getters pour l'accès** - Exposer les données via des getters
-5. **Documentation JSDoc** - Documenter chaque classe et méthode
+1. **One file = one class** - Each class in its own file
+2. **PascalCase naming** - `PhotographerCard`, not `photographerCard`
+3. **`_` prefix for private** - `this._data` for internal properties
+4. **Getters for access** - Expose data via getters
+5. **JSDoc documentation** - Document each class and method
 
-## Exercice pratique
+## Practical Exercise
 
-Créer une classe `MediaItem` qui :
-- Stocke `id`, `title`, `likes`
-- A un getter pour chaque propriété
-- A une méthode `incrementLikes()` qui augmente les likes de 1
+Create a `MediaItem` class that:
+- Stores `id`, `title`, `likes`
+- Has a getter for each property
+- Has an `incrementLikes()` method that increases likes by 1
 
 ```javascript
 class MediaItem {

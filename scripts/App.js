@@ -1,10 +1,10 @@
 class App {
   /**
-   * Initialise l'API et le conteneur DOM pour les photographes.
+   * Initializes the API and DOM container for photographers.
    *
    * @description
-   * Démontre l'initialisation des propriétés d'instance.
-   * Les propriétés préfixées par _ sont considérées comme privées par convention.
+   * Demonstrates instance property initialization.
+   * Properties prefixed with _ are considered private by convention.
    */
   constructor() {
     this.photographersApi = new PhotographerApi('./data/photographers.json')
@@ -20,14 +20,14 @@ class App {
   }
 
   /**
-   * Méthode principale asynchrone pour charger et afficher les photographes.
+   * Main asynchronous method to load and display photographers.
    *
    * @description
-   * Utilise async/await pour gérer les opérations asynchrones de manière
-   * lisible et séquentielle. Les erreurs peuvent être gérées avec try/catch.
+   * Uses async/await to handle asynchronous operations in a
+   * readable and sequential manner. Errors can be handled with try/catch.
    *
-   * CONCEPT : History API integration
-   * L'état initial est restauré depuis l'URL, permettant des URLs partageables.
+   * CONCEPT: History API integration
+   * The initial state is restored from the URL, enabling shareable URLs.
    *
    * @async
    * @returns {Promise<void>}
@@ -35,57 +35,57 @@ class App {
   async main() {
     const photographersData = await this.photographersApi.get()
 
-    // Stocker tous les photographes pour le filtrage
+    // Store all photographers for filtering
     this._allPhotographers = new PhotographersFactory(
       photographersData,
       'photographers',
     )
 
-    // Initialiser les filtres comme "tous les photographes"
+    // Initialize filters as "all photographers"
     this._filteredByTags = [...this._allPhotographers]
     this._filteredBySearch = [...this._allPhotographers]
 
-    // Initialiser le compteur de favoris dans le header
+    // Initialize favorites counter in the header
     this._initFavoritesCounter()
 
-    // Initialiser le bouton de partage
+    // Initialize the share button
     this._initShareButton()
 
-    // Créer et insérer les contrôles de filtrage
+    // Create and insert filtering controls
     this._initSearchBar()
     this._initTagFilter()
 
-    // Écouter les changements d'état URL (bouton retour/avant)
+    // Listen for URL state changes (back/forward button)
     this._initUrlStateListener()
 
-    // Restaurer l'état depuis l'URL (si paramètres présents)
+    // Restore state from URL (if parameters present)
     this._restoreStateFromUrl()
   }
 
   /**
-   * Initialise l'écoute des changements d'état URL.
+   * Initializes listening for URL state changes.
    *
    * @description
-   * CONCEPT : popstate event
-   * Quand l'utilisateur clique sur Retour/Avant du navigateur,
-   * l'événement popstate est déclenché et on restaure l'état correspondant.
+   * CONCEPT: popstate event
+   * When the user clicks the browser's Back/Forward button,
+   * the popstate event is triggered and the corresponding state is restored.
    *
    * @private
    */
   _initUrlStateListener() {
     this._urlState.onChange((state) => {
-      // Restaurer les filtres sans re-pousser dans l'historique
+      // Restore filters without pushing to history again
       this._restoreFiltersFromState(state, false)
     })
   }
 
   /**
-   * Restaure l'état initial depuis les paramètres URL.
+   * Restores the initial state from URL parameters.
    *
    * @description
-   * CONCEPT : URLs partageables
-   * Permet de partager un lien avec des filtres pré-appliqués.
-   * Ex: ?tags=portrait,travel&search=paris
+   * CONCEPT: Shareable URLs
+   * Allows sharing a link with pre-applied filters.
+   * E.g.: ?tags=portrait,travel&search=paris
    *
    * @private
    */
@@ -94,28 +94,28 @@ class App {
     const hasTags = state.tags && state.tags.length > 0
     const hasSearch = state.search && state.search.trim() !== ''
 
-    // Si pas de filtres dans l'URL, afficher tous les photographes
+    // If no filters in URL, display all photographers
     if (!hasTags && !hasSearch) {
       this._renderPhotographers(this._allPhotographers)
       return
     }
 
-    // Restaurer les filtres depuis l'état URL
+    // Restore filters from URL state
     this._restoreFiltersFromState(state, false)
   }
 
   /**
-   * Restaure les filtres depuis un objet d'état.
+   * Restores filters from a state object.
    *
-   * @param {Object} state - L'état à restaurer.
-   * @param {boolean} updateUrl - Si true, met à jour l'URL.
+   * @param {Object} state - The state to restore.
+   * @param {boolean} updateUrl - If true, updates the URL.
    * @private
    */
   _restoreFiltersFromState(state, updateUrl = true) {
-    // Restaurer les tags
+    // Restore tags
     if (state.tags) {
       this._tagFilter.setTags(state.tags, false)
-      // Mettre à jour _filteredByTags manuellement
+      // Manually update _filteredByTags
       if (state.tags.length === 0) {
         this._filteredByTags = [...this._allPhotographers]
       } else {
@@ -125,7 +125,7 @@ class App {
       }
     }
 
-    // Restaurer la recherche
+    // Restore search
     if (this._searchBar) {
       const searchValue = state.search || ''
       this._searchBar.setValue(searchValue, false)
@@ -149,12 +149,12 @@ class App {
       }
     }
 
-    // Appliquer les filtres combinés
+    // Apply combined filters
     this._applyCombinedFilters()
   }
 
   /**
-   * Initialise le compteur de favoris dans le header.
+   * Initializes the favorites counter in the header.
    * @private
    */
   _initFavoritesCounter() {
@@ -166,10 +166,10 @@ class App {
   }
 
   /**
-   * Initialise le bouton de partage dans le header.
+   * Initializes the share button in the header.
    *
    * @description
-   * Permet de partager l'URL avec les filtres actuels.
+   * Allows sharing the URL with current filters.
    *
    * @private
    */
@@ -177,37 +177,37 @@ class App {
     const navLinks = document.querySelector('.main-nav__links')
     if (navLinks) {
       const shareButton = new ShareButton()
-      // Insérer avant le compteur de favoris
+      // Insert before the favorites counter
       navLinks.insertBefore(shareButton.createElement(), navLinks.firstChild)
     }
   }
 
   /**
-   * Initialise la barre de recherche.
+   * Initializes the search bar.
    *
    * @description
-   * La SearchBar utilise le debounce pour limiter les appels pendant la frappe.
-   * Les résultats sont combinés avec les filtres de tags (intersection).
+   * The SearchBar uses debounce to limit calls during typing.
+   * Results are combined with tag filters (intersection).
    *
-   * CONCEPT : History API - replaceState pour recherche
-   * On utilise replaceState (pas pushState) pendant la frappe pour
-   * ne pas polluer l'historique avec chaque caractère tapé.
+   * CONCEPT: History API - replaceState for search
+   * We use replaceState (not pushState) during typing to
+   * avoid polluting history with each typed character.
    *
    * @private
    */
   _initSearchBar() {
     this._searchBar = new SearchBar(
       this._allPhotographers,
-      // Callback de recherche : met à jour les filtres de recherche et l'URL
+      // Search callback: updates search filters and URL
       (searchResults) => {
         this._filteredBySearch = searchResults
         this._applyCombinedFilters()
 
-        // Mettre à jour l'URL avec replaceState (pas de nouvelle entrée historique)
+        // Update URL with replaceState (no new history entry)
         const searchValue = this._searchBar.getValue()
         this._urlState.setParam('search', searchValue, true) // true = replaceState
       },
-      // Callback de sélection : navigue vers le photographe
+      // Selection callback: navigates to the photographer
       (photographer) => {
         window.location.href = photographer.url
       },
@@ -215,34 +215,34 @@ class App {
 
     const searchBar = this._searchBar.createSearchBar()
 
-    // Insérer la barre de recherche au début du main
+    // Insert the search bar at the beginning of main
     this.$main.insertBefore(searchBar, this.$main.firstChild)
   }
 
   /**
-   * Initialise le système de filtrage par tags.
+   * Initializes the tag filtering system.
    *
    * @description
-   * Utilise une fonction callback (closure) pour gérer les changements de filtres.
-   * La méthode bind() ou les arrow functions préservent le contexte 'this'.
+   * Uses a callback function (closure) to handle filter changes.
+   * The bind() method or arrow functions preserve the 'this' context.
    *
-   * CONCEPT : History API - pushState pour filtres de tags
-   * Chaque changement de tag crée une nouvelle entrée dans l'historique,
-   * permettant de revenir en arrière avec le bouton du navigateur.
+   * CONCEPT: History API - pushState for tag filters
+   * Each tag change creates a new history entry,
+   * allowing navigation back with the browser button.
    *
    * @private
    */
   _initTagFilter() {
-    // Arrow function préserve automatiquement le contexte 'this'
-    // C'est une alternative à .bind(this)
+    // Arrow function automatically preserves the 'this' context
+    // This is an alternative to .bind(this)
     this._tagFilter = new TagFilter(
       this._allPhotographers,
-      // Callback de filtrage : met à jour les filtres de tags et l'URL
+      // Filter callback: updates tag filters and URL
       (filteredPhotographers) => {
         this._filteredByTags = filteredPhotographers
         this._applyCombinedFilters()
 
-        // Mettre à jour l'URL avec pushState (nouvelle entrée historique)
+        // Update URL with pushState (new history entry)
         const activeTags = this._tagFilter.getActiveTags()
         this._urlState.setParam('tags', activeTags, false) // false = pushState
       },
@@ -250,23 +250,23 @@ class App {
 
     const filterBar = this._tagFilter.createFilterBar()
 
-    // Insérer la barre de filtres avant la section des photographes
+    // Insert the filter bar before the photographers section
     this.$main.insertBefore(filterBar, this.$photographerSection.parentElement)
   }
 
   /**
-   * Applique la combinaison des filtres (tags ET recherche).
+   * Applies the combination of filters (tags AND search).
    *
    * @description
-   * CONCEPT CLÉ : Intersection de tableaux
-   * Utilise filter() et includes() pour trouver les éléments
-   * présents dans les deux tableaux filtrés.
+   * KEY CONCEPT: Array intersection
+   * Uses filter() and includes() to find elements
+   * present in both filtered arrays.
    *
    * @private
    */
   _applyCombinedFilters() {
-    // Intersection : garder uniquement les photographes présents
-    // dans les DEUX listes filtrées (par tags ET par recherche)
+    // Intersection: keep only photographers present
+    // in BOTH filtered lists (by tags AND by search)
     const combined = this._filteredByTags.filter((photographer) =>
       this._filteredBySearch.includes(photographer),
     )
@@ -275,23 +275,23 @@ class App {
   }
 
   /**
-   * Affiche une liste de photographes dans le DOM.
+   * Displays a list of photographers in the DOM.
    *
    * @description
-   * Démontre la manipulation du DOM :
-   * - innerHTML = '' pour vider un conteneur (plus rapide que removeChild en boucle)
-   * - forEach() pour itérer sur un tableau
-   * - appendChild() pour ajouter des éléments
+   * Demonstrates DOM manipulation:
+   * - innerHTML = '' to empty a container (faster than removeChild in a loop)
+   * - forEach() to iterate over an array
+   * - appendChild() to add elements
    *
-   * @param {Array<PhotographerProfil>} photographers - Liste des photographes à afficher.
+   * @param {Array<PhotographerProfil>} photographers - List of photographers to display.
    * @private
    */
   _renderPhotographers(photographers) {
-    // Vider le conteneur avant de réafficher
-    // innerHTML = '' est plus performant pour vider complètement un conteneur
+    // Empty the container before re-rendering
+    // innerHTML = '' is more performant for completely emptying a container
     this.$photographerSection.innerHTML = ''
 
-    // Afficher un message si aucun résultat
+    // Display a message if no results
     if (photographers.length === 0) {
       const noResult = document.createElement('p')
       noResult.classList.add('no-result')
@@ -300,7 +300,7 @@ class App {
       return
     }
 
-    // forEach() exécute une fonction pour chaque élément du tableau
+    // forEach() executes a function for each element in the array
     photographers.forEach((photographer) => {
       const templateCard = new PhotographerCard(photographer)
       this.$photographerSection.appendChild(

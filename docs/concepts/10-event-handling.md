@@ -1,19 +1,19 @@
-# Gestion des événements (Event Handling)
+# Event Handling
 
 ## Concept
 
-Les événements permettent de réagir aux interactions utilisateur (clics, touches clavier, scroll, etc.) et aux changements d'état du navigateur.
+Events allow you to react to user interactions (clicks, key presses, scroll, etc.) and browser state changes.
 
 ## addEventListener
 
-### Syntaxe de base
+### Basic Syntax
 
 ```javascript
 element.addEventListener(eventType, callback, options)
 
-// Exemple
+// Example
 button.addEventListener('click', (e) => {
-  console.log('Bouton cliqué!')
+  console.log('Button clicked!')
 })
 ```
 
@@ -21,15 +21,15 @@ button.addEventListener('click', (e) => {
 
 ```javascript
 element.addEventListener('click', handler, {
-  once: true,      // Se déclenche une seule fois
-  capture: true,   // Phase de capture (au lieu de bubbling)
-  passive: true    // N'appellera pas preventDefault()
+  once: true,      // Triggers only once
+  capture: true,   // Capture phase (instead of bubbling)
+  passive: true    // Will not call preventDefault()
 })
 ```
 
-## Types d'événements courants
+## Common Event Types
 
-### Événements souris
+### Mouse Events
 
 ```javascript
 element.addEventListener('click', handler)
@@ -39,45 +39,45 @@ element.addEventListener('mouseleave', handler)
 element.addEventListener('mousemove', handler)
 ```
 
-### Événements clavier
+### Keyboard Events
 
 ```javascript
 element.addEventListener('keydown', handler)
 element.addEventListener('keyup', handler)
-element.addEventListener('keypress', handler)  // Déprécié
+element.addEventListener('keypress', handler)  // Deprecated
 ```
 
-### Événements de formulaire
+### Form Events
 
 ```javascript
-input.addEventListener('input', handler)     // À chaque frappe
-input.addEventListener('change', handler)    // Au blur si modifié
+input.addEventListener('input', handler)     // On each keystroke
+input.addEventListener('change', handler)    // On blur if modified
 input.addEventListener('focus', handler)
 input.addEventListener('blur', handler)
 form.addEventListener('submit', handler)
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Événements click
+### Click Events
 
-**Fichier**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
+**File**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
 
 ```javascript
 class FavoriteButton {
   _addEventListeners() {
     this.$button.addEventListener('click', (e) => {
-      e.stopPropagation()  // Empêche le clic de remonter
-      e.preventDefault()   // Empêche le comportement par défaut
+      e.stopPropagation()  // Prevents the click from bubbling up
+      e.preventDefault()   // Prevents the default behavior
       this._toggle()
     })
   }
 }
 ```
 
-### Événements input
+### Input Events
 
-**Fichier**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
+**File**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
 
 ```javascript
 class SearchBar {
@@ -91,16 +91,16 @@ class SearchBar {
     })
 
     this.$input.addEventListener('blur', () => {
-      // Délai pour permettre le clic sur suggestion
+      // Delay to allow clicking on suggestion
       setTimeout(() => this._hideSuggestions(), 200)
     })
   }
 }
 ```
 
-### Événements clavier
+### Keyboard Events
 
-**Fichier**: [scripts/utils/KeyboardShortcutManager.js](../../scripts/utils/KeyboardShortcutManager.js)
+**File**: [scripts/utils/KeyboardShortcutManager.js](../../scripts/utils/KeyboardShortcutManager.js)
 
 ```javascript
 class KeyboardShortcutManager {
@@ -111,7 +111,7 @@ class KeyboardShortcutManager {
   }
 
   _handleKeyDown(e) {
-    // Ignorer si dans un champ de saisie
+    // Ignore if in an input field
     if (this._isInputFocused()) return
 
     const key = this._getKeyCombo(e)
@@ -134,7 +134,7 @@ class KeyboardShortcutManager {
 }
 ```
 
-**Fichier**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
+**File**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
 
 ```javascript
 _handleKeyDown(e) {
@@ -153,15 +153,15 @@ _handleKeyDown(e) {
 }
 ```
 
-## L'objet Event
+## The Event Object
 
-### Propriétés communes
+### Common Properties
 
 ```javascript
 element.addEventListener('click', (e) => {
-  e.target        // Élément qui a déclenché l'événement
-  e.currentTarget // Élément avec le listener
-  e.type          // Type d'événement ('click', 'keydown', etc.)
+  e.target        // Element that triggered the event
+  e.currentTarget // Element with the listener
+  e.type          // Event type ('click', 'keydown', etc.)
   e.timeStamp     // Timestamp
 })
 ```
@@ -172,10 +172,10 @@ element.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   e.key       // 'Enter', 'Escape', 'a', etc.
   e.code      // 'Enter', 'Escape', 'KeyA', etc.
-  e.ctrlKey   // true si Ctrl est pressé
-  e.altKey    // true si Alt est pressé
-  e.shiftKey  // true si Shift est pressé
-  e.metaKey   // true si Cmd (Mac) ou Win (Windows)
+  e.ctrlKey   // true if Ctrl is pressed
+  e.altKey    // true if Alt is pressed
+  e.shiftKey  // true if Shift is pressed
+  e.metaKey   // true if Cmd (Mac) or Win (Windows)
 })
 ```
 
@@ -183,31 +183,31 @@ document.addEventListener('keydown', (e) => {
 
 ```javascript
 element.addEventListener('click', (e) => {
-  e.clientX   // Position X dans la fenêtre
-  e.clientY   // Position Y dans la fenêtre
-  e.pageX     // Position X dans le document
-  e.pageY     // Position Y dans le document
-  e.button    // 0=gauche, 1=milieu, 2=droit
+  e.clientX   // X position in the window
+  e.clientY   // Y position in the window
+  e.pageX     // X position in the document
+  e.pageY     // Y position in the document
+  e.button    // 0=left, 1=middle, 2=right
 })
 ```
 
-## Propagation des événements
+## Event Propagation
 
-### Bubbling (par défaut)
+### Bubbling (default)
 
-L'événement remonte du target vers les parents.
+The event bubbles up from the target to the parents.
 
 ```
 document
   └── body
-       └── div (3. Reçoit l'événement)
-            └── button (2. Reçoit l'événement)
-                 └── span (1. Clic ici - target)
+       └── div (3. Receives the event)
+            └── button (2. Receives the event)
+                 └── span (1. Click here - target)
 ```
 
 ### Capturing
 
-L'événement descend du document vers le target.
+The event descends from the document to the target.
 
 ```javascript
 element.addEventListener('click', handler, { capture: true })
@@ -215,49 +215,49 @@ element.addEventListener('click', handler, { capture: true })
 
 ### stopPropagation
 
-Arrête la propagation de l'événement.
+Stops the event propagation.
 
-**Fichier**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
+**File**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
 
 ```javascript
 this.$button.addEventListener('click', (e) => {
-  e.stopPropagation()  // Le clic ne remontera pas au parent
+  e.stopPropagation()  // The click will not bubble up to the parent
   this._toggle()
 })
 ```
 
 ### preventDefault
 
-Empêche le comportement par défaut du navigateur.
+Prevents the browser's default behavior.
 
 ```javascript
 form.addEventListener('submit', (e) => {
-  e.preventDefault()  // Empêche l'envoi du formulaire
-  // Validation custom...
+  e.preventDefault()  // Prevents form submission
+  // Custom validation...
 })
 
 link.addEventListener('click', (e) => {
-  e.preventDefault()  // Empêche la navigation
-  // Navigation custom...
+  e.preventDefault()  // Prevents navigation
+  // Custom navigation...
 })
 ```
 
 ## Event Delegation
 
-Technique pour gérer les événements sur de nombreux éléments avec un seul listener.
+A technique for handling events on many elements with a single listener.
 
-**Fichier**: [scripts/utils/LikeManager.js](../../scripts/utils/LikeManager.js)
+**File**: [scripts/utils/LikeManager.js](../../scripts/utils/LikeManager.js)
 
 ```javascript
 class LikeManager {
   constructor($container) {
     this.$container = $container
-    // Un seul listener pour tous les boutons like
+    // A single listener for all like buttons
     this.$container.addEventListener('click', (e) => this._handleClick(e))
   }
 
   _handleClick(e) {
-    // Trouver le bouton like le plus proche
+    // Find the closest like button
     const $likeBtn = e.target.closest('[data-like-id]')
     if (!$likeBtn) return
 
@@ -267,17 +267,17 @@ class LikeManager {
 }
 ```
 
-### Avantages de la délégation
+### Advantages of Delegation
 
-1. **Performance** - Un seul listener au lieu de N
-2. **Éléments dynamiques** - Fonctionne avec les éléments ajoutés après
-3. **Mémoire** - Moins de listeners = moins de mémoire
+1. **Performance** - A single listener instead of N
+2. **Dynamic elements** - Works with elements added later
+3. **Memory** - Fewer listeners = less memory
 
 ## Custom Events
 
-Créer et dispatcher des événements personnalisés.
+Create and dispatch custom events.
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 class FavoritesManager {
@@ -288,18 +288,18 @@ class FavoritesManager {
   }
 }
 
-// Écouter ailleurs
+// Listen elsewhere
 document.addEventListener('favorites:change', (e) => {
   const { photographerId, isFavorite } = e.detail
-  console.log(`Photographe ${photographerId}: ${isFavorite ? 'ajouté' : 'retiré'}`)
+  console.log(`Photographer ${photographerId}: ${isFavorite ? 'added' : 'removed'}`)
 })
 ```
 
-## Nettoyage des listeners
+## Cleaning Up Listeners
 
-Important pour éviter les fuites mémoire.
+Important to avoid memory leaks.
 
-**Fichier**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
+**File**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
 
 ```javascript
 class Lightbox {
@@ -315,12 +315,12 @@ class Lightbox {
 }
 ```
 
-### Pattern avec bind
+### Pattern with bind
 
 ```javascript
 class Component {
   constructor() {
-    // Bind une fois dans le constructeur
+    // Bind once in the constructor
     this.handleClick = this.handleClick.bind(this)
   }
 
@@ -333,33 +333,33 @@ class Component {
   }
 
   handleClick(e) {
-    // 'this' fait référence à l'instance
+    // 'this' refers to the instance
   }
 }
 ```
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Événement | Fichier | Usage |
-|-----------|---------|-------|
-| click | FavoriteButton.js | Toggle favoris |
-| input | SearchBar.js | Recherche en temps réel |
-| keydown | KeyboardShortcutManager.js | Raccourcis clavier |
-| submit | contactForm.js | Envoi de formulaire |
-| popstate | UrlStateManager.js | Navigation arrière |
-| focus/blur | SearchBar.js | Affichage suggestions |
+| Event | File | Usage |
+|-------|------|-------|
+| click | FavoriteButton.js | Toggle favorites |
+| input | SearchBar.js | Real-time search |
+| keydown | KeyboardShortcutManager.js | Keyboard shortcuts |
+| submit | contactForm.js | Form submission |
+| popstate | UrlStateManager.js | Back navigation |
+| focus/blur | SearchBar.js | Suggestions display |
 
-## Bonnes pratiques
+## Best Practices
 
-1. **Utiliser la délégation** pour les listes dynamiques
-2. **Nettoyer les listeners** dans les méthodes de fermeture
-3. **Bind dans le constructeur** pour pouvoir retirer le listener
-4. **Éviter les fonctions anonymes** si vous devez retirer le listener
-5. **Utiliser passive: true** pour les événements scroll/touch
+1. **Use delegation** for dynamic lists
+2. **Clean up listeners** in close methods
+3. **Bind in constructor** to be able to remove the listener
+4. **Avoid anonymous functions** if you need to remove the listener
+5. **Use passive: true** for scroll/touch events
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un composant de navigation au clavier pour une galerie :
+Create a keyboard navigation component for a gallery:
 
 ```javascript
 class GalleryKeyboardNav {

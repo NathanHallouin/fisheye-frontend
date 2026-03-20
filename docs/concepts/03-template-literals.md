@@ -1,34 +1,34 @@
-# Template Literals (Littéraux de gabarit)
+# Template Literals
 
 ## Concept
 
-Les template literals sont des chaînes de caractères délimitées par des backticks (`` ` ``) qui permettent l'interpolation d'expressions et les chaînes multi-lignes.
+Template literals are strings delimited by backticks (`` ` ``) that allow expression interpolation and multi-line strings.
 
-## Syntaxe
+## Syntax
 
 ```javascript
-// Interpolation de variables
+// Variable interpolation
 const name = 'Alice'
-const greeting = `Bonjour ${name}!`
+const greeting = `Hello ${name}!`
 
 // Expressions
 const a = 5, b = 10
-const result = `La somme est ${a + b}`
+const result = `The sum is ${a + b}`
 
-// Multi-lignes
+// Multi-line
 const html = `
   <div>
-    <h1>Titre</h1>
-    <p>Contenu</p>
+    <h1>Title</h1>
+    <p>Content</p>
   </div>
 `
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Construction de chemins d'images
+### Building Image Paths
 
-**Fichier**: [scripts/models/PhotographerProfil.js](../../scripts/models/PhotographerProfil.js)
+**File**: [scripts/models/PhotographerProfil.js](../../scripts/models/PhotographerProfil.js)
 
 ```javascript
 get portrait() {
@@ -36,7 +36,7 @@ get portrait() {
 }
 ```
 
-**Fichier**: [scripts/models/PhotographerMedia.js](../../scripts/models/PhotographerMedia.js)
+**File**: [scripts/models/PhotographerMedia.js](../../scripts/models/PhotographerMedia.js)
 
 ```javascript
 get picture() {
@@ -44,9 +44,9 @@ get picture() {
 }
 ```
 
-### Construction d'URLs
+### Building URLs
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
 createCard() {
@@ -56,90 +56,90 @@ createCard() {
 }
 ```
 
-### Attributs ARIA dynamiques
+### Dynamic ARIA Attributes
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
-link.setAttribute('aria-label', `Lien vers le profil de ${this._photographer.name}`)
-img.alt = `Portrait de ${this._photographer.name}`
+link.setAttribute('aria-label', `Link to ${this._photographer.name}'s profile`)
+img.alt = `Portrait of ${this._photographer.name}`
 ```
 
-### Construction de HTML (cas spécifiques)
+### HTML Construction (specific cases)
 
-**Fichier**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
+**File**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
 
 ```javascript
 const lightboxHTML = `
-  <div class="lightbox" role="dialog" aria-label="Visionneuse d'images">
-    <button class="lightbox__close" aria-label="Fermer la lightbox">
-      <span class="sr-only">Fermer</span>
+  <div class="lightbox" role="dialog" aria-label="Image viewer">
+    <button class="lightbox__close" aria-label="Close lightbox">
+      <span class="sr-only">Close</span>
     </button>
-    <button class="lightbox__prev" aria-label="Image précédente">
-      <span class="sr-only">Précédent</span>
+    <button class="lightbox__prev" aria-label="Previous image">
+      <span class="sr-only">Previous</span>
     </button>
     <div class="lightbox__content"></div>
-    <button class="lightbox__next" aria-label="Image suivante">
-      <span class="sr-only">Suivant</span>
+    <button class="lightbox__next" aria-label="Next image">
+      <span class="sr-only">Next</span>
     </button>
   </div>
 `
 ```
 
-### Affichage formaté
+### Formatted Display
 
-**Fichier**: [scripts/templates/PhotographerInfo.js](../../scripts/templates/PhotographerInfo.js)
+**File**: [scripts/templates/PhotographerInfo.js](../../scripts/templates/PhotographerInfo.js)
 
 ```javascript
-priceText.textContent = `${this._photographer.price}€/jour`
+priceText.textContent = `${this._photographer.price}€/day`
 ```
 
-**Fichier**: [scripts/templates/StatsDashboard.js](../../scripts/templates/StatsDashboard.js)
+**File**: [scripts/templates/StatsDashboard.js](../../scripts/templates/StatsDashboard.js)
 
 ```javascript
 const formatNumber = (num) => num.toLocaleString('fr-FR')
 valueEl.textContent = `${formatNumber(stat.value)}${stat.suffix || ''}`
 ```
 
-## Comparaison avec la concaténation
+## Comparison with Concatenation
 
-### Ancien style (concaténation)
+### Old Style (concatenation)
 
 ```javascript
-const message = 'Bonjour ' + name + ', vous avez ' + count + ' messages.'
+const message = 'Hello ' + name + ', you have ' + count + ' messages.'
 const path = 'assets/media/' + photographerId + '/' + filename
 ```
 
-### Nouveau style (template literals)
+### New Style (template literals)
 
 ```javascript
-const message = `Bonjour ${name}, vous avez ${count} messages.`
+const message = `Hello ${name}, you have ${count} messages.`
 const path = `assets/media/${photographerId}/${filename}`
 ```
 
-## Fonctionnalités avancées
+## Advanced Features
 
-### 1. Expressions complexes
+### 1. Complex Expressions
 
 ```javascript
 const item = { name: 'Photo', price: 100, quantity: 3 }
 const receipt = `Total: ${item.price * item.quantity}€`
 ```
 
-### 2. Appels de fonctions
+### 2. Function Calls
 
 ```javascript
 const uppercase = (str) => str.toUpperCase()
-const greeting = `Bonjour ${uppercase(name)}!`
+const greeting = `Hello ${uppercase(name)}!`
 ```
 
-### 3. Opérateur ternaire
+### 3. Ternary Operator
 
 ```javascript
-const status = `Utilisateur ${isActive ? 'actif' : 'inactif'}`
+const status = `User ${isActive ? 'active' : 'inactive'}`
 ```
 
-### 4. Chaînes multi-lignes
+### 4. Multi-line Strings
 
 ```javascript
 const template = `
@@ -150,33 +150,33 @@ const template = `
 `
 ```
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Utilisation | Exemple | Fichier |
-|------------|---------|---------|
-| Chemins d'images | `` `assets/media/${id}/${file}` `` | PhotographerMedia.js |
+| Usage | Example | File |
+|-------|---------|------|
+| Image paths | `` `assets/media/${id}/${file}` `` | PhotographerMedia.js |
 | URLs | `` `./photographer.html?user=${name}` `` | PhotographerCard.js |
-| Attributs ARIA | `` `Lien vers ${name}` `` | Tous les templates |
-| Affichage prix | `` `${price}€/jour` `` | PhotographerInfo.js |
-| HTML complexe | Templates multi-lignes | lightbox.js |
+| ARIA attributes | `` `Link to ${name}` `` | All templates |
+| Price display | `` `${price}€/day` `` | PhotographerInfo.js |
+| Complex HTML | Multi-line templates | lightbox.js |
 
-## Bonnes pratiques
+## Best Practices
 
-1. **Préférer template literals** - Plus lisibles que la concaténation
-2. **Éviter innerHTML avec données utilisateur** - Risque XSS
-3. **Utiliser textContent pour le texte simple** - Plus sûr
+1. **Prefer template literals** - More readable than concatenation
+2. **Avoid innerHTML with user data** - XSS risk
+3. **Use textContent for simple text** - Safer
 
 ```javascript
-// Bon - textContent avec template literal
-element.textContent = `Prix: ${price}€`
+// Good - textContent with template literal
+element.textContent = `Price: ${price}€`
 
-// Risqué - innerHTML avec données non sanitizées
-element.innerHTML = `<p>${userInput}</p>`  // Danger XSS!
+// Risky - innerHTML with unsanitized data
+element.innerHTML = `<p>${userInput}</p>`  // XSS danger!
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Créer une fonction `createMediaCard` qui génère une carte HTML en utilisant template literals :
+Create a `createMediaCard` function that generates an HTML card using template literals:
 
 ```javascript
 function createMediaCard(media) {
@@ -193,4 +193,4 @@ function createMediaCard(media) {
 }
 ```
 
-Note: Dans Fisheye, on préfère `document.createElement()` pour la création DOM, mais les template literals sont utiles pour les templates HTML statiques complexes.
+Note: In Fisheye, we prefer `document.createElement()` for DOM creation, but template literals are useful for complex static HTML templates.

@@ -2,50 +2,50 @@
 
 ## Concept
 
-L'opérateur spread (`...`) permet d'étendre un itérable (tableau, objet) en éléments individuels. Il est utilisé pour copier, fusionner et passer des arguments.
+The spread operator (`...`) allows you to expand an iterable (array, object) into individual elements. It is used for copying, merging, and passing arguments.
 
-## Syntaxe
+## Syntax
 
-### Avec les tableaux
+### With Arrays
 
 ```javascript
-// Copie de tableau
+// Array copy
 const original = [1, 2, 3]
 const copy = [...original]
 
-// Fusion de tableaux
+// Array merge
 const combined = [...arr1, ...arr2]
 
-// Ajout d'éléments
+// Adding elements
 const extended = [...original, 4, 5]
 
-// Passage d'arguments
+// Passing arguments
 Math.max(...numbers)
 ```
 
-### Avec les objets
+### With Objects
 
 ```javascript
-// Copie d'objet
+// Object copy
 const original = { a: 1, b: 2 }
 const copy = { ...original }
 
-// Fusion d'objets
+// Object merge
 const merged = { ...obj1, ...obj2 }
 
-// Mise à jour de propriétés
+// Updating properties
 const updated = { ...original, b: 3 }
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Copie de tableau pour éviter la mutation
+### Array Copy to Avoid Mutation
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 _filterPhotographers(state) {
-  let filtered = [...this._allPhotographers]  // Copie pour ne pas muter l'original
+  let filtered = [...this._allPhotographers]  // Copy to avoid mutating the original
 
   if (state.search) {
     filtered = filtered.filter(p =>
@@ -63,13 +63,13 @@ _filterPhotographers(state) {
 }
 ```
 
-### Copie avant tri (immutabilité)
+### Copy Before Sorting (immutability)
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
 sort(data) {
-  const sortedData = [...data]  // Ne pas muter le tableau original
+  const sortedData = [...data]  // Don't mutate the original array
 
   const comparator = this._getComparator()
   sortedData.sort(comparator)
@@ -78,13 +78,13 @@ sort(data) {
 }
 ```
 
-### Fusion d'état
+### State Merge
 
-**Fichier**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
+**File**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
 
 ```javascript
 updateState(newState, replace = false) {
-  this._state = { ...this._state, ...newState }  // Fusion des états
+  this._state = { ...this._state, ...newState }  // Merge states
 
   const url = this._buildUrl()
   if (replace) {
@@ -95,15 +95,15 @@ updateState(newState, replace = false) {
 }
 ```
 
-### Création d'objets avec propriétés dynamiques
+### Creating Objects with Dynamic Properties
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 add(photographerId, photographerData) {
   const favoriteData = {
     id: photographerId,
-    ...photographerData,  // Copie toutes les propriétés de photographerData
+    ...photographerData,  // Copy all properties from photographerData
     addedAt: Date.now()
   }
 
@@ -112,63 +112,63 @@ add(photographerId, photographerData) {
 }
 ```
 
-### Rest parameters (inverse du spread)
+### Rest Parameters (inverse of spread)
 
-**Fichier**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
+**File**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
 
 ```javascript
 export function debounce(fn, delay) {
   let timeoutId
-  return function (...args) {  // Rest: collecte tous les arguments
+  return function (...args) {  // Rest: collects all arguments
     clearTimeout(timeoutId)
     timeoutId = setTimeout(() => fn.apply(this, args), delay)
   }
 }
 ```
 
-## Patterns courants
+## Common Patterns
 
-### 1. Copie superficielle (shallow copy)
+### 1. Shallow Copy
 
 ```javascript
 const original = { a: 1, b: { c: 2 } }
 const copy = { ...original }
 
-copy.a = 10        // Ne modifie pas original.a
-copy.b.c = 20      // MODIFIE original.b.c! (référence partagée)
+copy.a = 10        // Does not modify original.a
+copy.b.c = 20      // MODIFIES original.b.c! (shared reference)
 ```
 
-### 2. Mise à jour immutable
+### 2. Immutable Update
 
 ```javascript
-// Mettre à jour un élément dans un tableau
+// Update an item in an array
 const items = [{ id: 1, name: 'A' }, { id: 2, name: 'B' }]
 const updated = items.map(item =>
   item.id === 2 ? { ...item, name: 'Updated' } : item
 )
 ```
 
-### 3. Ajout/Suppression dans un tableau immutable
+### 3. Immutable Add/Remove in Array
 
 ```javascript
-// Ajouter
+// Add
 const withNew = [...items, newItem]
 
-// Supprimer par index
+// Remove by index
 const without = [...items.slice(0, index), ...items.slice(index + 1)]
 
-// Supprimer par condition
+// Remove by condition
 const filtered = items.filter(item => item.id !== idToRemove)
 ```
 
-### 4. Valeurs par défaut d'objet
+### 4. Object Default Values
 
 ```javascript
 const defaultOptions = { timeout: 5000, retries: 3 }
 const options = { ...defaultOptions, ...userOptions }
 ```
 
-### 5. Cloner avec modification
+### 5. Clone with Modification
 
 ```javascript
 const photographer = { name: 'Alice', price: 100 }
@@ -176,71 +176,71 @@ const updated = { ...photographer, price: 150 }
 // { name: 'Alice', price: 150 }
 ```
 
-## Spread vs méthodes traditionnelles
+## Spread vs Traditional Methods
 
-### Tableaux
+### Arrays
 
 ```javascript
-// Ancien style
+// Old style
 const copy = original.slice()
 const merged = arr1.concat(arr2)
 
-// Avec spread
+// With spread
 const copy = [...original]
 const merged = [...arr1, ...arr2]
 ```
 
-### Objets
+### Objects
 
 ```javascript
-// Ancien style
+// Old style
 const copy = Object.assign({}, original)
 const merged = Object.assign({}, obj1, obj2)
 
-// Avec spread
+// With spread
 const copy = { ...original }
 const merged = { ...obj1, ...obj2 }
 ```
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Pattern | Exemple | Fichier |
-|---------|---------|---------|
-| Copie avant mutation | `[...array].sort()` | SortFilters.js |
-| Fusion d'état | `{ ...state, ...newState }` | UrlStateManager.js |
-| Copie avec ajout | `{ ...data, addedAt: now }` | FavoritesManager.js |
+| Pattern | Example | File |
+|---------|---------|------|
+| Copy before mutation | `[...array].sort()` | SortFilters.js |
+| State merge | `{ ...state, ...newState }` | UrlStateManager.js |
+| Copy with addition | `{ ...data, addedAt: now }` | FavoritesManager.js |
 | Rest parameters | `function(...args)` | debounce.js |
-| Filtrage immutable | `[...photographers]` | App.js |
+| Immutable filtering | `[...photographers]` | App.js |
 
-## Attention: Copie superficielle
+## Warning: Shallow Copy
 
-Le spread ne fait qu'une copie **superficielle** (shallow copy) :
+Spread only makes a **shallow copy**:
 
 ```javascript
 const original = {
   name: 'Alice',
-  address: { city: 'Paris' }  // Objet imbriqué
+  address: { city: 'Paris' }  // Nested object
 }
 
 const copy = { ...original }
 
-copy.name = 'Bob'           // OK - ne modifie pas original
-copy.address.city = 'Lyon'  // ATTENTION - modifie aussi original!
+copy.name = 'Bob'           // OK - does not modify original
+copy.address.city = 'Lyon'  // WARNING - also modifies original!
 ```
 
-Pour une copie profonde :
+For a deep copy:
 
 ```javascript
-// Solution simple (attention aux fonctions et dates)
+// Simple solution (caution with functions and dates)
 const deepCopy = JSON.parse(JSON.stringify(original))
 
-// Solution avec structuredClone (moderne)
+// Solution with structuredClone (modern)
 const deepCopy = structuredClone(original)
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Implémenter une fonction qui met à jour un photographe dans une liste de manière immutable :
+Implement a function that updates a photographer in a list immutably:
 
 ```javascript
 function updatePhotographer(photographers, id, updates) {

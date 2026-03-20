@@ -2,70 +2,70 @@
 
 ## Concept
 
-Le **Decorator Pattern** permet d'ajouter des comportements à une fonction sans modifier son code original. En JavaScript, cela se fait via les **Higher-Order Functions** (fonctions qui prennent ou retournent des fonctions).
+The **Decorator Pattern** allows adding behaviors to a function without modifying its original code. In JavaScript, this is done via **Higher-Order Functions** (functions that take or return functions).
 
-## Cas d'utilisation
+## Use Cases
 
-- Logging automatique des appels de fonctions
-- Mesure de performance
-- Gestion d'erreurs centralisée
-- Mise en cache (memoization)
+- Automatic logging of function calls
+- Performance measurement
+- Centralized error handling
+- Caching (memoization)
 - Rate limiting
-- Validation des arguments
+- Argument validation
 
-## Syntaxe de base
+## Basic Syntax
 
 ```javascript
-// Un decorator est une fonction qui enveloppe une autre fonction
+// A decorator is a function that wraps another function
 function withLogging(fn, name) {
   return function(...args) {
-    console.log(`[${name}] Appelé avec:`, args)
+    console.log(`[${name}] Called with:`, args)
     const result = fn.apply(this, args)
-    console.log(`[${name}] Résultat:`, result)
+    console.log(`[${name}] Result:`, result)
     return result
   }
 }
 
-// Utilisation
+// Usage
 const add = (a, b) => a + b
 const loggedAdd = withLogging(add, 'add')
 
-loggedAdd(2, 3) // Logs: [add] Appelé avec: [2, 3] puis [add] Résultat: 5
+loggedAdd(2, 3) // Logs: [add] Called with: [2, 3] then [add] Result: 5
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Fichier: `scripts/utils/withLogging.js`
+### File: `scripts/utils/withLogging.js`
 
 ```javascript
-// Decorator avec options configurables
+// Decorator with configurable options
 function withLogging(fn, name, options = {}) {
   const { logArgs = true, logResult = true, logDuration = true } = options
 
   return function(...args) {
     const start = performance.now()
 
-    if (logArgs) console.log(`[${name}] Appelé avec:`, args)
+    if (logArgs) console.log(`[${name}] Called with:`, args)
 
     const result = fn.apply(this, args)
 
-    // Gérer les Promises
+    // Handle Promises
     if (result instanceof Promise) {
       return result.then(value => {
-        if (logResult) console.log(`[${name}] Résultat:`, value)
-        if (logDuration) console.log(`[${name}] Durée: ${performance.now() - start}ms`)
+        if (logResult) console.log(`[${name}] Result:`, value)
+        if (logDuration) console.log(`[${name}] Duration: ${performance.now() - start}ms`)
         return value
       })
     }
 
-    if (logResult) console.log(`[${name}] Résultat:`, result)
-    if (logDuration) console.log(`[${name}] Durée: ${performance.now() - start}ms`)
+    if (logResult) console.log(`[${name}] Result:`, result)
+    if (logDuration) console.log(`[${name}] Duration: ${performance.now() - start}ms`)
     return result
   }
 }
 ```
 
-### Decorator de memoization
+### Memoization decorator
 
 ```javascript
 function withMemoization(fn, keyFn = (...args) => JSON.stringify(args)) {
@@ -89,17 +89,17 @@ function withMemoization(fn, keyFn = (...args) => JSON.stringify(args)) {
   return memoized
 }
 
-// Utilisation
+// Usage
 const expensiveCalc = withMemoization((n) => {
-  console.log('Calcul...')
+  console.log('Calculating...')
   return n * 2
 })
 
-expensiveCalc(5) // "Calcul..." puis 10
-expensiveCalc(5) // 10 (depuis le cache, pas de log)
+expensiveCalc(5) // "Calculating..." then 10
+expensiveCalc(5) // 10 (from cache, no log)
 ```
 
-### Composer plusieurs decorators
+### Composing multiple decorators
 
 ```javascript
 function compose(...decorators) {
@@ -111,7 +111,7 @@ function compose(...decorators) {
   }
 }
 
-// Utilisation
+// Usage
 const enhancedFetch = compose(
   (fn) => withLogging(fn, 'fetchData'),
   (fn) => withErrorHandling(fn, null),
@@ -119,21 +119,21 @@ const enhancedFetch = compose(
 )(originalFetch)
 ```
 
-## Avantages
+## Advantages
 
-1. **Séparation des préoccupations** : Le code métier reste propre
-2. **Réutilisabilité** : Un decorator peut s'appliquer à n'importe quelle fonction
-3. **Composition** : Les decorators se combinent facilement
-4. **Testabilité** : Chaque decorator peut être testé indépendamment
+1. **Separation of concerns**: Business code stays clean
+2. **Reusability**: A decorator can be applied to any function
+3. **Composition**: Decorators combine easily
+4. **Testability**: Each decorator can be tested independently
 
-## Bonnes pratiques
+## Best Practices
 
-- Préserver le contexte `this` avec `apply(this, args)`
-- Gérer les fonctions async (retournant des Promises)
-- Fournir des options de configuration
-- Permettre de désactiver les decorators en production
+- Preserve `this` context with `apply(this, args)`
+- Handle async functions (returning Promises)
+- Provide configuration options
+- Allow disabling decorators in production
 
-## Voir aussi
+## See Also
 
 - [Closures](05-closures.md)
 - [Higher-Order Functions](https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function)

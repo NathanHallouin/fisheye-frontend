@@ -1,30 +1,30 @@
 /**
- * Pattern Error Boundary pour la gestion centralisée des erreurs.
+ * Error Boundary pattern for centralized error handling.
  *
- * CONCEPT : Error Boundary Pattern
+ * CONCEPT: Error Boundary Pattern
  *
- * Ce pattern permet de:
- * - Capturer les erreurs sans faire crasher l'application
- * - Afficher un UI de fallback en cas d'erreur
- * - Logger les erreurs pour le debugging
- * - Permettre à l'utilisateur de réessayer
+ * This pattern allows you to:
+ * - Capture errors without crashing the application
+ * - Display a fallback UI in case of error
+ * - Log errors for debugging
+ * - Allow the user to retry
  *
- * Inspiré du concept React Error Boundaries, adapté à Vanilla JS.
+ * Inspired by the React Error Boundaries concept, adapted to Vanilla JS.
  */
 
 /**
- * Gestionnaire centralisé des erreurs de l'application.
+ * Centralized error handler for the application.
  */
 class ErrorBoundary {
   /**
-   * Enveloppe une fonction asynchrone avec gestion d'erreur.
-   * @param {Function} fn - La fonction à exécuter.
-   * @param {*} fallback - Valeur de retour en cas d'erreur.
-   * @param {Object} [options] - Options de configuration.
-   * @param {boolean} [options.silent=false] - Ne pas logger l'erreur.
-   * @param {Function} [options.onError] - Callback appelé en cas d'erreur.
-   * @param {string} [options.context] - Contexte pour le logging.
-   * @returns {Promise<*>} Le résultat de la fonction ou le fallback.
+   * Wraps an asynchronous function with error handling.
+   * @param {Function} fn - The function to execute.
+   * @param {*} fallback - Return value in case of error.
+   * @param {Object} [options] - Configuration options.
+   * @param {boolean} [options.silent=false] - Do not log the error.
+   * @param {Function} [options.onError] - Callback called in case of error.
+   * @param {string} [options.context] - Context for logging.
+   * @returns {Promise<*>} The function result or the fallback.
    *
    * @example
    * const data = await ErrorBoundary.wrap(
@@ -48,7 +48,7 @@ class ErrorBoundary {
           onError(error)
         } catch (callbackError) {
           console.error(
-            '[ErrorBoundary] Erreur dans onError callback:',
+            '[ErrorBoundary] Error in onError callback:',
             callbackError,
           )
         }
@@ -59,11 +59,11 @@ class ErrorBoundary {
   }
 
   /**
-   * Enveloppe une fonction synchrone avec gestion d'erreur.
-   * @param {Function} fn - La fonction à exécuter.
-   * @param {*} fallback - Valeur de retour en cas d'erreur.
-   * @param {Object} [options] - Options de configuration.
-   * @returns {*} Le résultat de la fonction ou le fallback.
+   * Wraps a synchronous function with error handling.
+   * @param {Function} fn - The function to execute.
+   * @param {*} fallback - Return value in case of error.
+   * @param {Object} [options] - Configuration options.
+   * @returns {*} The function result or the fallback.
    */
   static wrapSync(fn, fallback, options = {}) {
     const { silent = false, onError = null, context = '' } = options
@@ -80,7 +80,7 @@ class ErrorBoundary {
           onError(error)
         } catch (callbackError) {
           console.error(
-            '[ErrorBoundary] Erreur dans onError callback:',
+            '[ErrorBoundary] Error in onError callback:',
             callbackError,
           )
         }
@@ -91,10 +91,10 @@ class ErrorBoundary {
   }
 
   /**
-   * Crée un wrapper réutilisable pour une fonction.
-   * @param {*} fallback - Valeur de fallback par défaut.
-   * @param {Object} [options] - Options par défaut.
-   * @returns {Function} Fonction wrapper.
+   * Creates a reusable wrapper for a function.
+   * @param {*} fallback - Default fallback value.
+   * @param {Object} [options] - Default options.
+   * @returns {Function} Wrapper function.
    *
    * @example
    * const safeFetch = ErrorBoundary.createWrapper(null, { context: 'API' })
@@ -105,14 +105,14 @@ class ErrorBoundary {
   }
 
   /**
-   * Exécute une fonction avec retry automatique.
-   * @param {Function} fn - La fonction à exécuter.
-   * @param {Object} [options] - Options de retry.
-   * @param {number} [options.maxRetries=3] - Nombre maximum de tentatives.
-   * @param {number} [options.delay=1000] - Délai entre les tentatives (ms).
-   * @param {number} [options.backoffMultiplier=2] - Multiplicateur de délai.
-   * @param {Function} [options.shouldRetry] - Fonction pour décider si on retry.
-   * @returns {Promise<*>} Le résultat de la fonction.
+   * Executes a function with automatic retry.
+   * @param {Function} fn - The function to execute.
+   * @param {Object} [options] - Retry options.
+   * @param {number} [options.maxRetries=3] - Maximum number of attempts.
+   * @param {number} [options.delay=1000] - Delay between attempts (ms).
+   * @param {number} [options.backoffMultiplier=2] - Delay multiplier.
+   * @param {Function} [options.shouldRetry] - Function to decide if we retry.
+   * @returns {Promise<*>} The function result.
    *
    * @example
    * const data = await ErrorBoundary.withRetry(
@@ -137,7 +137,7 @@ class ErrorBoundary {
       } catch (error) {
         lastError = error
         console.warn(
-          `[ErrorBoundary] Tentative ${attempt}/${maxRetries} échouée:`,
+          `[ErrorBoundary] Attempt ${attempt}/${maxRetries} failed:`,
           error.message,
         )
 
@@ -152,12 +152,12 @@ class ErrorBoundary {
   }
 
   /**
-   * Crée un composant d'erreur visuel.
-   * @param {Error} error - L'erreur à afficher.
-   * @param {Object} [options] - Options d'affichage.
-   * @param {Function} [options.onRetry] - Callback pour le bouton Réessayer.
-   * @param {string} [options.message] - Message personnalisé.
-   * @returns {HTMLElement} L'élément DOM d'erreur.
+   * Creates a visual error component.
+   * @param {Error} error - The error to display.
+   * @param {Object} [options] - Display options.
+   * @param {Function} [options.onRetry] - Callback for the Retry button.
+   * @param {string} [options.message] - Custom message.
+   * @returns {HTMLElement} The error DOM element.
    */
   static createErrorUI(error, options = {}) {
     const { onRetry = null, message = null } = options
@@ -174,7 +174,7 @@ class ErrorBoundary {
 
     const title = document.createElement('h3')
     title.classList.add('error-boundary__title')
-    title.textContent = "Oups, quelque chose s'est mal passé"
+    title.textContent = 'Oops, something went wrong'
 
     const messageEl = document.createElement('p')
     messageEl.classList.add('error-boundary__message')
@@ -187,7 +187,7 @@ class ErrorBoundary {
     if (onRetry) {
       const retryBtn = document.createElement('button')
       retryBtn.classList.add('error-boundary__retry', 'btn')
-      retryBtn.textContent = 'Réessayer'
+      retryBtn.textContent = 'Retry'
       retryBtn.addEventListener('click', onRetry)
       container.appendChild(retryBtn)
     }
@@ -196,10 +196,10 @@ class ErrorBoundary {
   }
 
   /**
-   * Affiche une erreur dans un conteneur avec possibilité de retry.
-   * @param {HTMLElement} container - Conteneur où afficher l'erreur.
-   * @param {Error} error - L'erreur à afficher.
-   * @param {Function} [retryFn] - Fonction à appeler pour réessayer.
+   * Displays an error in a container with retry option.
+   * @param {HTMLElement} container - Container where to display the error.
+   * @param {Error} error - The error to display.
+   * @param {Function} [retryFn] - Function to call to retry.
    */
   static showError(container, error, retryFn = null) {
     container.innerHTML = ''
@@ -207,7 +207,7 @@ class ErrorBoundary {
     const errorUI = ErrorBoundary.createErrorUI(error, {
       onRetry: retryFn
         ? () => {
-            container.innerHTML = '<p class="loading">Chargement...</p>'
+            container.innerHTML = '<p class="loading">Loading...</p>'
             retryFn()
           }
         : null,
@@ -217,15 +217,15 @@ class ErrorBoundary {
   }
 
   /**
-   * Configure un gestionnaire global d'erreurs non capturées.
-   * @param {Object} [options] - Options de configuration.
-   * @param {Function} [options.onError] - Callback pour chaque erreur.
-   * @param {boolean} [options.showToast=true] - Afficher un toast.
+   * Sets up a global handler for uncaught errors.
+   * @param {Object} [options] - Configuration options.
+   * @param {Function} [options.onError] - Callback for each error.
+   * @param {boolean} [options.showToast=true] - Display a toast.
    */
   static setupGlobalHandler(options = {}) {
     const { onError = null, showToast = true } = options
 
-    // Erreurs synchrones non capturées
+    // Uncaught synchronous errors
     window.addEventListener('error', (event) => {
       ErrorBoundary._logError(event.error || event.message, 'Global')
 
@@ -234,11 +234,11 @@ class ErrorBoundary {
       }
 
       if (showToast && typeof Toast !== 'undefined') {
-        Toast.error('Une erreur inattendue est survenue.')
+        Toast.error('An unexpected error occurred.')
       }
     })
 
-    // Promesses rejetées non gérées
+    // Unhandled rejected promises
     window.addEventListener('unhandledrejection', (event) => {
       const error =
         event.reason instanceof Error
@@ -252,20 +252,20 @@ class ErrorBoundary {
       }
 
       if (showToast && typeof Toast !== 'undefined') {
-        Toast.error('Une erreur est survenue lors du chargement.')
+        Toast.error('An error occurred during loading.')
       }
     })
   }
 
   /**
-   * Log une erreur avec contexte.
-   * @param {Error} error - L'erreur à logger.
-   * @param {string} [context] - Contexte de l'erreur.
+   * Logs an error with context.
+   * @param {Error} error - The error to log.
+   * @param {string} [context] - Error context.
    * @private
    */
   static _logError(error, context = '') {
     const prefix = context ? `[${context}]` : '[ErrorBoundary]'
-    console.error(`${prefix} Erreur capturée:`, {
+    console.error(`${prefix} Error captured:`, {
       name: error.name,
       message: error.message,
       stack: error.stack,
@@ -274,32 +274,32 @@ class ErrorBoundary {
   }
 
   /**
-   * Retourne un message utilisateur pour une erreur.
-   * @param {Error} error - L'erreur à analyser.
-   * @returns {string} Message pour l'utilisateur.
+   * Returns a user message for an error.
+   * @param {Error} error - The error to analyze.
+   * @returns {string} Message for the user.
    * @private
    */
   static _getUserMessage(error) {
-    // Utiliser ErrorHandler si disponible
+    // Use ErrorHandler if available
     if (typeof ErrorHandler !== 'undefined') {
       return ErrorHandler.getDisplayMessage(error)
     }
 
-    // Messages de base
+    // Basic messages
     if (error.name === 'NetworkError' || error.message.includes('fetch')) {
-      return 'Problème de connexion. Vérifiez votre réseau et réessayez.'
+      return 'Connection problem. Check your network and try again.'
     }
 
     if (error.name === 'TypeError') {
-      return 'Une erreur technique est survenue.'
+      return 'A technical error occurred.'
     }
 
-    return 'Une erreur inattendue est survenue. Veuillez réessayer.'
+    return 'An unexpected error occurred. Please try again.'
   }
 
   /**
-   * Utilitaire pour attendre.
-   * @param {number} ms - Millisecondes à attendre.
+   * Utility to wait.
+   * @param {number} ms - Milliseconds to wait.
    * @returns {Promise<void>}
    * @private
    */

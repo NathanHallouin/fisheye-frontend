@@ -1,54 +1,54 @@
 /**
- * Gestionnaire de Web Workers.
+ * Web Workers manager.
  *
- * CONCEPT : Web Worker Management
+ * CONCEPT: Web Worker Management
  *
- * Cette classe encapsule la complexité des Web Workers:
- * - Création et gestion du cycle de vie
- * - Communication par Promises (plus simple que callbacks)
- * - Gestion des erreurs
- * - Pool de workers pour les tâches parallèles
+ * This class encapsulates Web Workers complexity:
+ * - Creation and lifecycle management
+ * - Communication via Promises (simpler than callbacks)
+ * - Error handling
+ * - Worker pool for parallel tasks
  */
 
 /**
- * Gestionnaire pour communiquer facilement avec un Web Worker.
+ * Manager for easy communication with a Web Worker.
  */
 class WorkerManager {
   /**
-   * Crée un gestionnaire de worker.
-   * @param {string} workerPath - Chemin vers le fichier worker.
+   * Creates a worker manager.
+   * @param {string} workerPath - Path to the worker file.
    */
   constructor(workerPath) {
     /**
-     * Chemin vers le fichier worker.
+     * Path to the worker file.
      * @type {string}
      * @private
      */
     this._workerPath = workerPath
 
     /**
-     * Instance du Worker.
+     * Worker instance.
      * @type {Worker|null}
      * @private
      */
     this._worker = null
 
     /**
-     * Map des promesses en attente.
+     * Map of pending promises.
      * @type {Map<string, {resolve: Function, reject: Function}>}
      * @private
      */
     this._pending = new Map()
 
     /**
-     * Compteur pour générer des IDs uniques.
+     * Counter for generating unique IDs.
      * @type {number}
      * @private
      */
     this._idCounter = 0
 
     /**
-     * État du worker.
+     * Worker state.
      * @type {boolean}
      * @private
      */
@@ -58,7 +58,7 @@ class WorkerManager {
   }
 
   /**
-   * Initialise le worker et configure les handlers.
+   * Initializes the worker and configures handlers.
    * @private
    */
   _initWorker() {
@@ -70,14 +70,14 @@ class WorkerManager {
 
       this._isReady = true
     } catch (error) {
-      console.error('[WorkerManager] Impossible de créer le worker:', error)
+      console.error('[WorkerManager] Unable to create worker:', error)
       this._isReady = false
     }
   }
 
   /**
-   * Gère les messages reçus du worker.
-   * @param {MessageEvent} e - L'événement message.
+   * Handles messages received from the worker.
+   * @param {MessageEvent} e - The message event.
    * @private
    */
   _handleMessage(e) {
@@ -86,7 +86,7 @@ class WorkerManager {
     const pending = this._pending.get(id)
     if (!pending) {
       console.warn(
-        '[WorkerManager] Message reçu sans requête correspondante:',
+        '[WorkerManager] Message received without corresponding request:',
         id,
       )
       return
@@ -102,23 +102,23 @@ class WorkerManager {
   }
 
   /**
-   * Gère les erreurs du worker.
-   * @param {ErrorEvent} e - L'événement erreur.
+   * Handles worker errors.
+   * @param {ErrorEvent} e - The error event.
    * @private
    */
   _handleError(e) {
-    console.error('[WorkerManager] Erreur worker:', e.message)
+    console.error('[WorkerManager] Worker error:', e.message)
 
-    // Rejeter toutes les promesses en attente
+    // Reject all pending promises
     this._pending.forEach((pending) => {
-      pending.reject(new Error(`Erreur worker: ${e.message}`))
+      pending.reject(new Error(`Worker error: ${e.message}`))
     })
     this._pending.clear()
   }
 
   /**
-   * Génère un ID unique pour une requête.
-   * @returns {string} L'ID unique.
+   * Generates a unique ID for a request.
+   * @returns {string} The unique ID.
    * @private
    */
   _generateId() {
@@ -126,30 +126,30 @@ class WorkerManager {
   }
 
   /**
-   * Envoie une requête au worker et retourne une Promise.
-   * @param {string} type - Le type de l'opération.
-   * @param {Object} payload - Les données à envoyer.
-   * @param {number} [timeout=30000] - Timeout en ms.
-   * @returns {Promise<*>} Le résultat de l'opération.
+   * Sends a request to the worker and returns a Promise.
+   * @param {string} type - The operation type.
+   * @param {Object} payload - The data to send.
+   * @param {number} [timeout=30000] - Timeout in ms.
+   * @returns {Promise<*>} The operation result.
    * @private
    */
   _send(type, payload, timeout = 30000) {
     if (!this._isReady || !this._worker) {
-      return Promise.reject(new Error('Worker non disponible'))
+      return Promise.reject(new Error('Worker not available'))
     }
 
     return new Promise((resolve, reject) => {
       const id = this._generateId()
 
-      // Configurer le timeout
+      // Configure timeout
       const timeoutId = setTimeout(() => {
         this._pending.delete(id)
         reject(
-          new Error(`Timeout: opération ${type} a pris plus de ${timeout}ms`),
+          new Error(`Timeout: operation ${type} took more than ${timeout}ms`),
         )
       }, timeout)
 
-      // Stocker la promesse
+      // Store the promise
       this._pending.set(id, {
         resolve: (result) => {
           clearTimeout(timeoutId)
@@ -161,17 +161,17 @@ class WorkerManager {
         },
       })
 
-      // Envoyer au worker
+      // Send to worker
       this._worker.postMessage({ type, payload, id })
     })
   }
 
   /**
-   * Trie les données dans le worker.
-   * @param {Array} data - Les données à trier.
-   * @param {string} sortBy - La propriété de tri.
-   * @param {string} [order='desc'] - L'ordre ('asc' ou 'desc').
-   * @returns {Promise<Array>} Les données triées.
+   * Sorts data in the worker.
+   * @param {Array} data - The data to sort.
+   * @param {string} sortBy - The sort property.
+   * @param {string} [order='desc'] - The order ('asc' or 'desc').
+   * @returns {Promise<Array>} The sorted data.
    *
    * @example
    * const sorted = await workerManager.sort(media, 'likes', 'desc')
@@ -181,10 +181,10 @@ class WorkerManager {
   }
 
   /**
-   * Filtre les données dans le worker.
-   * @param {Array} data - Les données à filtrer.
-   * @param {Object} filters - Les filtres à appliquer.
-   * @returns {Promise<Array>} Les données filtrées.
+   * Filters data in the worker.
+   * @param {Array} data - The data to filter.
+   * @param {Object} filters - The filters to apply.
+   * @returns {Promise<Array>} The filtered data.
    *
    * @example
    * const filtered = await workerManager.filter(media, { type: 'image' })
@@ -194,23 +194,23 @@ class WorkerManager {
   }
 
   /**
-   * Trie et filtre les données en une seule opération.
-   * @param {Array} data - Les données.
-   * @param {Object} filters - Les filtres.
-   * @param {string} sortBy - La propriété de tri.
-   * @param {string} [order='desc'] - L'ordre de tri.
-   * @returns {Promise<Array>} Les données triées et filtrées.
+   * Sorts and filters data in a single operation.
+   * @param {Array} data - The data.
+   * @param {Object} filters - The filters.
+   * @param {string} sortBy - The sort property.
+   * @param {string} [order='desc'] - The sort order.
+   * @returns {Promise<Array>} The sorted and filtered data.
    */
   sortAndFilter(data, filters, sortBy, order = 'desc') {
     return this._send('SORT_AND_FILTER', { data, filters, sortBy, order })
   }
 
   /**
-   * Recherche dans les données.
-   * @param {Array} data - Les données où chercher.
-   * @param {string} query - La requête de recherche.
-   * @param {string[]} fields - Les champs où chercher.
-   * @returns {Promise<Array>} Les résultats.
+   * Searches within data.
+   * @param {Array} data - The data to search.
+   * @param {string} query - The search query.
+   * @param {string[]} fields - The fields to search.
+   * @returns {Promise<Array>} The results.
    *
    * @example
    * const results = await workerManager.search(
@@ -224,11 +224,11 @@ class WorkerManager {
   }
 
   /**
-   * Agrège les données avec groupement.
-   * @param {Array} data - Les données à agréger.
-   * @param {string} groupBy - La propriété de groupement.
-   * @param {Object} aggregations - Les agrégations.
-   * @returns {Promise<Object>} Les données agrégées.
+   * Aggregates data with grouping.
+   * @param {Array} data - The data to aggregate.
+   * @param {string} groupBy - The grouping property.
+   * @param {Object} aggregations - The aggregations.
+   * @returns {Promise<Object>} The aggregated data.
    *
    * @example
    * const stats = await workerManager.aggregate(media, 'photographerId', {
@@ -241,15 +241,15 @@ class WorkerManager {
   }
 
   /**
-   * Vérifie si le worker est disponible.
-   * @returns {boolean} True si le worker est prêt.
+   * Checks if the worker is available.
+   * @returns {boolean} True if the worker is ready.
    */
   get isAvailable() {
     return this._isReady && this._worker !== null
   }
 
   /**
-   * Termine le worker et libère les ressources.
+   * Terminates the worker and releases resources.
    */
   terminate() {
     if (this._worker) {
@@ -257,9 +257,9 @@ class WorkerManager {
       this._worker = null
     }
 
-    // Rejeter les promesses en attente
+    // Reject pending promises
     this._pending.forEach((pending) => {
-      pending.reject(new Error('Worker terminé'))
+      pending.reject(new Error('Worker terminated'))
     })
     this._pending.clear()
 
@@ -267,7 +267,7 @@ class WorkerManager {
   }
 
   /**
-   * Redémarre le worker.
+   * Restarts the worker.
    */
   restart() {
     this.terminate()
@@ -276,14 +276,14 @@ class WorkerManager {
 }
 
 /**
- * Singleton pour le worker de tri/filtrage.
+ * Singleton for the sort/filter worker.
  */
 class SortWorker {
   static _instance = null
 
   /**
-   * Retourne l'instance unique du SortWorker.
-   * @returns {WorkerManager} L'instance.
+   * Returns the unique SortWorker instance.
+   * @returns {WorkerManager} The instance.
    */
   static getInstance() {
     if (!SortWorker._instance) {
@@ -295,8 +295,8 @@ class SortWorker {
   }
 
   /**
-   * Vérifie si les Web Workers sont supportés.
-   * @returns {boolean} True si supportés.
+   * Checks if Web Workers are supported.
+   * @returns {boolean} True if supported.
    */
   static isSupported() {
     return typeof Worker !== 'undefined'

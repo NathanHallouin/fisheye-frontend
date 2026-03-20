@@ -1,30 +1,30 @@
 /**
- * Gestionnaire de chargement paresseux (Lazy Loading) des images.
+ * Lazy loading manager for images.
  *
  * @description
- * Utilise l'API IntersectionObserver pour charger les images uniquement
- * quand elles entrent dans le viewport (zone visible).
+ * Uses the IntersectionObserver API to load images only
+ * when they enter the viewport (visible area).
  *
- * CONCEPT CLÉ : IntersectionObserver
- * Cette API permet de détecter quand un élément entre ou sort
- * du viewport de manière performante (pas de polling scroll).
+ * KEY CONCEPT: IntersectionObserver
+ * This API allows detecting when an element enters or leaves
+ * the viewport in a performant way (no scroll polling).
  *
- * Avantages du lazy loading :
- * - Réduit le temps de chargement initial
- * - Économise la bande passante
- * - Améliore les performances perçues
- * - Réduit la consommation mémoire
+ * Lazy loading advantages:
+ * - Reduces initial load time
+ * - Saves bandwidth
+ * - Improves perceived performance
+ * - Reduces memory consumption
  */
 class LazyLoader {
   /**
-   * Instance unique (Singleton).
+   * Singleton instance.
    * @type {LazyLoader|null}
    */
   static _instance = null
 
   /**
-   * Retourne l'instance unique du LazyLoader.
-   * @returns {LazyLoader} L'instance unique.
+   * Returns the unique LazyLoader instance.
+   * @returns {LazyLoader} The unique instance.
    */
   static getInstance() {
     if (!LazyLoader._instance) {
@@ -34,99 +34,99 @@ class LazyLoader {
   }
 
   /**
-   * Crée une instance de LazyLoader.
+   * Creates a LazyLoader instance.
    *
    * @description
-   * Configure l'IntersectionObserver avec des options optimisées :
-   * - rootMargin : Marge autour du viewport pour pré-charger
-   * - threshold : Pourcentage de visibilité requis pour déclencher
+   * Configures the IntersectionObserver with optimized options:
+   * - rootMargin: Margin around the viewport for preloading
+   * - threshold: Visibility percentage required to trigger
    */
   constructor() {
     /**
-     * CONCEPT : Options de l'IntersectionObserver
+     * CONCEPT: IntersectionObserver options
      *
-     * - root : L'élément racine (null = viewport)
-     * - rootMargin : Marge autour de root (permet le pré-chargement)
-     * - threshold : Ratio de visibilité pour déclencher le callback
+     * - root: The root element (null = viewport)
+     * - rootMargin: Margin around root (enables preloading)
+     * - threshold: Visibility ratio to trigger the callback
      */
     const options = {
-      root: null, // null = viewport du navigateur
-      rootMargin: '100px 0px', // Charger 100px AVANT d'entrer dans le viewport
-      threshold: 0.01, // Déclencher dès que 1% est visible
+      root: null, // null = browser viewport
+      rootMargin: '100px 0px', // Load 100px BEFORE entering the viewport
+      threshold: 0.01, // Trigger as soon as 1% is visible
     }
 
     /**
-     * CONCEPT : Création de l'IntersectionObserver
+     * CONCEPT: Creating the IntersectionObserver
      *
-     * Le callback reçoit un tableau d'IntersectionObserverEntry.
-     * Chaque entry contient :
-     * - target : l'élément observé
-     * - isIntersecting : true si visible
-     * - intersectionRatio : pourcentage visible (0 à 1)
-     * - boundingClientRect : dimensions et position
+     * The callback receives an array of IntersectionObserverEntry.
+     * Each entry contains:
+     * - target: the observed element
+     * - isIntersecting: true if visible
+     * - intersectionRatio: visible percentage (0 to 1)
+     * - boundingClientRect: dimensions and position
      */
     this._observer = new IntersectionObserver(
       (entries) => this._handleIntersection(entries),
       options,
     )
 
-    // Compteur pour les statistiques
+    // Counter for statistics
     this._loadedCount = 0
     this._observedCount = 0
   }
 
   /**
-   * Gère les intersections détectées.
+   * Handles detected intersections.
    *
    * @description
-   * CONCEPT : Callback de l'IntersectionObserver
-   * Appelé à chaque fois qu'un élément observé change d'état
-   * (entre ou sort du viewport).
+   * CONCEPT: IntersectionObserver callback
+   * Called each time an observed element changes state
+   * (enters or leaves the viewport).
    *
-   * @param {IntersectionObserverEntry[]} entries - Les entrées d'intersection.
+   * @param {IntersectionObserverEntry[]} entries - The intersection entries.
    * @private
    */
   _handleIntersection(entries) {
     entries.forEach((entry) => {
-      // isIntersecting = true quand l'élément entre dans le viewport
+      // isIntersecting = true when the element enters the viewport
       if (entry.isIntersecting) {
         this._loadImage(entry.target)
-        // Arrêter d'observer une fois chargé (optimisation)
+        // Stop observing once loaded (optimization)
         this._observer.unobserve(entry.target)
       }
     })
   }
 
   /**
-   * Charge l'image d'un élément.
+   * Loads an element's image.
    *
    * @description
-   * Remplace data-src par src pour déclencher le chargement.
-   * Gère également le srcset pour les images responsives.
+   * Replaces data-src with src to trigger loading.
+   * Also handles srcset for responsive images.
    *
-   * @param {HTMLElement} element - L'élément image ou conteneur.
+   * @param {HTMLElement} element - The image element or container.
    * @private
    */
   _loadImage(element) {
-    // Cas 1 : Élément <img> direct
+    // Case 1: Direct <img> element
     if (element.tagName === 'IMG') {
       this._loadImgElement(element)
       return
     }
 
-    // Cas 2 : Élément <picture> avec <source> et <img>
+    // Case 2: <picture> element with <source> and <img>
     if (element.tagName === 'PICTURE') {
       this._loadPictureElement(element)
       return
     }
 
-    // Cas 3 : Conteneur avec une image enfant
+    // Case 3: Container with a child image
     const img = element.querySelector('img[data-src]')
     if (img) {
       this._loadImgElement(img)
     }
 
-    // Cas 4 : Background image (data-bg)
+    // Case 4: Background image (data-bg)
     if (element.dataset.bg) {
       element.style.backgroundImage = `url('${element.dataset.bg}')`
       delete element.dataset.bg
@@ -136,75 +136,75 @@ class LazyLoader {
   }
 
   /**
-   * Charge une image <img>.
+   * Loads an <img> image.
    *
-   * @param {HTMLImageElement} img - L'élément image.
+   * @param {HTMLImageElement} img - The image element.
    * @private
    */
   _loadImgElement(img) {
-    // Ajouter la classe de chargement
+    // Add loading class
     img.classList.add('lazy-loading')
 
-    // Créer une nouvelle image pour précharger
+    // Create a new image to preload
     const tempImage = new Image()
 
-    // Gestionnaire de succès
+    // Success handler
     tempImage.onload = () => {
-      // Transférer src une fois chargé
+      // Transfer src once loaded
       if (img.dataset.src) {
         img.src = img.dataset.src
         delete img.dataset.src
       }
 
-      // Transférer srcset si présent
+      // Transfer srcset if present
       if (img.dataset.srcset) {
         img.srcset = img.dataset.srcset
         delete img.dataset.srcset
       }
 
-      // Mettre à jour les classes
+      // Update classes
       img.classList.remove('lazy-loading')
       img.classList.add('lazy-loaded')
 
-      // Incrémenter le compteur
+      // Increment counter
       this._loadedCount++
 
-      // Émettre un événement personnalisé
+      // Emit custom event
       this._emitLoadEvent(img)
     }
 
-    // Gestionnaire d'erreur
+    // Error handler
     tempImage.onerror = () => {
       img.classList.remove('lazy-loading')
       img.classList.add('lazy-error')
 
-      // Charger une image de fallback
+      // Load fallback image
       if (img.dataset.fallback) {
         img.src = img.dataset.fallback
       }
 
-      console.warn('LazyLoader: Erreur de chargement', img.dataset.src)
+      console.warn('LazyLoader: Loading error', img.dataset.src)
     }
 
-    // Démarrer le chargement
+    // Start loading
     tempImage.src = img.dataset.src
   }
 
   /**
-   * Charge un élément <picture>.
+   * Loads a <picture> element.
    *
-   * @param {HTMLPictureElement} picture - L'élément picture.
+   * @param {HTMLPictureElement} picture - The picture element.
    * @private
    */
   _loadPictureElement(picture) {
-    // Charger les sources
+    // Load sources
     const sources = picture.querySelectorAll('source[data-srcset]')
     sources.forEach((source) => {
       source.srcset = source.dataset.srcset
       delete source.dataset.srcset
     })
 
-    // Charger l'image de fallback
+    // Load the fallback image
     const img = picture.querySelector('img')
     if (img) {
       this._loadImgElement(img)
@@ -212,9 +212,9 @@ class LazyLoader {
   }
 
   /**
-   * Émet un événement personnalisé après le chargement.
+   * Emits a custom event after loading.
    *
-   * @param {HTMLElement} element - L'élément chargé.
+   * @param {HTMLElement} element - The loaded element.
    * @private
    */
   _emitLoadEvent(element) {
@@ -230,14 +230,14 @@ class LazyLoader {
   }
 
   /**
-   * Observe un élément pour le lazy loading.
+   * Observes an element for lazy loading.
    *
-   * @param {HTMLElement} element - L'élément à observer.
+   * @param {HTMLElement} element - The element to observe.
    */
   observe(element) {
     if (!element) return
 
-    // Vérifier si l'élément a des données à charger
+    // Check if the element has data to load
     const hasLazyData =
       element.dataset.src ||
       element.dataset.srcset ||
@@ -245,7 +245,7 @@ class LazyLoader {
       element.querySelector('[data-src]')
 
     if (!hasLazyData) {
-      console.warn('LazyLoader: Élément sans data-src/data-srcset', element)
+      console.warn('LazyLoader: Element without data-src/data-srcset', element)
       return
     }
 
@@ -254,34 +254,34 @@ class LazyLoader {
   }
 
   /**
-   * Observe plusieurs éléments.
+   * Observes multiple elements.
    *
-   * @param {NodeList|Array<HTMLElement>} elements - Les éléments à observer.
+   * @param {NodeList|Array<HTMLElement>} elements - The elements to observe.
    */
   observeAll(elements) {
     elements.forEach((element) => this.observe(element))
   }
 
   /**
-   * Arrête d'observer un élément.
+   * Stops observing an element.
    *
-   * @param {HTMLElement} element - L'élément à ne plus observer.
+   * @param {HTMLElement} element - The element to stop observing.
    */
   unobserve(element) {
     this._observer.unobserve(element)
   }
 
   /**
-   * Arrête d'observer tous les éléments.
+   * Stops observing all elements.
    */
   disconnect() {
     this._observer.disconnect()
   }
 
   /**
-   * Force le chargement immédiat d'un élément.
+   * Forces immediate loading of an element.
    *
-   * @param {HTMLElement} element - L'élément à charger.
+   * @param {HTMLElement} element - The element to load.
    */
   loadImmediately(element) {
     this._loadImage(element)
@@ -289,18 +289,18 @@ class LazyLoader {
   }
 
   /**
-   * Force le chargement de tous les éléments observés.
+   * Forces loading of all observed elements.
    */
   loadAll() {
-    // Note : IntersectionObserver n'expose pas la liste des éléments observés
-    // Cette méthode est utile si on garde une référence séparée
-    console.info('LazyLoader: loadAll() appelé - les images seront chargées')
+    // Note: IntersectionObserver doesn't expose the list of observed elements
+    // This method is useful if a separate reference is kept
+    console.info('LazyLoader: loadAll() called - images will be loaded')
   }
 
   /**
-   * Retourne les statistiques de chargement.
+   * Returns loading statistics.
    *
-   * @returns {Object} Les statistiques.
+   * @returns {Object} The statistics.
    */
   getStats() {
     return {
@@ -311,45 +311,45 @@ class LazyLoader {
   }
 
   /**
-   * Crée un élément image avec lazy loading.
+   * Creates an image element with lazy loading.
    *
    * @description
-   * Méthode utilitaire pour créer une image lazy-loadable.
+   * Utility method to create a lazy-loadable image.
    *
-   * @param {Object} options - Les options de l'image.
-   * @param {string} options.src - L'URL de l'image.
-   * @param {string} options.alt - Le texte alternatif.
-   * @param {string} [options.placeholder] - URL du placeholder.
-   * @param {string} [options.fallback] - URL de l'image de fallback.
-   * @param {string} [options.className] - Classes CSS.
-   * @returns {HTMLImageElement} L'élément image créé.
+   * @param {Object} options - Image options.
+   * @param {string} options.src - The image URL.
+   * @param {string} options.alt - The alternative text.
+   * @param {string} [options.placeholder] - Placeholder URL.
+   * @param {string} [options.fallback] - Fallback image URL.
+   * @param {string} [options.className] - CSS classes.
+   * @returns {HTMLImageElement} The created image element.
    */
   createLazyImage({ src, alt, placeholder, fallback, className }) {
     const img = document.createElement('img')
 
-    // Utiliser un placeholder ou une image transparente
+    // Use a placeholder or transparent image
     img.src =
       placeholder ||
       'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 
-    // Stocker l'URL réelle dans data-src
+    // Store the real URL in data-src
     img.dataset.src = src
 
-    // Attributs d'accessibilité
+    // Accessibility attributes
     img.alt = alt || ''
 
-    // Fallback en cas d'erreur
+    // Fallback in case of error
     if (fallback) {
       img.dataset.fallback = fallback
     }
 
-    // Classes CSS
+    // CSS classes
     if (className) {
       img.className = className
     }
     img.classList.add('lazy')
 
-    // Observer l'image
+    // Observe the image
     this.observe(img)
 
     return img

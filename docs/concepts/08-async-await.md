@@ -1,31 +1,31 @@
-# Async/Await et Promises
+# Async/Await and Promises
 
 ## Concept
 
-`async/await` est une syntaxe moderne pour gérer le code asynchrone en JavaScript. Elle repose sur les Promises et rend le code asynchrone plus lisible.
+`async/await` is a modern syntax for handling asynchronous code in JavaScript. It relies on Promises and makes asynchronous code more readable.
 
-## Les Promises
+## Promises
 
-Une Promise représente une valeur qui sera disponible dans le futur.
+A Promise represents a value that will be available in the future.
 
-### États d'une Promise
+### Promise States
 
-1. **Pending** - En attente
-2. **Fulfilled** - Résolue avec succès
-3. **Rejected** - Rejetée avec une erreur
+1. **Pending** - Waiting
+2. **Fulfilled** - Successfully resolved
+3. **Rejected** - Rejected with an error
 
-### Syntaxe de base
+### Basic Syntax
 
 ```javascript
-// Créer une Promise
+// Create a Promise
 const promise = new Promise((resolve, reject) => {
   setTimeout(() => {
-    resolve('Succès!')
-    // ou reject(new Error('Échec'))
+    resolve('Success!')
+    // or reject(new Error('Failure'))
   }, 1000)
 })
 
-// Consommer une Promise
+// Consume a Promise
 promise
   .then(result => console.log(result))
   .catch(error => console.error(error))
@@ -33,7 +33,7 @@ promise
 
 ## Async/Await
 
-### Syntaxe
+### Syntax
 
 ```javascript
 async function fetchData() {
@@ -42,17 +42,17 @@ async function fetchData() {
     const data = await response.json()
     return data
   } catch (error) {
-    console.error('Erreur:', error)
+    console.error('Error:', error)
     return null
   }
 }
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Classe API avec async/await
+### API Class with async/await
 
-**Fichier**: [scripts/api/Api.js](../../scripts/api/Api.js)
+**File**: [scripts/api/Api.js](../../scripts/api/Api.js)
 
 ```javascript
 class Api {
@@ -68,7 +68,7 @@ class Api {
       }
       return await res.json()
     } catch (error) {
-      console.error('Erreur API:', error)
+      console.error('API Error:', error)
       return null
     }
   }
@@ -86,9 +86,9 @@ class PhotographerApi extends Api {
 }
 ```
 
-### Initialisation de l'application
+### Application Initialization
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 class App {
@@ -101,7 +101,7 @@ class App {
     const data = await this.photographersApi.getPhotographers()
 
     if (!data) {
-      console.error('Impossible de charger les données')
+      console.error('Unable to load data')
       return
     }
 
@@ -110,14 +110,14 @@ class App {
   }
 }
 
-// Point d'entrée
+// Entry point
 const app = new App()
 app.main()
 ```
 
-### Chargement paresseux d'images
+### Lazy Image Loading
 
-**Fichier**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
+**File**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
 
 ```javascript
 class LazyLoader {
@@ -146,9 +146,9 @@ class LazyLoader {
 }
 ```
 
-### Partage avec l'API Share
+### Sharing with the Share API
 
-**Fichier**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
+**File**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
 
 ```javascript
 class ShareButton {
@@ -160,11 +160,11 @@ class ShareButton {
         await navigator.share({ title, text, url })
       } else {
         await navigator.clipboard.writeText(url)
-        this._showFeedback('Lien copié!')
+        this._showFeedback('Link copied!')
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Erreur de partage:', error)
+        console.error('Share error:', error)
       }
     }
   }
@@ -175,7 +175,7 @@ class ShareButton {
 
 ### Promise.all
 
-Attend que toutes les Promises soient résolues. Échoue si une seule échoue.
+Waits for all Promises to resolve. Fails if any single one fails.
 
 ```javascript
 async function loadAllData() {
@@ -190,9 +190,9 @@ async function loadAllData() {
 
 ### Promise.allSettled
 
-Attend toutes les Promises, sans échouer si certaines sont rejetées.
+Waits for all Promises, without failing if some are rejected.
 
-**Fichier**: [scripts/utils/ParallelLoader.js](../../scripts/utils/ParallelLoader.js)
+**File**: [scripts/utils/ParallelLoader.js](../../scripts/utils/ParallelLoader.js)
 
 ```javascript
 class ParallelLoader {
@@ -215,9 +215,9 @@ class ParallelLoader {
 }
 ```
 
-## Gestion des erreurs
+## Error Handling
 
-### Pattern try/catch
+### try/catch Pattern
 
 ```javascript
 async function safeFetch(url) {
@@ -230,15 +230,15 @@ async function safeFetch(url) {
 
     return await response.json()
   } catch (error) {
-    console.error('Erreur:', error.message)
-    return null  // Valeur par défaut
+    console.error('Error:', error.message)
+    return null  // Default value
   }
 }
 ```
 
-### Pattern avec fallback
+### Fallback Pattern
 
-**Fichier**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
+**File**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
 
 ```javascript
 async copyToClipboard(text) {
@@ -246,7 +246,7 @@ async copyToClipboard(text) {
     await navigator.clipboard.writeText(text)
     return true
   } catch (error) {
-    // Fallback pour les navigateurs plus anciens
+    // Fallback for older browsers
     const textArea = document.createElement('textarea')
     textArea.value = text
     document.body.appendChild(textArea)
@@ -258,9 +258,9 @@ async copyToClipboard(text) {
 }
 ```
 
-## Patterns courants
+## Common Patterns
 
-### 1. Séquence d'opérations
+### 1. Sequential Operations
 
 ```javascript
 async function processPhotographer(id) {
@@ -271,7 +271,7 @@ async function processPhotographer(id) {
 }
 ```
 
-### 2. Opérations parallèles
+### 2. Parallel Operations
 
 ```javascript
 async function loadDashboard() {
@@ -285,7 +285,7 @@ async function loadDashboard() {
 }
 ```
 
-### 3. Retry pattern
+### 3. Retry Pattern
 
 ```javascript
 async function fetchWithRetry(url, retries = 3) {
@@ -317,76 +317,76 @@ async function fetchWithTimeout(url, timeout = 5000) {
 }
 ```
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Pattern | Fichier | Usage |
-|---------|---------|-------|
-| Fetch API | Api.js | Chargement des données JSON |
-| Try/catch | App.js, Api.js | Gestion d'erreurs |
-| Promise constructor | LazyLoader.js | Chargement d'images |
-| navigator.share | ShareButton.js | Partage natif |
-| navigator.clipboard | UrlStateManager.js | Copie dans presse-papier |
+| Pattern | File | Usage |
+|---------|------|-------|
+| Fetch API | Api.js | Loading JSON data |
+| Try/catch | App.js, Api.js | Error handling |
+| Promise constructor | LazyLoader.js | Image loading |
+| navigator.share | ShareButton.js | Native sharing |
+| navigator.clipboard | UrlStateManager.js | Copy to clipboard |
 
-## Erreurs courantes
+## Common Mistakes
 
-### 1. Oublier await
+### 1. Forgetting await
 
 ```javascript
-// Mauvais - retourne une Promise, pas les données
+// Bad - returns a Promise, not the data
 function getData() {
   return fetch(url).then(r => r.json())
 }
-const data = getData()  // data est une Promise!
+const data = getData()  // data is a Promise!
 
-// Bon
+// Good
 async function getData() {
   return await fetch(url).then(r => r.json())
 }
 const data = await getData()
 ```
 
-### 2. await dans une boucle (séquentiel au lieu de parallèle)
+### 2. await in a loop (sequential instead of parallel)
 
 ```javascript
-// Lent - séquentiel
+// Slow - sequential
 for (const id of ids) {
-  const data = await fetchData(id)  // Attend chaque requête
+  const data = await fetchData(id)  // Waits for each request
 }
 
-// Rapide - parallèle
+// Fast - parallel
 const results = await Promise.all(
   ids.map(id => fetchData(id))
 )
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Créer une fonction qui charge les données d'un photographe avec ses médias :
+Create a function that loads a photographer's data with their media:
 
 ```javascript
 async function loadPhotographerWithMedia(photographerId) {
   try {
-    // Charger en parallèle
+    // Load in parallel
     const [photographerData, allMedia] = await Promise.all([
       fetch('./data/photographers.json').then(r => r.json()),
       fetch('./data/media.json').then(r => r.json())
     ])
 
-    // Trouver le photographe
+    // Find the photographer
     const photographer = photographerData.photographers.find(
       p => p.id === photographerId
     )
 
     if (!photographer) {
-      throw new Error('Photographe non trouvé')
+      throw new Error('Photographer not found')
     }
 
-    // Filtrer ses médias
+    // Filter their media
     const media = allMedia.filter(m => m.photographerId === photographerId)
 
     return { photographer, media }
   } catch (error) {
-    console.error('Erreur de chargement:', error)
+    console.error('Loading error:', error)
     return null
   }
 }

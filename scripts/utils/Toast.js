@@ -1,13 +1,13 @@
 /**
- * Classe pour afficher des notifications toast.
- * Singleton pattern pour une gestion centralisée des toasts.
+ * Class for displaying toast notifications.
+ * Singleton pattern for centralized toast management.
  */
 class Toast {
   static _instance = null
   static _container = null
 
   /**
-   * Types de toast disponibles.
+   * Available toast types.
    */
   static TYPES = {
     success: {
@@ -29,7 +29,7 @@ class Toast {
   }
 
   /**
-   * Durées par défaut en ms.
+   * Default durations in ms.
    */
   static DURATIONS = {
     short: 3000,
@@ -38,7 +38,7 @@ class Toast {
   }
 
   /**
-   * Initialise le conteneur de toasts.
+   * Initializes the toast container.
    */
   static _initContainer() {
     if (Toast._container) return
@@ -51,11 +51,11 @@ class Toast {
   }
 
   /**
-   * Affiche un toast.
-   * @param {string} message - Le message à afficher.
-   * @param {string} [type='info'] - Le type de toast (success, error, warning, info).
-   * @param {number|string} [duration='medium'] - La durée d'affichage.
-   * @returns {HTMLElement} L'élément toast créé.
+   * Displays a toast.
+   * @param {string} message - The message to display.
+   * @param {string} [type='info'] - The toast type (success, error, warning, info).
+   * @param {number|string} [duration='medium'] - The display duration.
+   * @returns {HTMLElement} The created toast element.
    */
   static show(message, type = 'info', duration = 'medium') {
     Toast._initContainer()
@@ -64,12 +64,12 @@ class Toast {
     const durationMs =
       typeof duration === 'number' ? duration : Toast.DURATIONS[duration] || Toast.DURATIONS.medium
 
-    // Créer le toast
+    // Create the toast
     const $toast = document.createElement('div')
     $toast.classList.add('toast', config.className)
     $toast.setAttribute('role', 'alert')
 
-    // Icône
+    // Icon
     const $icon = document.createElement('span')
     $icon.classList.add('toast__icon')
     $icon.textContent = config.icon
@@ -80,7 +80,7 @@ class Toast {
     $message.classList.add('toast__message')
     $message.textContent = message
 
-    // Bouton de fermeture
+    // Close button
     const $closeBtn = document.createElement('button')
     $closeBtn.classList.add('toast__close')
     $closeBtn.setAttribute('aria-label', 'Fermer la notification')
@@ -91,10 +91,10 @@ class Toast {
     $toast.appendChild($message)
     $toast.appendChild($closeBtn)
 
-    // Ajouter au conteneur
+    // Add to container
     Toast._container.appendChild($toast)
 
-    // Animation d'entrée
+    // Entry animation
     requestAnimationFrame(() => {
       $toast.classList.add('toast--visible')
     })
@@ -107,8 +107,8 @@ class Toast {
   }
 
   /**
-   * Ferme un toast avec animation.
-   * @param {HTMLElement} $toast - L'élément toast à fermer.
+   * Closes a toast with animation.
+   * @param {HTMLElement} $toast - The toast element to close.
    */
   static _dismiss($toast) {
     if (!$toast || !$toast.parentNode) return
@@ -129,43 +129,43 @@ class Toast {
   }
 
   /**
-   * Raccourci pour un toast de succès.
-   * @param {string} message - Le message.
-   * @param {number|string} [duration] - La durée.
+   * Shortcut for a success toast.
+   * @param {string} message - The message.
+   * @param {number|string} [duration] - The duration.
    */
   static success(message, duration) {
     return Toast.show(message, 'success', duration)
   }
 
   /**
-   * Raccourci pour un toast d'erreur.
-   * @param {string} message - Le message.
-   * @param {number|string} [duration] - La durée.
+   * Shortcut for an error toast.
+   * @param {string} message - The message.
+   * @param {number|string} [duration] - The duration.
    */
   static error(message, duration) {
     return Toast.show(message, 'error', duration)
   }
 
   /**
-   * Raccourci pour un toast d'avertissement.
-   * @param {string} message - Le message.
-   * @param {number|string} [duration] - La durée.
+   * Shortcut for a warning toast.
+   * @param {string} message - The message.
+   * @param {number|string} [duration] - The duration.
    */
   static warning(message, duration) {
     return Toast.show(message, 'warning', duration)
   }
 
   /**
-   * Raccourci pour un toast d'information.
-   * @param {string} message - Le message.
-   * @param {number|string} [duration] - La durée.
+   * Shortcut for an info toast.
+   * @param {string} message - The message.
+   * @param {number|string} [duration] - The duration.
    */
   static info(message, duration) {
     return Toast.show(message, 'info', duration)
   }
 
   /**
-   * Ferme tous les toasts.
+   * Closes all toasts.
    */
   static dismissAll() {
     if (!Toast._container) return

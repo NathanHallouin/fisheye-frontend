@@ -1,8 +1,8 @@
 class PhotographersFactory {
   /**
-   * @param {Object} data - Les données à traiter.
-   * @param {string} type - Le type d'entité à créer.
-   * @returns {Array|Error} Un tableau d'instances ou une erreur si le type est inconnu.
+   * @param {Object} data - The data to process.
+   * @param {string} type - The type of entity to create.
+   * @returns {Array|Error} An array of instances or an error if the type is unknown.
    */
   constructor(data, type) {
     if (type === 'photographers') {

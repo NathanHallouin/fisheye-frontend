@@ -1,30 +1,30 @@
 /**
- * Decorator Pattern pour le logging et la mesure de performance.
+ * Decorator Pattern for logging and performance measurement.
  *
- * CONCEPT : Higher-Order Functions et Decorator Pattern
+ * CONCEPT: Higher-Order Functions and Decorator Pattern
  *
- * Un decorator est une fonction qui enveloppe une autre fonction pour
- * ajouter des fonctionnalités sans modifier le code original.
- * C'est un pattern AOP (Aspect-Oriented Programming).
+ * A decorator is a function that wraps another function to
+ * add functionality without modifying the original code.
+ * It's an AOP (Aspect-Oriented Programming) pattern.
  *
- * Avantages:
- * - Séparation des préoccupations (cross-cutting concerns)
- * - Réutilisabilité du logging
- * - Code métier plus propre
- * - Activation/désactivation facile du debug
+ * Advantages:
+ * - Separation of concerns (cross-cutting concerns)
+ * - Reusability of logging
+ * - Cleaner business code
+ * - Easy activation/deactivation of debug
  */
 
 /**
- * Décorateur qui ajoute du logging à une fonction.
- * @param {Function} fn - La fonction à décorer.
- * @param {string} name - Le nom à afficher dans les logs.
- * @param {Object} options - Options de configuration.
- * @param {boolean} [options.logArgs=true] - Logger les arguments.
- * @param {boolean} [options.logResult=true] - Logger le résultat.
- * @param {boolean} [options.logDuration=true] - Logger la durée d'exécution.
- * @param {boolean} [options.logErrors=true] - Logger les erreurs.
- * @param {string} [options.level='log'] - Niveau de log ('log', 'debug', 'info').
- * @returns {Function} La fonction décorée.
+ * Decorator that adds logging to a function.
+ * @param {Function} fn - The function to decorate.
+ * @param {string} name - The name to display in logs.
+ * @param {Object} options - Configuration options.
+ * @param {boolean} [options.logArgs=true] - Log arguments.
+ * @param {boolean} [options.logResult=true] - Log result.
+ * @param {boolean} [options.logDuration=true] - Log execution duration.
+ * @param {boolean} [options.logErrors=true] - Log errors.
+ * @param {string} [options.level='log'] - Log level ('log', 'debug', 'info').
+ * @returns {Function} The decorated function.
  *
  * @example
  * const fetchData = withLogging(
@@ -49,55 +49,55 @@ function withLogging(fn, name, options = {}) {
     const start = performance.now()
 
     if (logArgs) {
-      logger(`${prefix} Appelé avec:`, args)
+      logger(`${prefix} Called with:`, args)
     }
 
     try {
       const result = fn.apply(this, args)
 
-      // Gérer les Promises (fonctions async)
+      // Handle Promises (async functions)
       if (result instanceof Promise) {
         return result
           .then((value) => {
             if (logResult) {
-              logger(`${prefix} Résultat:`, value)
+              logger(`${prefix} Result:`, value)
             }
             if (logDuration) {
               logger(
-                `${prefix} Durée: ${(performance.now() - start).toFixed(2)}ms`,
+                `${prefix} Duration: ${(performance.now() - start).toFixed(2)}ms`,
               )
             }
             return value
           })
           .catch((error) => {
             if (logErrors) {
-              console.error(`${prefix} Erreur:`, error)
+              console.error(`${prefix} Error:`, error)
             }
             if (logDuration) {
               logger(
-                `${prefix} Durée avant erreur: ${(performance.now() - start).toFixed(2)}ms`,
+                `${prefix} Duration before error: ${(performance.now() - start).toFixed(2)}ms`,
               )
             }
             throw error
           })
       }
 
-      // Fonctions synchrones
+      // Synchronous functions
       if (logResult) {
-        logger(`${prefix} Résultat:`, result)
+        logger(`${prefix} Result:`, result)
       }
       if (logDuration) {
-        logger(`${prefix} Durée: ${(performance.now() - start).toFixed(2)}ms`)
+        logger(`${prefix} Duration: ${(performance.now() - start).toFixed(2)}ms`)
       }
 
       return result
     } catch (error) {
       if (logErrors) {
-        console.error(`${prefix} Erreur:`, error)
+        console.error(`${prefix} Error:`, error)
       }
       if (logDuration) {
         logger(
-          `${prefix} Durée avant erreur: ${(performance.now() - start).toFixed(2)}ms`,
+          `${prefix} Duration before error: ${(performance.now() - start).toFixed(2)}ms`,
         )
       }
       throw error
@@ -106,10 +106,10 @@ function withLogging(fn, name, options = {}) {
 }
 
 /**
- * Décorateur qui mesure uniquement la durée d'exécution.
- * @param {Function} fn - La fonction à mesurer.
- * @param {string} name - Le nom pour les logs.
- * @returns {Function} La fonction décorée.
+ * Decorator that only measures execution duration.
+ * @param {Function} fn - The function to measure.
+ * @param {string} name - The name for logs.
+ * @returns {Function} The decorated function.
  *
  * @example
  * const sortMedia = withTiming(
@@ -127,11 +127,11 @@ function withTiming(fn, name) {
 }
 
 /**
- * Décorateur qui ajoute la gestion d'erreurs avec fallback.
- * @param {Function} fn - La fonction à décorer.
- * @param {*} fallback - Valeur de fallback en cas d'erreur.
- * @param {string} [name] - Nom optionnel pour le logging.
- * @returns {Function} La fonction décorée.
+ * Decorator that adds error handling with fallback.
+ * @param {Function} fn - The function to decorate.
+ * @param {*} fallback - Fallback value in case of error.
+ * @param {string} [name] - Optional name for logging.
+ * @returns {Function} The decorated function.
  *
  * @example
  * const safeParseJSON = withErrorHandling(
@@ -139,7 +139,7 @@ function withTiming(fn, name) {
  *   {},
  *   'parseJSON'
  * )
- * safeParseJSON('invalid json') // Retourne {} au lieu de throw
+ * safeParseJSON('invalid json') // Returns {} instead of throwing
  */
 function withErrorHandling(fn, fallback, name = '') {
   const prefix = name ? `[${name}] ` : ''
@@ -151,7 +151,7 @@ function withErrorHandling(fn, fallback, name = '') {
       if (result instanceof Promise) {
         return result.catch((error) => {
           console.warn(
-            `${prefix}Erreur capturée, utilisation du fallback:`,
+            `${prefix}Error captured, using fallback:`,
             error.message,
           )
           return fallback
@@ -161,7 +161,7 @@ function withErrorHandling(fn, fallback, name = '') {
       return result
     } catch (error) {
       console.warn(
-        `${prefix}Erreur capturée, utilisation du fallback:`,
+        `${prefix}Error captured, using fallback:`,
         error.message,
       )
       return fallback
@@ -170,18 +170,18 @@ function withErrorHandling(fn, fallback, name = '') {
 }
 
 /**
- * Décorateur qui met en cache les résultats (memoization).
- * @param {Function} fn - La fonction à mémoizer.
- * @param {Function} [keyFn] - Fonction pour générer la clé de cache.
- * @returns {Function} La fonction mémoizée avec propriété .cache.
+ * Decorator that caches results (memoization).
+ * @param {Function} fn - The function to memoize.
+ * @param {Function} [keyFn] - Function to generate the cache key.
+ * @returns {Function} The memoized function with .cache property.
  *
  * @example
  * const expensiveCalc = withMemoization(
- *   (n) => n * 2, // calcul coûteux
+ *   (n) => n * 2, // expensive calculation
  *   (n) => `calc_${n}`
  * )
- * expensiveCalc(5) // Calcule
- * expensiveCalc(5) // Retourne du cache
+ * expensiveCalc(5) // Calculates
+ * expensiveCalc(5) // Returns from cache
  */
 function withMemoization(fn, keyFn = (...args) => JSON.stringify(args)) {
   const cache = new Map()
@@ -195,11 +195,11 @@ function withMemoization(fn, keyFn = (...args) => JSON.stringify(args)) {
 
     const result = fn.apply(this, args)
 
-    // Gérer les Promises
+    // Handle Promises
     if (result instanceof Promise) {
-      // Stocker la promesse, pas le résultat
+      // Store the promise, not the result
       cache.set(key, result)
-      // En cas d'erreur, retirer du cache
+      // On error, remove from cache
       result.catch(() => cache.delete(key))
       return result
     }
@@ -208,7 +208,7 @@ function withMemoization(fn, keyFn = (...args) => JSON.stringify(args)) {
     return result
   }
 
-  // Exposer le cache pour permettre l'invalidation manuelle
+  // Expose cache to allow manual invalidation
   memoized.cache = cache
   memoized.clearCache = () => cache.clear()
 
@@ -216,17 +216,17 @@ function withMemoization(fn, keyFn = (...args) => JSON.stringify(args)) {
 }
 
 /**
- * Décorateur qui limite le nombre d'appels par période.
- * @param {Function} fn - La fonction à limiter.
- * @param {number} maxCalls - Nombre maximum d'appels.
- * @param {number} period - Période en millisecondes.
- * @returns {Function} La fonction limitée.
+ * Decorator that limits the number of calls per period.
+ * @param {Function} fn - The function to limit.
+ * @param {number} maxCalls - Maximum number of calls.
+ * @param {number} period - Period in milliseconds.
+ * @returns {Function} The limited function.
  *
  * @example
  * const limitedAPI = withRateLimit(
  *   fetchAPI,
  *   10,
- *   60000 // Max 10 appels par minute
+ *   60000 // Max 10 calls per minute
  * )
  */
 function withRateLimit(fn, maxCalls, period) {
@@ -235,7 +235,7 @@ function withRateLimit(fn, maxCalls, period) {
   return function (...args) {
     const now = Date.now()
 
-    // Nettoyer les appels expirés
+    // Clean up expired calls
     while (calls.length > 0 && calls[0] <= now - period) {
       calls.shift()
     }
@@ -243,7 +243,7 @@ function withRateLimit(fn, maxCalls, period) {
     if (calls.length >= maxCalls) {
       const waitTime = calls[0] + period - now
       console.warn(
-        `Rate limit atteint. Réessayez dans ${Math.ceil(waitTime / 1000)}s`,
+        `Rate limit reached. Try again in ${Math.ceil(waitTime / 1000)}s`,
       )
       return Promise.reject(new Error('Rate limit exceeded'))
     }
@@ -254,17 +254,17 @@ function withRateLimit(fn, maxCalls, period) {
 }
 
 /**
- * Décorateur qui ajoute une validation des arguments.
- * @param {Function} fn - La fonction à décorer.
- * @param {Function[]} validators - Fonctions de validation pour chaque argument.
- * @returns {Function} La fonction décorée.
+ * Decorator that adds argument validation.
+ * @param {Function} fn - The function to decorate.
+ * @param {Function[]} validators - Validation functions for each argument.
+ * @returns {Function} The decorated function.
  *
  * @example
  * const divide = withValidation(
  *   (a, b) => a / b,
  *   [
- *     (a) => typeof a === 'number' || 'Le premier argument doit être un nombre',
- *     (b) => b !== 0 || 'Division par zéro impossible'
+ *     (a) => typeof a === 'number' || 'First argument must be a number',
+ *     (b) => b !== 0 || 'Division by zero not allowed'
  *   ]
  * )
  */
@@ -276,7 +276,7 @@ function withValidation(fn, validators) {
 
       if (result !== true) {
         throw new Error(
-          typeof result === 'string' ? result : `Argument ${i} invalide`,
+          typeof result === 'string' ? result : `Argument ${i} invalid`,
         )
       }
     }
@@ -286,9 +286,9 @@ function withValidation(fn, validators) {
 }
 
 /**
- * Compose plusieurs décorateurs ensemble.
- * @param {...Function} decorators - Décorateurs à composer (appliqués de droite à gauche).
- * @returns {Function} Fonction qui applique tous les décorateurs.
+ * Composes multiple decorators together.
+ * @param {...Function} decorators - Decorators to compose (applied right to left).
+ * @returns {Function} Function that applies all decorators.
  *
  * @example
  * const enhancedFn = compose(

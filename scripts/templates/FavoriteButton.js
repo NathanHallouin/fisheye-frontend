@@ -1,16 +1,16 @@
 /**
- * Classe représentant un bouton favori (coeur).
+ * Class representing a favorite button (heart).
  *
  * @description
- * Ce composant utilise :
- * - Event delegation : Un seul gestionnaire pour tous les boutons
- * - Data attributes : Stocker l'ID du photographe sur l'élément
- * - ARIA : Accessibilité avec aria-pressed et aria-label
+ * This component uses:
+ * - Event delegation: A single handler for all buttons
+ * - Data attributes: Store the photographer ID on the element
+ * - ARIA: Accessibility with aria-pressed and aria-label
  */
 class FavoriteButton {
   /**
-   * Crée un bouton favori pour un photographe.
-   * @param {Object} photographer - Les données du photographe.
+   * Creates a favorite button for a photographer.
+   * @param {Object} photographer - The photographer's data.
    */
   constructor(photographer) {
     this._photographer = photographer
@@ -19,8 +19,8 @@ class FavoriteButton {
   }
 
   /**
-   * Crée l'élément bouton.
-   * @returns {HTMLButtonElement} Le bouton créé.
+   * Creates the button element.
+   * @returns {HTMLButtonElement} The created button.
    */
   createButton() {
     this.$button = document.createElement('button')
@@ -28,17 +28,17 @@ class FavoriteButton {
     this.$button.setAttribute('type', 'button')
     this.$button.setAttribute('data-photographer-id', this._photographer.id)
 
-    // État initial
+    // Initial state
     this._updateState()
 
-    // Event listener avec arrow function pour préserver this
+    // Event listener with arrow function to preserve this
     this.$button.addEventListener('click', (e) => {
       e.preventDefault()
-      e.stopPropagation() // Empêcher la navigation vers la page photographe
+      e.stopPropagation() // Prevent navigation to photographer page
       this._handleClick()
     })
 
-    // Écouter les changements globaux (si modifié depuis une autre page)
+    // Listen for global changes (if modified from another page)
     this._favoritesManager.onChange(() => {
       this._updateState()
     })
@@ -47,19 +47,19 @@ class FavoriteButton {
   }
 
   /**
-   * Gère le clic sur le bouton.
+   * Handles the button click.
    * @private
    */
   _handleClick() {
     const isNowFavorite = this._favoritesManager.toggle(this._photographer)
     this._updateState()
 
-    // Animation de feedback
+    // Feedback animation
     this._animatePulse()
   }
 
   /**
-   * Met à jour l'état visuel du bouton.
+   * Updates the visual state of the button.
    * @private
    */
   _updateState() {
@@ -67,29 +67,29 @@ class FavoriteButton {
 
     const isFavorite = this._favoritesManager.isFavorite(this._photographer.id)
 
-    // Mettre à jour les classes
+    // Update classes
     this.$button.classList.toggle('favorite-btn--active', isFavorite)
 
-    // Mettre à jour ARIA
+    // Update ARIA
     this.$button.setAttribute('aria-pressed', isFavorite.toString())
     this.$button.setAttribute(
       'aria-label',
       isFavorite
-        ? `Retirer ${this._photographer.name} des favoris`
-        : `Ajouter ${this._photographer.name} aux favoris`,
+        ? `Remove ${this._photographer.name} from favorites`
+        : `Add ${this._photographer.name} to favorites`,
     )
 
-    // Mettre à jour le contenu (icône coeur)
+    // Update content (heart icon)
     this.$button.innerHTML = `
       <svg class="favorite-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="${isFavorite ? this._getFilledHeartPath() : this._getOutlineHeartPath()}"/>
       </svg>
-      <span class="sr-only">${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}</span>
+      <span class="sr-only">${isFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
     `
   }
 
   /**
-   * Animation de pulsation au clic.
+   * Pulse animation on click.
    * @private
    */
   _animatePulse() {
@@ -100,7 +100,7 @@ class FavoriteButton {
   }
 
   /**
-   * Retourne le path SVG du coeur rempli.
+   * Returns the SVG path of the filled heart.
    * @returns {string}
    * @private
    */
@@ -109,7 +109,7 @@ class FavoriteButton {
   }
 
   /**
-   * Retourne le path SVG du coeur vide (outline).
+   * Returns the SVG path of the empty heart (outline).
    * @returns {string}
    * @private
    */
@@ -119,7 +119,7 @@ class FavoriteButton {
 }
 
 /**
- * Compteur de favoris pour l'affichage dans le header.
+ * Favorites counter for display in the header.
  */
 class FavoritesCounter {
   constructor() {
@@ -128,18 +128,18 @@ class FavoritesCounter {
   }
 
   /**
-   * Crée l'élément compteur.
+   * Creates the counter element.
    * @returns {HTMLElement}
    */
   createElement() {
     this.$counter = document.createElement('a')
     this.$counter.href = './favorites.html'
     this.$counter.classList.add('favorites-counter')
-    this.$counter.setAttribute('aria-label', 'Voir mes favoris')
+    this.$counter.setAttribute('aria-label', 'View my favorites')
 
     this._updateCount()
 
-    // Écouter les changements
+    // Listen for changes
     this._favoritesManager.onChange(() => {
       this._updateCount()
     })
@@ -148,7 +148,7 @@ class FavoritesCounter {
   }
 
   /**
-   * Met à jour le compteur.
+   * Updates the counter.
    * @private
    */
   _updateCount() {
@@ -161,12 +161,12 @@ class FavoritesCounter {
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
       <span class="favorites-counter__count ${count > 0 ? 'favorites-counter__count--visible' : ''}">${count}</span>
-      <span class="sr-only">${count} favori${count > 1 ? 's' : ''}</span>
+      <span class="sr-only">${count} favorite${count > 1 ? 's' : ''}</span>
     `
 
     this.$counter.setAttribute(
       'aria-label',
-      `Voir mes favoris (${count} photographe${count > 1 ? 's' : ''})`,
+      `View my favorites (${count} photographer${count > 1 ? 's' : ''})`,
     )
   }
 }

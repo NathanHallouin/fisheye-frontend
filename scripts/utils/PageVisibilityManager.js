@@ -1,22 +1,22 @@
 /**
- * Gestionnaire de visibilité de page.
- * Pause automatiquement les vidéos quand l'onglet n'est pas visible
- * et les reprend quand l'utilisateur revient.
+ * Page visibility manager.
+ * Automatically pauses videos when the tab is not visible
+ * and resumes them when the user returns.
  *
- * CONCEPT : Page Visibility API
+ * CONCEPT: Page Visibility API
  *
- * L'API Page Visibility permet de détecter quand un onglet devient
- * visible ou caché. Cela permet d'optimiser les ressources :
- * - Pauser les vidéos/animations
- * - Réduire les requêtes réseau
- * - Économiser la batterie sur mobile
+ * The Page Visibility API allows detecting when a tab becomes
+ * visible or hidden. This enables resource optimization:
+ * - Pause videos/animations
+ * - Reduce network requests
+ * - Save battery on mobile
  */
 class PageVisibilityManager {
   static _instance = null
 
   /**
-   * Retourne l'instance unique du PageVisibilityManager.
-   * @returns {PageVisibilityManager} L'instance unique.
+   * Returns the unique PageVisibilityManager instance.
+   * @returns {PageVisibilityManager} The unique instance.
    */
   static getInstance() {
     if (!PageVisibilityManager._instance) {
@@ -26,23 +26,23 @@ class PageVisibilityManager {
   }
 
   /**
-   * Crée une instance de PageVisibilityManager.
+   * Creates a PageVisibilityManager instance.
    */
   constructor() {
     /**
-     * Ensemble des vidéos qui étaient en lecture avant que la page soit cachée.
+     * Set of videos that were playing before the page was hidden.
      * @type {Set<HTMLVideoElement>}
      */
     this._playingVideos = new Set()
 
     /**
-     * Callbacks à exécuter lors des changements de visibilité.
+     * Callbacks to execute on visibility changes.
      * @type {Map<string, Function>}
      */
     this._callbacks = new Map()
 
     /**
-     * État de visibilité actuel.
+     * Current visibility state.
      * @type {boolean}
      */
     this._isVisible = !document.hidden
@@ -51,13 +51,13 @@ class PageVisibilityManager {
   }
 
   /**
-   * Initialise le listener de visibilité.
+   * Initializes the visibility listener.
    * @private
    */
   _init() {
-    // Vérifier le support de l'API
+    // Check API support
     if (typeof document.hidden === 'undefined') {
-      console.warn('Page Visibility API non supportée')
+      console.warn('Page Visibility API not supported')
       return
     }
 
@@ -65,7 +65,7 @@ class PageVisibilityManager {
   }
 
   /**
-   * Gère les changements de visibilité de la page.
+   * Handles page visibility changes.
    * @private
    */
   _handleVisibilityChange() {
@@ -77,22 +77,22 @@ class PageVisibilityManager {
       this._onVisible()
     }
 
-    // Exécuter les callbacks enregistrés
+    // Execute registered callbacks
     this._callbacks.forEach((callback) => {
       try {
         callback(this._isVisible)
       } catch (error) {
-        console.error('Erreur dans le callback de visibilité:', error)
+        console.error('Error in visibility callback:', error)
       }
     })
   }
 
   /**
-   * Appelé quand la page devient cachée.
+   * Called when the page becomes hidden.
    * @private
    */
   _onHidden() {
-    // Trouver toutes les vidéos en lecture
+    // Find all playing videos
     const videos = document.querySelectorAll('video')
 
     videos.forEach((video) => {
@@ -104,17 +104,17 @@ class PageVisibilityManager {
   }
 
   /**
-   * Appelé quand la page devient visible.
+   * Called when the page becomes visible.
    * @private
    */
   _onVisible() {
-    // Reprendre les vidéos qui étaient en lecture
+    // Resume videos that were playing
     this._playingVideos.forEach((video) => {
-      // Vérifier que la vidéo est toujours dans le DOM
+      // Check that the video is still in the DOM
       if (document.body.contains(video)) {
         video.play().catch((error) => {
-          // Ignorer les erreurs de lecture (autoplay bloqué, etc.)
-          console.warn('Impossible de reprendre la vidéo:', error.message)
+          // Ignore playback errors (autoplay blocked, etc.)
+          console.warn('Unable to resume video:', error.message)
         })
       }
     })
@@ -123,10 +123,10 @@ class PageVisibilityManager {
   }
 
   /**
-   * Enregistre un callback pour les changements de visibilité.
-   * @param {string} id - Identifiant unique du callback.
-   * @param {Function} callback - Fonction appelée avec (isVisible: boolean).
-   * @returns {Function} Fonction pour désinscrire le callback.
+   * Registers a callback for visibility changes.
+   * @param {string} id - Unique callback identifier.
+   * @param {Function} callback - Function called with (isVisible: boolean).
+   * @returns {Function} Function to unregister the callback.
    *
    * @example
    * const unsubscribe = pageVisibility.onVisibilityChange('myComponent', (visible) => {
@@ -144,32 +144,32 @@ class PageVisibilityManager {
   }
 
   /**
-   * Retire un callback.
-   * @param {string} id - Identifiant du callback à retirer.
+   * Removes a callback.
+   * @param {string} id - Identifier of the callback to remove.
    */
   offVisibilityChange(id) {
     this._callbacks.delete(id)
   }
 
   /**
-   * Retourne l'état de visibilité actuel.
-   * @returns {boolean} True si la page est visible.
+   * Returns the current visibility state.
+   * @returns {boolean} True if the page is visible.
    */
   get isVisible() {
     return this._isVisible
   }
 
   /**
-   * Retourne si la page est cachée.
-   * @returns {boolean} True si la page est cachée.
+   * Returns whether the page is hidden.
+   * @returns {boolean} True if the page is hidden.
    */
   get isHidden() {
     return !this._isVisible
   }
 
   /**
-   * Pause manuellement une vidéo et la mémorise pour reprise.
-   * @param {HTMLVideoElement} video - La vidéo à pauser.
+   * Manually pauses a video and remembers it for resumption.
+   * @param {HTMLVideoElement} video - The video to pause.
    */
   pauseVideo(video) {
     if (!video.paused) {
@@ -179,8 +179,8 @@ class PageVisibilityManager {
   }
 
   /**
-   * Reprend manuellement une vidéo mémorisée.
-   * @param {HTMLVideoElement} video - La vidéo à reprendre.
+   * Manually resumes a remembered video.
+   * @param {HTMLVideoElement} video - The video to resume.
    */
   resumeVideo(video) {
     if (this._playingVideos.has(video)) {
@@ -190,7 +190,7 @@ class PageVisibilityManager {
   }
 
   /**
-   * Nettoie les références aux vidéos supprimées du DOM.
+   * Cleans up references to videos removed from the DOM.
    */
   cleanup() {
     this._playingVideos.forEach((video) => {
@@ -201,7 +201,7 @@ class PageVisibilityManager {
   }
 }
 
-// Initialiser automatiquement le gestionnaire
+// Automatically initialize the manager
 document.addEventListener('DOMContentLoaded', () => {
   PageVisibilityManager.getInstance()
 })

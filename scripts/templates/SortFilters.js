@@ -1,6 +1,6 @@
 /**
- * Classe utilitaire pour stocker et mettre à jour les médias filtrés.
- * Utilise le pattern Singleton via des propriétés statiques.
+ * Utility class to store and update filtered media.
+ * Uses the Singleton pattern via static properties.
  */
 class InitData {
   static data = []
@@ -14,29 +14,29 @@ class InitData {
 }
 
 /**
- * Classe pour trier les médias selon différents critères.
+ * Class to sort media according to different criteria.
  *
  * @description
- * Cette classe implémente plusieurs concepts JavaScript clés :
- * - Array.sort() : Tri de tableaux avec fonction de comparaison
- * - Spread operator : Copie du tableau pour éviter les mutations
- * - Fonctions de comparaison : Logique de tri personnalisée
- * - localeCompare() : Comparaison de chaînes respectant la locale
+ * This class implements several key JavaScript concepts:
+ * - Array.sort(): Array sorting with comparison function
+ * - Spread operator: Array copy to avoid mutations
+ * - Comparison functions: Custom sorting logic
+ * - localeCompare(): String comparison respecting locale
  */
 class SortFilters {
   /**
-   * Options de tri disponibles.
+   * Available sort options.
    * @static
    * @readonly
    */
   static SORT_OPTIONS = {
-    POPULARITY: 'Popularité',
+    POPULARITY: 'Popularity',
     DATE: 'Date',
-    TITLE: 'Titre',
+    TITLE: 'Title',
   }
 
   /**
-   * Ordres de tri disponibles.
+   * Available sort orders.
    * @static
    * @readonly
    */
@@ -46,7 +46,7 @@ class SortFilters {
   }
 
   /**
-   * Stocke l'ordre actuel pour chaque type de tri.
+   * Stores the current order for each sort type.
    * @static
    * @private
    */
@@ -57,15 +57,15 @@ class SortFilters {
   }
 
   /**
-   * Dernier type de tri utilisé.
+   * Last sort type used.
    * @static
    * @private
    */
   static _lastSortType = null
 
   /**
-   * Crée une instance de SortFilters et applique le tri.
-   * @param {string} typeFilter - Le type de tri ('Popularité', 'Date', 'Titre').
+   * Creates a SortFilters instance and applies the sort.
+   * @param {string} typeFilter - The sort type ('Popularity', 'Date', 'Title').
    */
   constructor(typeFilter) {
     this._typeFilter = typeFilter
@@ -74,19 +74,19 @@ class SortFilters {
   }
 
   /**
-   * Trie les médias selon le critère choisi.
+   * Sorts the media according to the chosen criterion.
    *
    * @description
-   * CONCEPT CLÉ : Immutabilité avec le spread operator
-   * On crée une COPIE du tableau avant de le trier pour ne pas
-   * modifier le tableau original. Ceci est une bonne pratique
-   * qui facilite le debugging et évite les effets de bord.
+   * KEY CONCEPT: Immutability with the spread operator
+   * We create a COPY of the array before sorting to avoid
+   * modifying the original array. This is a best practice
+   * that facilitates debugging and avoids side effects.
    *
-   * sort() MODIFIE le tableau sur lequel il est appelé (mutation).
-   * En utilisant [...array].sort(), on trie une copie.
+   * sort() MODIFIES the array it's called on (mutation).
+   * Using [...array].sort(), we sort a copy.
    */
   sortData() {
-    // Basculer l'ordre si on clique sur le même type de tri
+    // Toggle order if clicking on the same sort type
     if (SortFilters._lastSortType === this._typeFilter) {
       this._toggleOrder()
     }
@@ -94,8 +94,8 @@ class SortFilters {
 
     const order = SortFilters._currentOrders[this._typeFilter]
 
-    // IMPORTANT : Spread operator pour créer une copie
-    // Sans [...], sort() modifierait InitData.data directement
+    // IMPORTANT: Spread operator to create a copy
+    // Without [...], sort() would modify InitData.data directly
     const dataCopy = [...InitData.data]
 
     switch (this._typeFilter) {
@@ -112,14 +112,14 @@ class SortFilters {
         this._sortedMedia = dataCopy
     }
 
-    // Mettre à jour l'affichage
+    // Update the display
     if (InitData.update && InitData.update.updateMedia) {
       InitData.update.updateMedia(this._sortedMedia)
     }
   }
 
   /**
-   * Bascule l'ordre de tri pour le type actuel.
+   * Toggles the sort order for the current type.
    * @private
    */
   _toggleOrder() {
@@ -131,29 +131,29 @@ class SortFilters {
   }
 
   /**
-   * Trie par popularité (nombre de likes).
+   * Sorts by popularity (number of likes).
    *
    * @description
-   * CONCEPT CLÉ : Fonction de comparaison pour sort()
+   * KEY CONCEPT: Comparison function for sort()
    *
-   * La fonction de comparaison reçoit deux éléments (a, b) et doit retourner :
-   * - Un nombre NÉGATIF si a doit venir AVANT b
-   * - Un nombre POSITIF si a doit venir APRÈS b
-   * - ZÉRO si l'ordre n'a pas d'importance
+   * The comparison function receives two elements (a, b) and must return:
+   * - A NEGATIVE number if a should come BEFORE b
+   * - A POSITIVE number if a should come AFTER b
+   * - ZERO if order doesn't matter
    *
-   * Pour un tri numérique descendant : b - a
-   * Pour un tri numérique ascendant : a - b
+   * For descending numeric sort: b - a
+   * For ascending numeric sort: a - b
    *
-   * @param {Array} data - Le tableau à trier.
-   * @param {string} order - L'ordre de tri ('asc' ou 'desc').
-   * @returns {Array} Le tableau trié.
+   * @param {Array} data - The array to sort.
+   * @param {string} order - The sort order ('asc' or 'desc').
+   * @returns {Array} The sorted array.
    * @private
    */
   _sortByPopularity(data, order) {
     return data.sort((a, b) => {
-      // Tri numérique : soustraction directe
-      // DESC : b - a (plus grand en premier)
-      // ASC : a - b (plus petit en premier)
+      // Numeric sort: direct subtraction
+      // DESC: b - a (largest first)
+      // ASC: a - b (smallest first)
       if (order === SortFilters.SORT_ORDER.DESC) {
         return b._likes - a._likes
       }
@@ -162,75 +162,75 @@ class SortFilters {
   }
 
   /**
-   * Trie par titre (ordre alphabétique).
+   * Sorts by title (alphabetical order).
    *
    * @description
-   * CONCEPT CLÉ : localeCompare() pour le tri de chaînes
+   * KEY CONCEPT: localeCompare() for string sorting
    *
-   * localeCompare() compare deux chaînes selon les règles de la locale.
-   * Il gère correctement :
-   * - Les accents (é, è, ê...)
-   * - Les caractères spéciaux
-   * - La casse (majuscules/minuscules)
+   * localeCompare() compares two strings according to locale rules.
+   * It correctly handles:
+   * - Accents (e, e, e...)
+   * - Special characters
+   * - Case (uppercase/lowercase)
    *
-   * Options utiles :
-   * - sensitivity: 'base' ignore les accents et la casse
-   * - numeric: true trie "2" avant "10"
+   * Useful options:
+   * - sensitivity: 'base' ignores accents and case
+   * - numeric: true sorts "2" before "10"
    *
-   * @param {Array} data - Le tableau à trier.
-   * @param {string} order - L'ordre de tri ('asc' ou 'desc').
-   * @returns {Array} Le tableau trié.
+   * @param {Array} data - The array to sort.
+   * @param {string} order - The sort order ('asc' or 'desc').
+   * @returns {Array} The sorted array.
    * @private
    */
   _sortByTitle(data, order) {
     return data.sort((a, b) => {
-      // localeCompare retourne -1, 0, ou 1
+      // localeCompare returns -1, 0, or 1
       const comparison = a._title.localeCompare(b._title, 'fr', {
-        sensitivity: 'base', // Ignore accents et casse
-        numeric: true, // "Photo 2" avant "Photo 10"
+        sensitivity: 'base', // Ignores accents and case
+        numeric: true, // "Photo 2" before "Photo 10"
       })
 
-      // Inverser le résultat pour l'ordre descendant
+      // Reverse the result for descending order
       return order === SortFilters.SORT_ORDER.DESC ? -comparison : comparison
     })
   }
 
   /**
-   * Trie par date.
+   * Sorts by date.
    *
    * @description
-   * CONCEPT CLÉ : Comparaison de dates
+   * KEY CONCEPT: Date comparison
    *
-   * Les objets Date peuvent être soustraits directement.
-   * JavaScript convertit automatiquement les dates en timestamps (millisecondes).
+   * Date objects can be subtracted directly.
+   * JavaScript automatically converts dates to timestamps (milliseconds).
    *
    * new Date('2020-05-25') - new Date('2019-01-01')
    * = timestamp1 - timestamp2
-   * = nombre de millisecondes de différence
+   * = number of milliseconds difference
    *
-   * @param {Array} data - Le tableau à trier.
-   * @param {string} order - L'ordre de tri ('asc' ou 'desc').
-   * @returns {Array} Le tableau trié.
+   * @param {Array} data - The array to sort.
+   * @param {string} order - The sort order ('asc' or 'desc').
+   * @returns {Array} The sorted array.
    * @private
    */
   _sortByDate(data, order) {
     return data.sort((a, b) => {
-      // Convertir les chaînes en objets Date
+      // Convert strings to Date objects
       const dateA = new Date(a._date)
       const dateB = new Date(b._date)
 
-      // Soustraction de dates = différence en millisecondes
+      // Date subtraction = difference in milliseconds
       if (order === SortFilters.SORT_ORDER.DESC) {
-        return dateB - dateA // Plus récent en premier
+        return dateB - dateA // Most recent first
       }
-      return dateA - dateB // Plus ancien en premier
+      return dateA - dateB // Oldest first
     })
   }
 
   /**
-   * Retourne l'ordre actuel pour un type de tri.
-   * @param {string} sortType - Le type de tri.
-   * @returns {string} L'ordre actuel ('asc' ou 'desc').
+   * Returns the current order for a sort type.
+   * @param {string} sortType - The sort type.
+   * @returns {string} The current order ('asc' or 'desc').
    * @static
    */
   static getCurrentOrder(sortType) {
@@ -239,25 +239,25 @@ class SortFilters {
 }
 
 /**
- * Fonctions de comparaison utilitaires exportables.
+ * Exportable utility comparison functions.
  *
  * @description
- * Ces fonctions peuvent être utilisées indépendamment pour d'autres tris.
- * Elles suivent le pattern de Higher-Order Functions : des fonctions
- * qui retournent d'autres fonctions.
+ * These functions can be used independently for other sorts.
+ * They follow the Higher-Order Functions pattern: functions
+ * that return other functions.
  */
 const SortComparators = {
   /**
-   * Crée une fonction de comparaison numérique.
+   * Creates a numeric comparison function.
    *
    * @description
-   * CONCEPT CLÉ : Higher-Order Function
-   * Une fonction qui retourne une autre fonction.
-   * Permet de créer des comparateurs configurables.
+   * KEY CONCEPT: Higher-Order Function
+   * A function that returns another function.
+   * Allows creating configurable comparators.
    *
-   * @param {string} property - La propriété à comparer.
-   * @param {boolean} descending - Si true, tri descendant.
-   * @returns {Function} La fonction de comparaison.
+   * @param {string} property - The property to compare.
+   * @param {boolean} descending - If true, descending sort.
+   * @returns {Function} The comparison function.
    *
    * @example
    * const sortByLikes = SortComparators.numeric('_likes', true)
@@ -271,10 +271,10 @@ const SortComparators = {
   },
 
   /**
-   * Crée une fonction de comparaison alphabétique.
-   * @param {string} property - La propriété à comparer.
-   * @param {boolean} descending - Si true, tri descendant.
-   * @returns {Function} La fonction de comparaison.
+   * Creates an alphabetic comparison function.
+   * @param {string} property - The property to compare.
+   * @param {boolean} descending - If true, descending sort.
+   * @returns {Function} The comparison function.
    */
   alphabetic: (property, descending = false) => {
     return (a, b) => {
@@ -287,10 +287,10 @@ const SortComparators = {
   },
 
   /**
-   * Crée une fonction de comparaison par date.
-   * @param {string} property - La propriété contenant la date.
-   * @param {boolean} descending - Si true, tri descendant (récent d'abord).
-   * @returns {Function} La fonction de comparaison.
+   * Creates a date comparison function.
+   * @param {string} property - The property containing the date.
+   * @param {boolean} descending - If true, descending sort (recent first).
+   * @returns {Function} The comparison function.
    */
   date: (property, descending = true) => {
     return (a, b) => {

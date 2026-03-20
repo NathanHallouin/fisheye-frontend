@@ -1,17 +1,17 @@
-# Classes d'erreurs personnalisées
+# Custom Error Classes
 
 ## Concept
 
-Les **Custom Error Classes** permettent de créer des types d'erreurs spécifiques pour mieux les identifier et les gérer. En héritant de `Error`, on peut ajouter des propriétés spécifiques à chaque type d'erreur.
+**Custom Error Classes** allow creating specific error types to better identify and handle them. By inheriting from `Error`, we can add properties specific to each error type.
 
-## Cas d'utilisation
+## Use Cases
 
-- Distinguer les erreurs réseau des erreurs de validation
-- Ajouter des informations contextuelles (code HTTP, champ invalide, etc.)
-- Permettre une gestion différenciée selon le type d'erreur
-- Améliorer le debugging avec des messages descriptifs
+- Distinguish network errors from validation errors
+- Add contextual information (HTTP code, invalid field, etc.)
+- Enable differentiated handling based on error type
+- Improve debugging with descriptive messages
 
-## Syntaxe de base
+## Basic Syntax
 
 ```javascript
 class CustomError extends Error {
@@ -19,7 +19,7 @@ class CustomError extends Error {
     super(message)
     this.name = 'CustomError'
 
-    // Capturer la stack trace (V8)
+    // Capture stack trace (V8)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor)
     }
@@ -27,12 +27,12 @@ class CustomError extends Error {
 }
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Fichier: `scripts/utils/CustomErrors.js`
+### File: `scripts/utils/CustomErrors.js`
 
 ```javascript
-// Classe de base pour toutes les erreurs de l'app
+// Base class for all app errors
 class AppError extends Error {
   constructor(message, options = {}) {
     super(message)
@@ -51,7 +51,7 @@ class AppError extends Error {
   }
 }
 
-// Erreur réseau
+// Network error
 class NetworkError extends AppError {
   constructor(message, options = {}) {
     super(message, { code: 'NETWORK_ERROR', ...options })
@@ -69,13 +69,13 @@ class NetworkError extends AppError {
   }
 
   getUserMessage() {
-    if (this.statusCode === 404) return 'Ressource introuvable.'
-    if (this.isServerError()) return 'Erreur serveur. Réessayez plus tard.'
-    return 'Erreur de connexion.'
+    if (this.statusCode === 404) return 'Resource not found.'
+    if (this.isServerError()) return 'Server error. Try again later.'
+    return 'Connection error.'
   }
 }
 
-// Erreur de validation
+// Validation error
 class ValidationError extends AppError {
   constructor(message, options = {}) {
     super(message, { code: 'VALIDATION_ERROR', ...options })
@@ -85,10 +85,10 @@ class ValidationError extends AppError {
   }
 }
 
-// Ressource non trouvée
+// Resource not found
 class NotFoundError extends AppError {
   constructor(resourceType, identifier) {
-    super(`${resourceType} "${identifier}" introuvable.`, { code: 'NOT_FOUND' })
+    super(`${resourceType} "${identifier}" not found.`, { code: 'NOT_FOUND' })
     this.name = 'NotFoundError'
     this.resourceType = resourceType
     this.identifier = identifier
@@ -96,18 +96,18 @@ class NotFoundError extends AppError {
 }
 ```
 
-## Utilisation
+## Usage
 
 ```javascript
-// Lancer une erreur typée
+// Throw a typed error
 async function fetchPhotographer(id) {
   const response = await fetch(`/api/photographers/${id}`)
 
   if (!response.ok) {
     if (response.status === 404) {
-      throw new NotFoundError('Photographe', id)
+      throw new NotFoundError('Photographer', id)
     }
-    throw new NetworkError('Erreur lors du chargement', {
+    throw new NetworkError('Error loading', {
       statusCode: response.status,
       url: response.url
     })
@@ -116,33 +116,33 @@ async function fetchPhotographer(id) {
   return response.json()
 }
 
-// Gérer différemment selon le type
+// Handle differently based on type
 try {
   const photographer = await fetchPhotographer(999)
 } catch (error) {
   if (error instanceof NotFoundError) {
-    showMessage(`${error.resourceType} non trouvé`)
+    showMessage(`${error.resourceType} not found`)
   } else if (error instanceof NetworkError) {
     showMessage(error.getUserMessage())
   } else {
-    showMessage('Erreur inattendue')
+    showMessage('Unexpected error')
   }
 }
 ```
 
-## Chaînage d'erreurs (ES2022)
+## Error Chaining (ES2022)
 
 ```javascript
 try {
   await fetchData()
 } catch (originalError) {
-  throw new AppError('Impossible de charger les données', {
-    cause: originalError  // Préserve l'erreur originale
+  throw new AppError('Unable to load data', {
+    cause: originalError  // Preserves the original error
   })
 }
 ```
 
-## ErrorHandler centralisé
+## Centralized ErrorHandler
 
 ```javascript
 class ErrorHandler {
@@ -154,9 +154,9 @@ class ErrorHandler {
       return `${error.field}: ${error.message}`
     }
     if (error instanceof NotFoundError) {
-      return `${error.resourceType} introuvable.`
+      return `${error.resourceType} not found.`
     }
-    return 'Une erreur est survenue.'
+    return 'An error occurred.'
   }
 
   static isRetryable(error) {
@@ -168,22 +168,22 @@ class ErrorHandler {
 }
 ```
 
-## Avantages
+## Advantages
 
-1. **Identification précise** : `instanceof` pour distinguer les types
-2. **Contexte riche** : Propriétés spécifiques à chaque type d'erreur
-3. **UX améliorée** : Messages utilisateur adaptés
-4. **Debugging facilité** : Stack trace préservée, infos supplémentaires
+1. **Precise identification**: `instanceof` to distinguish types
+2. **Rich context**: Properties specific to each error type
+3. **Improved UX**: Adapted user messages
+4. **Easier debugging**: Preserved stack trace, additional info
 
-## Bonnes pratiques
+## Best Practices
 
-- Hériter de `Error` (ou d'une classe qui hérite de `Error`)
-- Définir `this.name` avec le nom de la classe
-- Capturer la stack trace avec `Error.captureStackTrace`
-- Utiliser `instanceof` pour les vérifications de type
-- Fournir des méthodes utilitaires (`getUserMessage`, `isRetryable`)
+- Inherit from `Error` (or a class that inherits from `Error`)
+- Define `this.name` with the class name
+- Capture stack trace with `Error.captureStackTrace`
+- Use `instanceof` for type checks
+- Provide utility methods (`getUserMessage`, `isRetryable`)
 
-## Voir aussi
+## See Also
 
 - [Error Handling](09-error-handling.md)
 - [MDN - Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)

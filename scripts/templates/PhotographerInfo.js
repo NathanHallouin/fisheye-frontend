@@ -1,5 +1,5 @@
 /**
- * Classe représentant les informations du photographe (likes, prix).
+ * Class representing photographer information (likes, price).
  */
 class PhotographerInfo {
   constructor() {
@@ -10,7 +10,7 @@ class PhotographerInfo {
   static price = ''
 
   /**
-   * Crée l'affichage des informations du photographe.
+   * Creates the photographer information display.
    * @returns {HTMLElement}
    */
   createInfo() {
@@ -23,22 +23,22 @@ class PhotographerInfo {
     pLikes.textContent = this._totalLike
     const imgLike = document.createElement('img')
     imgLike.src = './assets/icons/heart-black.svg'
-    imgLike.alt = 'Bouton pour ajouter ou enlver un like'
+    imgLike.alt = 'Button to add or remove a like'
     imgLike.setAttribute('role', 'button')
     imgLike.classList.add('photographer-info__imgLike')
     likesDiv.appendChild(pLikes)
     likesDiv.appendChild(imgLike)
     const pPrice = document.createElement('p')
     pPrice.classList.add('photographer-info__price')
-    pPrice.textContent = `${PhotographerInfo.price}€ / jour`
+    pPrice.textContent = `${PhotographerInfo.price}€ / day`
     wrapper.appendChild(likesDiv)
     wrapper.appendChild(pPrice)
     return wrapper
   }
 
   /**
-   * Met à jour le nombre total de likes affiché pour le photographe.
-   * @param {number} newTotalLikes - Le nouveau nombre total de likes à afficher.
+   * Updates the total number of likes displayed for the photographer.
+   * @param {number} newTotalLikes - The new total number of likes to display.
    */
   updateInfo(newTotalLikes) {
     this._totalLike = newTotalLikes

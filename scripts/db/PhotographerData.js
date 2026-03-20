@@ -1,6 +1,6 @@
 class PhotographerData {
   /**
-   * @param {Object} data - Les données des photographes et médias.
+   * @param {Object} data - The photographers and media data.
    */
   constructor(data) {
     if (PhotographerData.exists) {
@@ -14,14 +14,14 @@ class PhotographerData {
   }
 
   /**
-   * @returns {string} Le nom du photographe depuis les paramètres d'URL.
+   * @returns {string} The photographer name from URL parameters.
    */
   get namePhotographer() {
     return this.searchParams
   }
 
   /**
-   * @returns {Object} Les données du photographe courant.
+   * @returns {Object} The current photographer data.
    */
   get dataPhotographer() {
     return this._data.photographers.find(
@@ -30,7 +30,7 @@ class PhotographerData {
   }
 
   /**
-   * @returns {Array} Les médias du photographe courant.
+   * @returns {Array} The current photographer's media.
    */
   get mediaPhotographer() {
     return this._data.media.filter(

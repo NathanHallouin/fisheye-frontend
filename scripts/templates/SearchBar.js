@@ -1,21 +1,21 @@
 /**
- * Classe représentant une barre de recherche avec auto-complétion.
+ * Class representing a search bar with auto-completion.
  *
  * @description
- * Cette classe implémente plusieurs concepts JavaScript clés :
- * - String.includes() : Recherche de sous-chaîne
- * - String.toLowerCase() : Normalisation pour recherche insensible à la casse
- * - Debounce : Optimisation des appels de fonction
- * - Closures : Variables capturées dans les callbacks
- * - Input events : Gestion des événements de saisie
- * - Keyboard events : Navigation clavier dans les suggestions
+ * This class implements several key JavaScript concepts:
+ * - String.includes(): Substring search
+ * - String.toLowerCase(): Normalization for case-insensitive search
+ * - Debounce: Function call optimization
+ * - Closures: Variables captured in callbacks
+ * - Input events: Input event handling
+ * - Keyboard events: Keyboard navigation in suggestions
  */
 class SearchBar {
   /**
-   * Crée une instance de SearchBar.
-   * @param {Array<Object>} photographers - Liste des photographes à rechercher.
-   * @param {Function} onSearch - Callback appelé avec les résultats filtrés.
-   * @param {Function} onSelect - Callback appelé quand un photographe est sélectionné.
+   * Creates a SearchBar instance.
+   * @param {Array<Object>} photographers - List of photographers to search.
+   * @param {Function} onSearch - Callback called with filtered results.
+   * @param {Function} onSelect - Callback called when a photographer is selected.
    */
   constructor(photographers, onSearch, onSelect) {
     this._photographers = photographers
@@ -25,90 +25,90 @@ class SearchBar {
     this._selectedIndex = -1
     this._isOpen = false
 
-    // Éléments DOM (seront créés dans createSearchBar)
+    // DOM elements (will be created in createSearchBar)
     this.$container = null
     this.$input = null
     this.$suggestionsList = null
 
-    // Créer la version debounced de la recherche
-    // Le debounce attend 300ms après la dernière frappe avant d'exécuter
+    // Create the debounced version of search
+    // Debounce waits 300ms after the last keystroke before executing
     this._debouncedSearch = debounce((query) => {
       this._performSearch(query)
     }, 300)
   }
 
   /**
-   * Crée la barre de recherche HTML.
-   * @returns {HTMLElement} Le conteneur de la barre de recherche.
+   * Creates the search bar HTML.
+   * @returns {HTMLElement} The search bar container.
    */
   createSearchBar() {
-    // Conteneur principal
+    // Main container
     this.$container = document.createElement('div')
     this.$container.classList.add('search-bar')
     this.$container.setAttribute('role', 'combobox')
     this.$container.setAttribute('aria-expanded', 'false')
     this.$container.setAttribute('aria-haspopup', 'listbox')
 
-    // Input de recherche
+    // Search input
     this.$input = document.createElement('input')
     this.$input.type = 'text'
     this.$input.classList.add('search-bar__input')
-    this.$input.placeholder = 'Rechercher un photographe...'
-    this.$input.setAttribute('aria-label', 'Rechercher un photographe')
+    this.$input.placeholder = 'Search for a photographer...'
+    this.$input.setAttribute('aria-label', 'Search for a photographer')
     this.$input.setAttribute('aria-autocomplete', 'list')
     this.$input.setAttribute('aria-controls', 'search-suggestions')
 
-    // Liste des suggestions
+    // Suggestions list
     this.$suggestionsList = document.createElement('ul')
     this.$suggestionsList.classList.add('search-bar__suggestions')
     this.$suggestionsList.id = 'search-suggestions'
     this.$suggestionsList.setAttribute('role', 'listbox')
-    this.$suggestionsList.setAttribute('aria-label', 'Suggestions de recherche')
+    this.$suggestionsList.setAttribute('aria-label', 'Search suggestions')
 
-    // Assembler les éléments
+    // Assemble elements
     this.$container.appendChild(this.$input)
     this.$container.appendChild(this.$suggestionsList)
 
-    // Attacher les événements
+    // Attach events
     this._attachEvents()
 
     return this.$container
   }
 
   /**
-   * Attache tous les événements nécessaires.
+   * Attaches all necessary events.
    *
    * @description
-   * Utilise plusieurs types d'événements :
-   * - 'input' : Déclenché à chaque modification du champ
-   * - 'keydown' : Pour la navigation clavier
-   * - 'focus/blur' : Pour gérer l'affichage des suggestions
-   * - 'click' : Pour la sélection d'une suggestion
+   * Uses several event types:
+   * - 'input': Triggered on each field modification
+   * - 'keydown': For keyboard navigation
+   * - 'focus/blur': To manage suggestions display
+   * - 'click': For selecting a suggestion
    *
    * @private
    */
   _attachEvents() {
-    // Événement 'input' : déclenché à chaque frappe
-    // Utilise le debounce pour éviter trop de recherches
+    // 'input' event: triggered on each keystroke
+    // Uses debounce to avoid too many searches
     this.$input.addEventListener('input', (e) => {
       const query = e.target.value
       this._debouncedSearch(query)
     })
 
-    // Événement 'keydown' : navigation clavier
+    // 'keydown' event: keyboard navigation
     this.$input.addEventListener('keydown', (e) => {
       this._handleKeydown(e)
     })
 
-    // Événement 'focus' : afficher les suggestions si texte présent
+    // 'focus' event: show suggestions if text is present
     this.$input.addEventListener('focus', () => {
       if (this.$input.value.length > 0 && this._suggestions.length > 0) {
         this._showSuggestions()
       }
     })
 
-    // Événement 'click' sur le document : fermer les suggestions
-    // si clic en dehors de la searchbar
+    // 'click' event on document: close suggestions
+    // if clicked outside the searchbar
     document.addEventListener('click', (e) => {
       if (!this.$container.contains(e.target)) {
         this._hideSuggestions()
@@ -117,24 +117,24 @@ class SearchBar {
   }
 
   /**
-   * Effectue la recherche dans la liste des photographes.
+   * Performs the search in the photographers list.
    *
    * @description
-   * CONCEPTS CLÉ :
-   * - String.toLowerCase() : Convertit en minuscules pour comparaison insensible à la casse
-   * - String.includes() : Vérifie si une chaîne contient une sous-chaîne
-   * - String.trim() : Supprime les espaces au début et à la fin
-   * - Array.filter() : Filtre les éléments selon un critère
+   * KEY CONCEPTS:
+   * - String.toLowerCase(): Converts to lowercase for case-insensitive comparison
+   * - String.includes(): Checks if a string contains a substring
+   * - String.trim(): Removes spaces at the beginning and end
+   * - Array.filter(): Filters elements based on a criterion
    *
-   * @param {string} query - Le texte recherché.
+   * @param {string} query - The search text.
    * @private
    */
   _performSearch(query) {
-    // trim() supprime les espaces inutiles
-    // toLowerCase() normalise la casse pour une recherche insensible
+    // trim() removes unnecessary spaces
+    // toLowerCase() normalizes case for insensitive search
     const normalizedQuery = query.trim().toLowerCase()
 
-    // Si la recherche est vide, afficher tous les photographes
+    // If search is empty, display all photographers
     if (normalizedQuery.length === 0) {
       this._suggestions = []
       this._hideSuggestions()
@@ -142,15 +142,15 @@ class SearchBar {
       return
     }
 
-    // filter() avec includes() pour trouver les correspondances
+    // filter() with includes() to find matches
     this._suggestions = this._photographers.filter((photographer) => {
-      // Normaliser toutes les propriétés à comparer
+      // Normalize all properties to compare
       const name = photographer.name.toLowerCase()
       const city = photographer.city.toLowerCase()
       const tagline = photographer.tagline.toLowerCase()
 
-      // includes() vérifie si la chaîne contient la sous-chaîne
-      // Retourne true si trouvé dans name, city OU tagline
+      // includes() checks if the string contains the substring
+      // Returns true if found in name, city OR tagline
       return (
         name.includes(normalizedQuery) ||
         city.includes(normalizedQuery) ||
@@ -158,7 +158,7 @@ class SearchBar {
       )
     })
 
-    // Mettre à jour l'affichage
+    // Update the display
     if (this._suggestions.length > 0) {
       this._renderSuggestions()
       this._showSuggestions()
@@ -166,27 +166,27 @@ class SearchBar {
       this._hideSuggestions()
     }
 
-    // Appeler le callback avec les résultats filtrés
+    // Call the callback with filtered results
     this._onSearch(this._suggestions)
   }
 
   /**
-   * Génère le HTML des suggestions.
+   * Generates the suggestions HTML.
    *
    * @description
-   * Utilise la délégation d'événements : un seul listener sur le parent
-   * au lieu d'un listener par élément.
+   * Uses event delegation: a single listener on the parent
+   * instead of one listener per element.
    *
    * @private
    */
   _renderSuggestions() {
-    // Vider la liste existante
+    // Clear the existing list
     this.$suggestionsList.innerHTML = ''
 
-    // Réinitialiser la sélection
+    // Reset the selection
     this._selectedIndex = -1
 
-    // Créer un élément pour chaque suggestion
+    // Create an element for each suggestion
     this._suggestions.forEach((photographer, index) => {
       const li = document.createElement('li')
       li.classList.add('search-bar__suggestion')
@@ -194,7 +194,7 @@ class SearchBar {
       li.setAttribute('data-index', index)
       li.id = `suggestion-${index}`
 
-      // Mettre en évidence le texte correspondant
+      // Highlight the matching text
       const highlightedName = this._highlightMatch(
         photographer.name,
         this.$input.value,
@@ -205,12 +205,12 @@ class SearchBar {
         <span class="search-bar__suggestion-location">${photographer.city}, ${photographer.country}</span>
       `
 
-      // Click sur une suggestion
+      // Click on a suggestion
       li.addEventListener('click', () => {
         this._selectSuggestion(index)
       })
 
-      // Hover pour mettre à jour la sélection visuelle
+      // Hover to update visual selection
       li.addEventListener('mouseenter', () => {
         this._updateSelectedIndex(index)
       })
@@ -220,49 +220,49 @@ class SearchBar {
   }
 
   /**
-   * Met en évidence la partie du texte qui correspond à la recherche.
+   * Highlights the part of the text that matches the search.
    *
    * @description
-   * CONCEPTS CLÉ :
-   * - RegExp : Expressions régulières pour recherche/remplacement
-   * - String.replace() : Remplacement avec capture de groupe
-   * - 'gi' flags : g = global (toutes les occurrences), i = insensible à la casse
+   * KEY CONCEPTS:
+   * - RegExp: Regular expressions for search/replace
+   * - String.replace(): Replacement with capture group
+   * - 'gi' flags: g = global (all occurrences), i = case insensitive
    *
-   * @param {string} text - Le texte original.
-   * @param {string} query - La recherche à mettre en évidence.
-   * @returns {string} Le texte avec la correspondance en gras.
+   * @param {string} text - The original text.
+   * @param {string} query - The search to highlight.
+   * @returns {string} The text with the match in bold.
    * @private
    */
   _highlightMatch(text, query) {
     if (!query.trim()) return text
 
-    // Échapper les caractères spéciaux des regex pour éviter les erreurs
+    // Escape regex special characters to avoid errors
     const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-    // Créer une expression régulière avec les flags :
-    // - 'g' : global - trouve toutes les occurrences
-    // - 'i' : insensible à la casse
+    // Create a regular expression with flags:
+    // - 'g': global - finds all occurrences
+    // - 'i': case insensitive
     const regex = new RegExp(`(${escapedQuery})`, 'gi')
 
-    // replace() avec $1 référence le groupe capturé (la correspondance)
+    // replace() with $1 references the captured group (the match)
     return text.replace(regex, '<strong>$1</strong>')
   }
 
   /**
-   * Gère la navigation au clavier dans les suggestions.
+   * Handles keyboard navigation in the suggestions.
    *
    * @description
-   * CONCEPT CLÉ : Keyboard events
-   * - e.key : Nom de la touche ('ArrowDown', 'Enter', etc.)
-   * - e.preventDefault() : Empêche le comportement par défaut
+   * KEY CONCEPT: Keyboard events
+   * - e.key: Key name ('ArrowDown', 'Enter', etc.)
+   * - e.preventDefault(): Prevents default behavior
    *
-   * @param {KeyboardEvent} e - L'événement clavier.
+   * @param {KeyboardEvent} e - The keyboard event.
    * @private
    */
   _handleKeydown(e) {
-    // Si les suggestions ne sont pas affichées, ignorer
+    // If suggestions are not displayed, ignore
     if (!this._isOpen) {
-      // Sauf pour Escape qui efface la recherche
+      // Except for Escape which clears the search
       if (e.key === 'Escape') {
         this.$input.value = ''
         this._onSearch(this._photographers)
@@ -272,9 +272,9 @@ class SearchBar {
 
     switch (e.key) {
       case 'ArrowDown':
-        // Empêcher le curseur de bouger dans l'input
+        // Prevent cursor from moving in the input
         e.preventDefault()
-        // Incrémenter l'index, revenir au début si à la fin
+        // Increment index, loop back to start if at end
         this._updateSelectedIndex(
           (this._selectedIndex + 1) % this._suggestions.length,
         )
@@ -282,7 +282,7 @@ class SearchBar {
 
       case 'ArrowUp':
         e.preventDefault()
-        // Décrémenter l'index, aller à la fin si au début
+        // Decrement index, go to end if at start
         this._updateSelectedIndex(
           this._selectedIndex <= 0
             ? this._suggestions.length - 1
@@ -302,19 +302,19 @@ class SearchBar {
         break
 
       case 'Tab':
-        // Permettre la navigation normale au Tab
+        // Allow normal Tab navigation
         this._hideSuggestions()
         break
     }
   }
 
   /**
-   * Met à jour l'index de la suggestion sélectionnée.
-   * @param {number} index - Le nouvel index.
+   * Updates the index of the selected suggestion.
+   * @param {number} index - The new index.
    * @private
    */
   _updateSelectedIndex(index) {
-    // Retirer la sélection précédente
+    // Remove previous selection
     const previousSelected = this.$suggestionsList.querySelector(
       '.search-bar__suggestion--selected',
     )
@@ -323,7 +323,7 @@ class SearchBar {
       previousSelected.setAttribute('aria-selected', 'false')
     }
 
-    // Appliquer la nouvelle sélection
+    // Apply new selection
     this._selectedIndex = index
     const newSelected = this.$suggestionsList.querySelector(
       `[data-index="${index}"]`,
@@ -332,40 +332,40 @@ class SearchBar {
       newSelected.classList.add('search-bar__suggestion--selected')
       newSelected.setAttribute('aria-selected', 'true')
 
-      // Mettre à jour l'attribut aria-activedescendant pour l'accessibilité
+      // Update aria-activedescendant attribute for accessibility
       this.$input.setAttribute('aria-activedescendant', newSelected.id)
 
-      // Scroll pour garder l'élément visible si nécessaire
+      // Scroll to keep element visible if necessary
       newSelected.scrollIntoView({ block: 'nearest' })
     }
   }
 
   /**
-   * Sélectionne une suggestion.
-   * @param {number} index - L'index de la suggestion.
+   * Selects a suggestion.
+   * @param {number} index - The suggestion index.
    * @private
    */
   _selectSuggestion(index) {
     const photographer = this._suggestions[index]
     if (photographer) {
-      // Mettre à jour l'input avec le nom sélectionné
+      // Update input with selected name
       this.$input.value = photographer.name
 
-      // Fermer les suggestions
+      // Close suggestions
       this._hideSuggestions()
 
-      // Appeler le callback de sélection
+      // Call selection callback
       if (this._onSelect) {
         this._onSelect(photographer)
       }
 
-      // Filtrer pour ne montrer que ce photographe
+      // Filter to show only this photographer
       this._onSearch([photographer])
     }
   }
 
   /**
-   * Affiche la liste des suggestions.
+   * Shows the suggestions list.
    * @private
    */
   _showSuggestions() {
@@ -375,7 +375,7 @@ class SearchBar {
   }
 
   /**
-   * Masque la liste des suggestions.
+   * Hides the suggestions list.
    * @private
    */
   _hideSuggestions() {
@@ -387,7 +387,7 @@ class SearchBar {
   }
 
   /**
-   * Efface la recherche et réinitialise l'affichage.
+   * Clears the search and resets the display.
    */
   clear() {
     this.$input.value = ''
@@ -397,24 +397,24 @@ class SearchBar {
   }
 
   /**
-   * Définit la valeur de recherche programmatiquement (pour restauration d'état URL).
+   * Sets the search value programmatically (for URL state restoration).
    *
    * @description
-   * CONCEPT : Synchronisation avec l'état externe
-   * Permet de restaurer l'état de recherche depuis une source externe
-   * comme les paramètres URL ou localStorage.
+   * CONCEPT: Synchronization with external state
+   * Allows restoring the search state from an external source
+   * like URL parameters or localStorage.
    *
-   * @param {string} value - La valeur de recherche.
-   * @param {boolean} [triggerCallback=true] - Si true, déclenche la recherche.
+   * @param {string} value - The search value.
+   * @param {boolean} [triggerCallback=true] - If true, triggers the search.
    */
   setValue(value, triggerCallback = true) {
     this.$input.value = value
 
     if (triggerCallback && value.trim().length > 0) {
-      // Effectuer la recherche immédiatement (sans debounce)
+      // Perform search immediately (without debounce)
       this._performSearch(value)
     } else if (!value.trim()) {
-      // Si valeur vide, réinitialiser
+      // If empty value, reset
       this._suggestions = []
       this._hideSuggestions()
       if (triggerCallback) {
@@ -424,8 +424,8 @@ class SearchBar {
   }
 
   /**
-   * Retourne la valeur actuelle de la recherche.
-   * @returns {string} La valeur de recherche.
+   * Returns the current search value.
+   * @returns {string} The search value.
    */
   getValue() {
     return this.$input ? this.$input.value : ''

@@ -1,5 +1,5 @@
 /**
- * Classe représentant l'en-tête de la page d'un photographe.
+ * Class representing the header of a photographer's page.
  */
 class PhotographerHeader {
   constructor(photographer) {
@@ -13,7 +13,7 @@ class PhotographerHeader {
   }
 
   /**
-   * Crée l'en-tête du photographe.
+   * Creates the photographer's header.
    * @returns {HTMLElement}
    */
   createHeader() {
@@ -36,9 +36,9 @@ class PhotographerHeader {
     const button = document.createElement('button')
     button.classList.add('contact-button')
     button.setAttribute('onclick', 'contactForm.displayModal()')
-    button.setAttribute('aria-label', 'Ouvrir le formulaire de contact')
+    button.setAttribute('aria-label', 'Open contact form')
     button.tabIndex = 0
-    button.textContent = 'Contactez-moi'
+    button.textContent = 'Contact me'
     const img = document.createElement('img')
     img.src = this._photographer.portrait
     img.alt = this._photographer.name

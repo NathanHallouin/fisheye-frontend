@@ -1,5 +1,5 @@
 /**
- * Classe représentant la gestion des médias d'un photographe (affichage, likes, etc.).
+ * Class representing the management of a photographer's media (display, likes, etc.).
  */
 class PhotographerMediaCard {
   constructor(photographer) {
@@ -25,7 +25,7 @@ class PhotographerMediaCard {
   }
 
   /**
-   * Crée et affiche tous les médias du photographe.
+   * Creates and displays all the photographer's media.
    */
   createAllMedia() {
     this._photographer.forEach((element, index) => {
@@ -48,7 +48,7 @@ class PhotographerMediaCard {
   }
 
   /**
-   * Met à jour les médias affichés.
+   * Updates the displayed media.
    * @param {Array} data
    */
   updateMedia(data) {
@@ -73,7 +73,7 @@ class PhotographerMediaCard {
   }
 
   /**
-   * Met à jour l'affichage des likes et gère les interactions.
+   * Updates the likes display and manages interactions.
    */
   updateLike() {
     const displayNewTotalLikes = new PhotographerInfo()
@@ -98,7 +98,7 @@ class PhotographerMediaCard {
   }
 
   /**
-   * Gère le like via le clic sur la checkbox.
+   * Handles the like via checkbox click.
    * @param {HTMLElement} label
    * @param {number} index
    * @param {PhotographerInfo} displayNewTotalLikes
@@ -126,7 +126,7 @@ class PhotographerMediaCard {
   }
 
   /**
-   * Gère le like via la touche "Entrée" sur la checkbox.
+   * Handles the like via the "Enter" key on the checkbox.
    * @param {HTMLElement} label
    * @param {number} index
    * @param {PhotographerInfo} displayNewTotalLikes

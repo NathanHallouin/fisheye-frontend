@@ -1,17 +1,17 @@
-# Closures (Fermetures)
+# Closures
 
 ## Concept
 
-Une closure est une fonction qui "capture" les variables de son environnement lexical (le scope où elle a été créée). La fonction garde accès à ces variables même après que le scope parent a terminé son exécution.
+A closure is a function that "captures" variables from its lexical environment (the scope where it was created). The function retains access to these variables even after the parent scope has finished executing.
 
-## Principe de base
+## Basic Principle
 
 ```javascript
 function createCounter() {
-  let count = 0  // Variable capturée
+  let count = 0  // Captured variable
 
   return function() {
-    count++      // La fonction interne a accès à count
+    count++      // Inner function has access to count
     return count
   }
 }
@@ -22,20 +22,20 @@ console.log(counter())  // 2
 console.log(counter())  // 3
 ```
 
-La variable `count` est "enfermée" dans la closure et persiste entre les appels.
+The variable `count` is "enclosed" in the closure and persists between calls.
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
 ### Debounce
 
-**Fichier**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
+**File**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
 
 ```javascript
 export function debounce(fn, delay) {
-  let timeoutId  // Variable capturée par la closure
+  let timeoutId  // Variable captured by the closure
 
   return function (...args) {
-    clearTimeout(timeoutId)  // Accès à timeoutId
+    clearTimeout(timeoutId)  // Access to timeoutId
     timeoutId = setTimeout(() => fn.apply(this, args), delay)
   }
 }
@@ -43,20 +43,20 @@ export function debounce(fn, delay) {
 // Usage
 const debouncedSearch = debounce(search, 300)
 
-// Chaque appel à debouncedSearch utilise le même timeoutId
-debouncedSearch('a')  // Démarre un timeout
-debouncedSearch('ab') // Annule le précédent, en démarre un nouveau
-debouncedSearch('abc') // Annule le précédent, en démarre un nouveau
-// Seulement 'abc' sera recherché après 300ms
+// Each call to debouncedSearch uses the same timeoutId
+debouncedSearch('a')  // Starts a timeout
+debouncedSearch('ab') // Cancels the previous one, starts a new one
+debouncedSearch('abc') // Cancels the previous one, starts a new one
+// Only 'abc' will be searched after 300ms
 ```
 
 ### Memoization
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 memoize(fn, keyGenerator = (...args) => args.join(':'), ttl = this._ttl) {
-  // La closure capture: this (CacheManager), fn, keyGenerator, ttl
+  // The closure captures: this (CacheManager), fn, keyGenerator, ttl
 
   return async (...args) => {
     const key = keyGenerator(...args)
@@ -70,12 +70,12 @@ const cachedFetch = cache.memoize(
   (url) => fetch(url).then(r => r.json())
 )
 
-// cachedFetch garde en mémoire la référence à cache et fn
+// cachedFetch keeps a reference to cache and fn in memory
 ```
 
-### Event handlers avec état
+### Event handlers with state
 
-**Fichier**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
+**File**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
 
 ```javascript
 class SearchBar {
@@ -83,12 +83,12 @@ class SearchBar {
     this._photographers = photographers
     this._onSearch = onSearch
 
-    // La closure capture this._search et le contexte
+    // The closure captures this._search and the context
     this._debouncedSearch = debounce(this._search.bind(this), 300)
   }
 
   _addEventListeners() {
-    // La closure capture this
+    // The closure captures this
     this.$input.addEventListener('input', (e) => {
       this._debouncedSearch(e.target.value)
     })
@@ -98,11 +98,11 @@ class SearchBar {
 
 ### Factory functions
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
 static SortComparators = {
-  // Chaque fonction retourne une closure qui capture property et desc
+  // Each function returns a closure that captures property and desc
   numeric: (property, desc) => (a, b) => {
     const valA = a[property]
     const valB = b[property]
@@ -117,17 +117,17 @@ static SortComparators = {
 
 // Usage
 const comparator = SortComparators.numeric('_likes', true)
-// comparator est une closure qui "se souvient" de '_likes' et true
+// comparator is a closure that "remembers" '_likes' and true
 data.sort(comparator)
 ```
 
-## Cas d'usage courants
+## Common Use Cases
 
-### 1. Encapsulation de données privées
+### 1. Private data encapsulation
 
 ```javascript
 function createBankAccount(initialBalance) {
-  let balance = initialBalance  // Donnée privée
+  let balance = initialBalance  // Private data
 
   return {
     deposit(amount) {
@@ -136,7 +136,7 @@ function createBankAccount(initialBalance) {
     },
     withdraw(amount) {
       if (amount > balance) {
-        throw new Error('Solde insuffisant')
+        throw new Error('Insufficient balance')
       }
       balance -= amount
       return balance
@@ -150,45 +150,45 @@ function createBankAccount(initialBalance) {
 const account = createBankAccount(100)
 account.deposit(50)   // 150
 account.withdraw(30)  // 120
-console.log(account.balance)  // undefined - balance est privé
+console.log(account.balance)  // undefined - balance is private
 ```
 
-### 2. Callbacks avec contexte
+### 2. Callbacks with context
 
 ```javascript
 function setupHandler(element, message) {
-  // message est capturé par la closure
+  // message is captured by the closure
   element.addEventListener('click', () => {
     alert(message)
   })
 }
 
-setupHandler(button1, 'Premier bouton cliqué')
-setupHandler(button2, 'Deuxième bouton cliqué')
+setupHandler(button1, 'First button clicked')
+setupHandler(button2, 'Second button clicked')
 ```
 
-### 3. Boucles et closures
+### 3. Loops and closures
 
 ```javascript
-// Problème classique
+// Classic problem
 for (var i = 0; i < 3; i++) {
   setTimeout(() => console.log(i), 100)
 }
-// Affiche: 3, 3, 3 (car var a une portée de fonction)
+// Outputs: 3, 3, 3 (because var has function scope)
 
-// Solution avec let (portée de bloc)
+// Solution with let (block scope)
 for (let i = 0; i < 3; i++) {
   setTimeout(() => console.log(i), 100)
 }
-// Affiche: 0, 1, 2
+// Outputs: 0, 1, 2
 
-// Solution avec closure (avant ES6)
+// Solution with closure (before ES6)
 for (var i = 0; i < 3; i++) {
   (function(j) {
     setTimeout(() => console.log(j), 100)
   })(i)
 }
-// Affiche: 0, 1, 2
+// Outputs: 0, 1, 2
 ```
 
 ### 4. Partial application
@@ -211,29 +211,29 @@ console.log(double(5))  // 10
 console.log(triple(5))  // 15
 ```
 
-## Avantages des closures
+## Advantages of Closures
 
-1. **Encapsulation** - Données privées inaccessibles de l'extérieur
-2. **État persistant** - Les variables survivent entre les appels
-3. **Flexibilité** - Création de fonctions personnalisées
-4. **Modules** - Pattern de module avant ES6
+1. **Encapsulation** - Private data inaccessible from outside
+2. **Persistent state** - Variables survive between calls
+3. **Flexibility** - Creation of customized functions
+4. **Modules** - Module pattern before ES6
 
-## Attention aux fuites mémoire
+## Beware of Memory Leaks
 
-Les closures gardent des références aux variables. Si ces références ne sont plus nécessaires, elles peuvent causer des fuites mémoire.
+Closures keep references to variables. If these references are no longer needed, they can cause memory leaks.
 
 ```javascript
 function createLeak() {
   const largeData = new Array(1000000).fill('x')
 
   return function() {
-    // largeData est capturé même si on ne l'utilise pas entièrement
+    // largeData is captured even if we don't use it entirely
     return largeData[0]
   }
 }
 
 const leak = createLeak()
-// largeData reste en mémoire tant que leak existe
+// largeData remains in memory as long as leak exists
 ```
 
 ### Solution
@@ -241,7 +241,7 @@ const leak = createLeak()
 ```javascript
 function createNoLeak() {
   const largeData = new Array(1000000).fill('x')
-  const firstItem = largeData[0]  // Extraire seulement ce qui est nécessaire
+  const firstItem = largeData[0]  // Extract only what is needed
 
   return function() {
     return firstItem
@@ -249,9 +249,9 @@ function createNoLeak() {
 }
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un gestionnaire de clics limité :
+Create a limited click manager:
 
 ```javascript
 function createClickLimiter(maxClicks, callback) {
@@ -269,12 +269,12 @@ function createClickLimiter(maxClicks, callback) {
 
 // Usage
 const limitedClick = createClickLimiter(3, (current, max) => {
-  console.log(`Clic ${current}/${max}`)
+  console.log(`Click ${current}/${max}`)
 })
 
 button.addEventListener('click', () => {
   if (!limitedClick()) {
-    console.log('Limite atteinte!')
+    console.log('Limit reached!')
     button.disabled = true
   }
 })

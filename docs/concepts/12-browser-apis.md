@@ -1,25 +1,25 @@
-# Browser APIs (APIs du navigateur)
+# Browser APIs
 
 ## Concept
 
-Les Browser APIs sont des interfaces fournies par le navigateur pour interagir avec le système, l'URL, le stockage et d'autres fonctionnalités natives.
+Browser APIs are interfaces provided by the browser to interact with the system, URL, storage, and other native features.
 
 ---
 
 ## Fetch API
 
-L'API Fetch permet d'effectuer des requêtes HTTP.
+The Fetch API allows making HTTP requests.
 
-### Syntaxe de base
+### Basic Syntax
 
 ```javascript
 const response = await fetch(url, options)
 const data = await response.json()
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/api/Api.js](../../scripts/api/Api.js)
+**File**: [scripts/api/Api.js](../../scripts/api/Api.js)
 
 ```javascript
 class Api {
@@ -35,7 +35,7 @@ class Api {
       }
       return await res.json()
     } catch (error) {
-      console.error('Erreur API:', error)
+      console.error('API Error:', error)
       return null
     }
   }
@@ -46,15 +46,15 @@ class Api {
 
 ## History API
 
-L'API History permet de manipuler l'historique du navigateur sans rechargement de page.
+The History API allows manipulating the browser history without page reload.
 
-### Méthodes principales
+### Main Methods
 
 ```javascript
-// Ajouter une entrée
+// Add an entry
 history.pushState(state, title, url)
 
-// Remplacer l'entrée actuelle
+// Replace the current entry
 history.replaceState(state, title, url)
 
 // Navigation
@@ -63,9 +63,9 @@ history.forward()
 history.go(-2)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
+**File**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
 
 ```javascript
 class UrlStateManager {
@@ -117,30 +117,30 @@ class UrlStateManager {
 
 ## URLSearchParams
 
-Permet de manipuler les paramètres de l'URL.
+Allows manipulating URL parameters.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const params = new URLSearchParams(window.location.search)
 
-// Lecture
-params.get('q')         // Valeur d'un paramètre
-params.has('q')         // Vérifie l'existence
-params.getAll('tags')   // Toutes les valeurs d'un paramètre
+// Reading
+params.get('q')         // Value of a parameter
+params.has('q')         // Check existence
+params.getAll('tags')   // All values of a parameter
 
 // Modification
 params.set('q', 'value')
 params.append('tag', 'portrait')
 params.delete('sort')
 
-// Conversion en string
+// Convert to string
 params.toString()  // 'q=value&tag=portrait'
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
+**File**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
 
 ```javascript
 _parseUrl() {
@@ -158,25 +158,25 @@ _parseUrl() {
 
 ## localStorage
 
-Stockage persistant côté client (survit à la fermeture du navigateur).
+Persistent client-side storage (survives browser closing).
 
-### Syntaxe
+### Syntax
 
 ```javascript
-// Stockage
+// Storage
 localStorage.setItem('key', 'value')
 
-// Lecture
+// Reading
 const value = localStorage.getItem('key')
 
-// Suppression
+// Deletion
 localStorage.removeItem('key')
-localStorage.clear()  // Tout effacer
+localStorage.clear()  // Clear everything
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 class FavoritesManager {
@@ -197,7 +197,7 @@ class FavoritesManager {
 
       return parsed
     } catch (error) {
-      console.error('Erreur de chargement des favoris:', error)
+      console.error('Error loading favorites:', error)
       return []
     }
   }
@@ -206,13 +206,13 @@ class FavoritesManager {
     try {
       localStorage.setItem(this._storageKey, JSON.stringify(this._favorites))
     } catch (error) {
-      console.error('Erreur de sauvegarde des favoris:', error)
+      console.error('Error saving favorites:', error)
     }
   }
 }
 ```
 
-**Fichier**: [scripts/templates/PhotographerMediaCard.js](../../scripts/templates/PhotographerMediaCard.js)
+**File**: [scripts/templates/PhotographerMediaCard.js](../../scripts/templates/PhotographerMediaCard.js)
 
 ```javascript
 _loadLikedState() {
@@ -241,23 +241,23 @@ _saveLikedState(isLiked) {
 
 ## IntersectionObserver
 
-Observe quand un élément entre/sort du viewport.
+Observes when an element enters/exits the viewport.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        // L'élément est visible
+        // The element is visible
       }
     })
   },
   {
-    root: null,           // Viewport par défaut
-    rootMargin: '100px',  // Marge autour du root
-    threshold: 0.1        // 10% visible pour déclencher
+    root: null,           // Viewport by default
+    rootMargin: '100px',  // Margin around the root
+    threshold: 0.1        // 10% visible to trigger
   }
 )
 
@@ -266,9 +266,9 @@ observer.unobserve(element)
 observer.disconnect()
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
+**File**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
 
 ```javascript
 class LazyLoader {
@@ -285,7 +285,7 @@ class LazyLoader {
     this._observer = new IntersectionObserver(
       (entries) => this._onIntersect(entries),
       {
-        rootMargin: '200px',  // Précharger 200px avant
+        rootMargin: '200px',  // Preload 200px before
         threshold: 0.01
       }
     )
@@ -311,7 +311,7 @@ class LazyLoader {
     if (!src) return
 
     try {
-      // Précharger l'image
+      // Preload the image
       await new Promise((resolve, reject) => {
         const tempImage = new Image()
         tempImage.onload = resolve
@@ -319,7 +319,7 @@ class LazyLoader {
         tempImage.src = src
       })
 
-      // Appliquer quand chargée
+      // Apply when loaded
       img.src = src
       img.removeAttribute('data-src')
       img.classList.add('loaded')
@@ -334,21 +334,21 @@ class LazyLoader {
 
 ## Clipboard API
 
-Permet de copier/coller dans le presse-papier.
+Allows copying/pasting to the clipboard.
 
-### Syntaxe
+### Syntax
 
 ```javascript
-// Écrire
-await navigator.clipboard.writeText('Texte à copier')
+// Write
+await navigator.clipboard.writeText('Text to copy')
 
-// Lire
+// Read
 const text = await navigator.clipboard.readText()
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
+**File**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
 
 ```javascript
 async _copyToClipboard(text) {
@@ -358,10 +358,10 @@ async _copyToClipboard(text) {
       return true
     }
 
-    // Fallback pour navigateurs anciens
+    // Fallback for older browsers
     return this._fallbackCopy(text)
   } catch (error) {
-    console.error('Erreur de copie:', error)
+    console.error('Copy error:', error)
     return this._fallbackCopy(text)
   }
 }
@@ -385,23 +385,23 @@ _fallbackCopy(text) {
 
 ## Web Share API
 
-Permet de partager du contenu via les apps natives.
+Allows sharing content via native apps.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 if (navigator.share) {
   await navigator.share({
-    title: 'Titre',
+    title: 'Title',
     text: 'Description',
     url: 'https://example.com'
   })
 }
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
+**File**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
 
 ```javascript
 class ShareButton {
@@ -411,16 +411,16 @@ class ShareButton {
     try {
       if (navigator.share) {
         await navigator.share(shareData)
-        this._showFeedback('Partagé!')
+        this._showFeedback('Shared!')
       } else {
-        // Fallback: copier le lien
+        // Fallback: copy the link
         await this._copyToClipboard(shareData.url)
-        this._showFeedback('Lien copié!')
+        this._showFeedback('Link copied!')
       }
     } catch (error) {
-      // L'utilisateur a annulé le partage
+      // User cancelled the share
       if (error.name !== 'AbortError') {
-        console.error('Erreur de partage:', error)
+        console.error('Share error:', error)
       }
     }
   }
@@ -428,7 +428,7 @@ class ShareButton {
   _getShareData() {
     return {
       title: `${this._photographerName} - Fisheye`,
-      text: `Découvrez le portfolio de ${this._photographerName}`,
+      text: `Discover ${this._photographerName}'s portfolio`,
       url: window.location.href
     }
   }
@@ -437,23 +437,23 @@ class ShareButton {
 
 ---
 
-## Récapitulatif
+## Summary
 
 | API | Usage | Support |
 |-----|-------|---------|
-| **Fetch** | Requêtes HTTP | Tous navigateurs modernes |
-| **History** | Navigation SPA | Tous navigateurs modernes |
-| **URLSearchParams** | Paramètres URL | Tous navigateurs modernes |
-| **localStorage** | Stockage persistant | Tous navigateurs |
-| **IntersectionObserver** | Lazy loading | IE non supporté |
-| **Clipboard** | Copier/coller | Nécessite HTTPS |
-| **Web Share** | Partage natif | Mobile principalement |
+| **Fetch** | HTTP requests | All modern browsers |
+| **History** | SPA navigation | All modern browsers |
+| **URLSearchParams** | URL parameters | All modern browsers |
+| **localStorage** | Persistent storage | All browsers |
+| **IntersectionObserver** | Lazy loading | IE not supported |
+| **Clipboard** | Copy/paste | Requires HTTPS |
+| **Web Share** | Native sharing | Mainly mobile |
 
 ---
 
 ## Feature Detection
 
-Toujours vérifier si une API est disponible avant de l'utiliser.
+Always check if an API is available before using it.
 
 ```javascript
 // Clipboard API
@@ -474,15 +474,15 @@ if (navigator.share) {
 if ('IntersectionObserver' in window) {
   const observer = new IntersectionObserver(callback)
 } else {
-  // Charger les images immédiatement
+  // Load images immediately
 }
 ```
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un gestionnaire de thème avec localStorage :
+Create a theme manager with localStorage:
 
 ```javascript
 class ThemeManager {
@@ -496,7 +496,7 @@ class ThemeManager {
     const saved = localStorage.getItem(this._storageKey)
     if (saved) return saved
 
-    // Détecter la préférence système
+    // Detect system preference
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark'
     }

@@ -1,15 +1,15 @@
 /**
- * Classe pour la sauvegarde automatique des formulaires dans sessionStorage.
- * Permet de restaurer les données en cas de rechargement de page.
+ * Class for automatic form saving in sessionStorage.
+ * Allows restoring data in case of page reload.
  */
 class FormAutoSave {
   /**
-   * Crée une instance de FormAutoSave.
-   * @param {string} formId - Identifiant unique pour le formulaire.
-   * @param {Object} [options] - Options de configuration.
-   * @param {number} [options.debounceDelay=500] - Délai de debounce en ms.
-   * @param {Function} [options.onRestore] - Callback appelé après restauration.
-   * @param {Function} [options.onSave] - Callback appelé après sauvegarde.
+   * Creates an instance of FormAutoSave.
+   * @param {string} formId - Unique identifier for the form.
+   * @param {Object} [options] - Configuration options.
+   * @param {number} [options.debounceDelay=500] - Debounce delay in ms.
+   * @param {Function} [options.onRestore] - Callback called after restoration.
+   * @param {Function} [options.onSave] - Callback called after saving.
    */
   constructor(formId, options = {}) {
     this._formId = formId
@@ -23,9 +23,9 @@ class FormAutoSave {
   }
 
   /**
-   * Enregistre un champ de formulaire pour l'auto-save.
-   * @param {HTMLInputElement|HTMLTextAreaElement} $field - L'élément du champ.
-   * @param {string} [name] - Nom du champ (utilise l'id ou name par défaut).
+   * Registers a form field for auto-save.
+   * @param {HTMLInputElement|HTMLTextAreaElement} $field - The field element.
+   * @param {string} [name] - Field name (uses id or name by default).
    */
   registerField($field, name = null) {
     const fieldName = name || $field.id || $field.name
@@ -33,14 +33,14 @@ class FormAutoSave {
 
     this._fields.set(fieldName, $field)
 
-    // Écouter les changements
+    // Listen for changes
     $field.addEventListener('input', () => this._debouncedSave())
     $field.addEventListener('blur', () => this._save())
   }
 
   /**
-   * Enregistre tous les champs d'un formulaire.
-   * @param {HTMLFormElement} $form - Le formulaire.
+   * Registers all fields of a form.
+   * @param {HTMLFormElement} $form - The form.
    */
   registerForm($form) {
     const inputs = $form.querySelectorAll('input, textarea, select')
@@ -52,8 +52,8 @@ class FormAutoSave {
   }
 
   /**
-   * Restaure les données sauvegardées dans les champs.
-   * @returns {boolean} True si des données ont été restaurées.
+   * Restores saved data into the fields.
+   * @returns {boolean} True if data was restored.
    */
   restore() {
     try {
@@ -77,13 +77,13 @@ class FormAutoSave {
 
       return hasRestored
     } catch (error) {
-      console.warn('Erreur lors de la restauration du formulaire:', error)
+      console.warn('Error restoring form:', error)
       return false
     }
   }
 
   /**
-   * Sauvegarde les données actuelles des champs.
+   * Saves the current field data.
    */
   _save() {
     try {
@@ -112,12 +112,12 @@ class FormAutoSave {
         this._showIndicator()
       }
     } catch (error) {
-      console.warn('Erreur lors de la sauvegarde du formulaire:', error)
+      console.warn('Error saving form:', error)
     }
   }
 
   /**
-   * Sauvegarde avec debounce.
+   * Saves with debounce.
    */
   _debouncedSave() {
     clearTimeout(this._timeoutId)
@@ -125,7 +125,7 @@ class FormAutoSave {
   }
 
   /**
-   * Efface les données sauvegardées.
+   * Clears the saved data.
    */
   clear() {
     sessionStorage.removeItem(this._storageKey)
@@ -133,16 +133,16 @@ class FormAutoSave {
   }
 
   /**
-   * Vérifie si des données sont sauvegardées.
-   * @returns {boolean} True si des données existent.
+   * Checks if data is saved.
+   * @returns {boolean} True if data exists.
    */
   hasSavedData() {
     return sessionStorage.getItem(this._storageKey) !== null
   }
 
   /**
-   * Récupère les données sauvegardées.
-   * @returns {Object|null} Les données sauvegardées ou null.
+   * Retrieves the saved data.
+   * @returns {Object|null} The saved data or null.
    */
   getSavedData() {
     try {
@@ -154,8 +154,8 @@ class FormAutoSave {
   }
 
   /**
-   * Crée et attache un indicateur de sauvegarde.
-   * @param {HTMLElement} $container - Conteneur pour l'indicateur.
+   * Creates and attaches a save indicator.
+   * @param {HTMLElement} $container - Container for the indicator.
    */
   createIndicator($container) {
     this._$indicator = document.createElement('span')
@@ -171,12 +171,12 @@ class FormAutoSave {
   }
 
   /**
-   * Affiche l'indicateur de sauvegarde.
+   * Shows the save indicator.
    */
   _showIndicator() {
     if (!this._$indicator) return
 
-    this._$indicator.textContent = 'Brouillon sauvegardé'
+    this._$indicator.textContent = 'Draft saved'
     this._$indicator.style.opacity = '1'
 
     setTimeout(() => {
@@ -185,7 +185,7 @@ class FormAutoSave {
   }
 
   /**
-   * Cache l'indicateur de sauvegarde.
+   * Hides the save indicator.
    */
   _hideIndicator() {
     if (this._$indicator) {

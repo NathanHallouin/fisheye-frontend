@@ -1,32 +1,32 @@
 /**
- * Web Worker pour le tri et le filtrage des données.
+ * Web Worker for sorting and filtering data.
  *
- * CONCEPT : Web Workers
+ * CONCEPT: Web Workers
  *
- * Les Web Workers exécutent du code dans un thread séparé,
- * ce qui évite de bloquer le thread principal (UI).
+ * Web Workers execute code in a separate thread,
+ * which prevents blocking the main thread (UI).
  *
- * Avantages:
- * - Ne bloque pas l'interface utilisateur
- * - Permet des calculs lourds sans lag
- * - Isolation du code (pas d'accès au DOM)
+ * Advantages:
+ * - Does not block the user interface
+ * - Allows heavy computations without lag
+ * - Code isolation (no DOM access)
  *
  * Limitations:
- * - Pas d'accès au DOM
- * - Communication uniquement par messages
- * - Les données sont copiées (pas de références partagées)
+ * - No DOM access
+ * - Communication only via messages
+ * - Data is copied (no shared references)
  */
 
 /**
- * Écoute les messages du thread principal.
+ * Listens for messages from the main thread.
  *
- * CONCEPT : postMessage / onmessage
+ * CONCEPT: postMessage / onmessage
  *
- * Communication bidirectionnelle:
+ * Bidirectional communication:
  * - Main -> Worker: worker.postMessage(data)
  * - Worker -> Main: self.postMessage(data)
  *
- * Les données sont sérialisées (structured clone algorithm).
+ * Data is serialized (structured clone algorithm).
  */
 self.onmessage = function (e) {
   const { type, payload, id } = e.data
@@ -61,17 +61,17 @@ self.onmessage = function (e) {
         break
 
       default:
-        throw new Error(`Type d'opération inconnu: ${type}`)
+        throw new Error(`Unknown operation type: ${type}`)
     }
 
-    // Envoyer le résultat au thread principal
+    // Send the result to the main thread
     self.postMessage({
       type: 'SUCCESS',
       id,
       result,
     })
   } catch (error) {
-    // Envoyer l'erreur au thread principal
+    // Send the error to the main thread
     self.postMessage({
       type: 'ERROR',
       id,
@@ -81,25 +81,25 @@ self.onmessage = function (e) {
 }
 
 /**
- * Trie un tableau de données.
- * @param {Array} data - Les données à trier.
- * @param {string} sortBy - La propriété de tri.
- * @param {string} [order='desc'] - L'ordre de tri ('asc' ou 'desc').
- * @returns {Array} Le tableau trié (copie).
+ * Sorts an array of data.
+ * @param {Array} data - The data to sort.
+ * @param {string} sortBy - The sort property.
+ * @param {string} [order='desc'] - The sort order ('asc' or 'desc').
+ * @returns {Array} The sorted array (copy).
  */
 function sortData(data, sortBy, order = 'desc') {
-  // Créer une copie pour ne pas modifier l'original
+  // Create a copy to not modify the original
   const sorted = [...data]
 
   sorted.sort((a, b) => {
     let valueA = a[sortBy]
     let valueB = b[sortBy]
 
-    // Gérer les valeurs nulles/undefined
+    // Handle null/undefined values
     if (valueA == null) return order === 'asc' ? -1 : 1
     if (valueB == null) return order === 'asc' ? 1 : -1
 
-    // Comparaison selon le type
+    // Comparison based on type
     if (typeof valueA === 'string') {
       valueA = valueA.toLowerCase()
       valueB = valueB.toLowerCase()
@@ -111,7 +111,7 @@ function sortData(data, sortBy, order = 'desc') {
       return order === 'asc' ? valueA - valueB : valueB - valueA
     }
 
-    // Pour les dates
+    // For dates
     if (valueA instanceof Date || !isNaN(Date.parse(valueA))) {
       const dateA = new Date(valueA)
       const dateB = new Date(valueB)
@@ -125,10 +125,10 @@ function sortData(data, sortBy, order = 'desc') {
 }
 
 /**
- * Filtre un tableau de données.
- * @param {Array} data - Les données à filtrer.
- * @param {Object} filters - Les filtres à appliquer.
- * @returns {Array} Le tableau filtré.
+ * Filters an array of data.
+ * @param {Array} data - The data to filter.
+ * @param {Object} filters - The filters to apply.
+ * @returns {Array} The filtered array.
  *
  * @example
  * filterData(media, {
@@ -144,7 +144,7 @@ function filterData(data, filters) {
 
   return data.filter((item) => {
     for (const [key, filterValue] of Object.entries(filters)) {
-      // Ignorer les filtres vides
+      // Ignore empty filters
       if (
         filterValue === null ||
         filterValue === undefined ||
@@ -155,7 +155,7 @@ function filterData(data, filters) {
 
       const itemValue = item[key]
 
-      // Filtre de comparaison (min/max)
+      // Comparison filter (min/max)
       if (key.startsWith('min')) {
         const field = key.replace('min', '').toLowerCase()
         if (item[field] < filterValue) return false
@@ -168,19 +168,19 @@ function filterData(data, filters) {
         continue
       }
 
-      // Filtre par tableau (inclusion)
+      // Array filter (inclusion)
       if (Array.isArray(filterValue)) {
         if (!filterValue.includes(itemValue)) return false
         continue
       }
 
-      // Filtre par fonction
+      // Function filter
       if (typeof filterValue === 'function') {
         if (!filterValue(itemValue, item)) return false
         continue
       }
 
-      // Filtre d'égalité strict
+      // Strict equality filter
       if (itemValue !== filterValue) return false
     }
 
@@ -189,11 +189,11 @@ function filterData(data, filters) {
 }
 
 /**
- * Recherche dans un tableau de données.
- * @param {Array} data - Les données où chercher.
- * @param {string} query - La requête de recherche.
- * @param {string[]} fields - Les champs où chercher.
- * @returns {Array} Les résultats de recherche.
+ * Searches in an array of data.
+ * @param {Array} data - The data to search in.
+ * @param {string} query - The search query.
+ * @param {string[]} fields - The fields to search in.
+ * @returns {Array} The search results.
  */
 function searchData(data, query, fields) {
   if (!query || query.trim() === '') {
@@ -204,7 +204,7 @@ function searchData(data, query, fields) {
   const searchTerms = normalizedQuery.split(/\s+/)
 
   return data.filter((item) => {
-    // Vérifier si tous les termes de recherche sont présents
+    // Check if all search terms are present
     return searchTerms.every((term) => {
       return fields.some((field) => {
         const value = item[field]
@@ -223,11 +223,11 @@ function searchData(data, query, fields) {
 }
 
 /**
- * Agrège des données avec groupement.
- * @param {Array} data - Les données à agréger.
- * @param {string} groupBy - La propriété de groupement.
- * @param {Object} aggregations - Les agrégations à calculer.
- * @returns {Object} Les données agrégées.
+ * Aggregates data with grouping.
+ * @param {Array} data - The data to aggregate.
+ * @param {string} groupBy - The grouping property.
+ * @param {Object} aggregations - The aggregations to calculate.
+ * @returns {Object} The aggregated data.
  *
  * @example
  * aggregateData(media, 'photographerId', {
@@ -239,7 +239,7 @@ function searchData(data, query, fields) {
 function aggregateData(data, groupBy, aggregations) {
   const groups = {}
 
-  // Grouper les données
+  // Group the data
   data.forEach((item) => {
     const key = item[groupBy]
     if (!groups[key]) {
@@ -248,7 +248,7 @@ function aggregateData(data, groupBy, aggregations) {
     groups[key].push(item)
   })
 
-  // Calculer les agrégations pour chaque groupe
+  // Calculate aggregations for each group
   const result = {}
 
   for (const [key, items] of Object.entries(groups)) {
@@ -300,7 +300,7 @@ function aggregateData(data, groupBy, aggregations) {
           break
 
         default:
-          throw new Error(`Opération d'agrégation inconnue: ${operation}`)
+          throw new Error(`Unknown aggregation operation: ${operation}`)
       }
     }
   }

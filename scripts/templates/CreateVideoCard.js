@@ -1,5 +1,5 @@
 /**
- * Classe pour créer une carte média vidéo.
+ * Class to create a video media card.
  */
 class CreateVideoCard {
   constructor(likeId) {
@@ -8,8 +8,8 @@ class CreateVideoCard {
   }
 
   /**
-   * Crée la carte vidéo pour un photographe.
-   * @param {Object} photographer - Les données du photographe.
+   * Creates the video card for a photographer.
+   * @param {Object} photographer - The photographer's data.
    * @returns {HTMLElement}
    */
   createMedia(photographer) {
@@ -23,7 +23,7 @@ class CreateVideoCard {
       lightbox.listenerLightbox(this)
     }
     video.autoplay = true
-    video.innerHTML = `Votre navigateur ne permet pas de lire les vidéos. Mais vous pouvez toujours <a href="${photographer.picture}">la télécharger</a> !`
+    video.innerHTML = `Your browser does not support video playback. But you can still <a href="${photographer.picture}">download it</a>!`
     const textDiv = document.createElement('div')
     textDiv.classList.add('media-card__text')
     const title = document.createElement('h3')
@@ -46,7 +46,7 @@ class CreateVideoCard {
     spanBtn.role = 'button'
     const spanSr = document.createElement('span')
     spanSr.classList.add('sr-only')
-    spanSr.textContent = 'Boutton pour ajouter ou enlever un like'
+    spanSr.textContent = 'Button to add or remove a like'
     spanBtn.appendChild(spanSr)
     label.appendChild(input)
     label.appendChild(spanBtn)

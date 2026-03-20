@@ -1,5 +1,5 @@
 /**
- * Classe pour créer une carte média image.
+ * Class to create an image media card.
  */
 class CreateImageCard {
   constructor(likeId) {
@@ -8,8 +8,8 @@ class CreateImageCard {
   }
 
   /**
-   * Crée la carte image pour un photographe.
-   * @param {Object} photographer - Les données du photographe.
+   * Creates the image card for a photographer.
+   * @param {Object} photographer - The photographer's data.
    * @returns {HTMLElement}
    */
   createMedia(photographer) {
@@ -45,7 +45,7 @@ class CreateImageCard {
     spanBtn.role = 'button'
     const spanSr = document.createElement('span')
     spanSr.classList.add('sr-only')
-    spanSr.textContent = 'Boutton pour ajouter ou enlever un like'
+    spanSr.textContent = 'Button to add or remove a like'
     spanBtn.appendChild(spanSr)
     label.appendChild(input)
     label.appendChild(spanBtn)

@@ -1,18 +1,18 @@
 /**
- * Composant bouton de partage d'URL.
+ * Share URL button component.
  *
  * @description
- * Permet de partager l'URL actuelle avec les filtres appliqués.
- * Utilise l'API Clipboard pour copier l'URL et affiche un feedback.
+ * Allows sharing the current URL with applied filters.
+ * Uses the Clipboard API to copy the URL and displays feedback.
  *
- * CONCEPTS :
- * - navigator.clipboard : API pour accéder au presse-papiers
- * - async/await avec l'API Clipboard
- * - Feedback utilisateur temporaire
+ * CONCEPTS:
+ * - navigator.clipboard: API to access the clipboard
+ * - async/await with the Clipboard API
+ * - Temporary user feedback
  */
 class ShareButton {
   /**
-   * Crée une instance de ShareButton.
+   * Creates a ShareButton instance.
    */
   constructor() {
     this._urlState = UrlStateManager.getInstance()
@@ -21,9 +21,9 @@ class ShareButton {
   }
 
   /**
-   * Crée le bouton de partage.
+   * Creates the share button.
    *
-   * @returns {HTMLElement} Le bouton de partage.
+   * @returns {HTMLElement} The share button.
    */
   createElement() {
     this.$button = document.createElement('button')
@@ -31,19 +31,19 @@ class ShareButton {
     this.$button.setAttribute('type', 'button')
     this.$button.setAttribute(
       'aria-label',
-      'Partager cette page avec les filtres actuels',
+      'Share this page with current filters',
     )
-    this.$button.setAttribute('title', 'Copier le lien')
+    this.$button.setAttribute('title', 'Copy link')
 
-    // Icône de partage (SVG)
+    // Share icon (SVG)
     this.$button.innerHTML = `
       <svg class="share-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
       </svg>
-      <span class="share-btn__text">Partager</span>
+      <span class="share-btn__text">Share</span>
     `
 
-    // Événement click
+    // Click event
     this.$button.addEventListener('click', () => {
       this._handleShare()
     })
@@ -52,12 +52,12 @@ class ShareButton {
   }
 
   /**
-   * Gère le clic sur le bouton de partage.
+   * Handles the click on the share button.
    *
    * @description
-   * CONCEPT : Clipboard API
-   * navigator.clipboard.writeText() copie du texte dans le presse-papiers.
-   * C'est une API asynchrone qui retourne une Promise.
+   * CONCEPT: Clipboard API
+   * navigator.clipboard.writeText() copies text to the clipboard.
+   * It's an asynchronous API that returns a Promise.
    *
    * @private
    */
@@ -65,34 +65,34 @@ class ShareButton {
     const success = await this._urlState.copyShareableUrl()
 
     if (success) {
-      this._showFeedback('Lien copié !')
+      this._showFeedback('Link copied!')
     } else {
-      // Fallback : afficher l'URL pour copie manuelle
+      // Fallback: display URL for manual copy
       this._showFallback()
     }
   }
 
   /**
-   * Affiche un feedback temporaire.
+   * Displays temporary feedback.
    *
-   * @param {string} message - Le message à afficher.
+   * @param {string} message - The message to display.
    * @private
    */
   _showFeedback(message) {
-    // Annuler le timeout précédent si existant
+    // Cancel previous timeout if exists
     if (this._feedbackTimeout) {
       clearTimeout(this._feedbackTimeout)
     }
 
-    // Ajouter la classe de feedback
+    // Add feedback class
     this.$button.classList.add('share-btn--success')
 
-    // Changer temporairement le texte
+    // Temporarily change the text
     const textSpan = this.$button.querySelector('.share-btn__text')
     const originalText = textSpan.textContent
     textSpan.textContent = message
 
-    // Restaurer après 2 secondes
+    // Restore after 2 seconds
     this._feedbackTimeout = setTimeout(() => {
       this.$button.classList.remove('share-btn--success')
       textSpan.textContent = originalText
@@ -100,14 +100,14 @@ class ShareButton {
   }
 
   /**
-   * Affiche un fallback si l'API Clipboard n'est pas disponible.
+   * Displays a fallback if the Clipboard API is not available.
    *
    * @private
    */
   _showFallback() {
     const url = this._urlState.getShareableUrl()
 
-    // Créer une alerte avec l'URL
-    window.prompt('Copiez ce lien pour le partager :', url)
+    // Create an alert with the URL
+    window.prompt('Copy this link to share:', url)
   }
 }

@@ -1,44 +1,44 @@
-# Structures de données (Data Structures)
+# Data Structures
 
 ## Concept
 
-JavaScript offre plusieurs structures de données pour organiser et manipuler les données efficacement. Chaque structure a ses forces et cas d'usage.
+JavaScript offers several data structures for organizing and manipulating data efficiently. Each structure has its strengths and use cases.
 
 ---
 
 ## Map
 
-Une collection de paires clé-valeur où les clés peuvent être de n'importe quel type.
+A collection of key-value pairs where keys can be of any type.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const map = new Map()
 
-// Ajout
+// Add
 map.set('key', 'value')
 map.set(123, 'number key')
 map.set({ id: 1 }, 'object key')
 
-// Lecture
+// Read
 map.get('key')      // 'value'
 map.has('key')      // true
 map.size            // 3
 
-// Suppression
+// Delete
 map.delete('key')
 map.clear()
 
-// Itération
+// Iteration
 for (const [key, value] of map) {
   console.log(key, value)
 }
 map.forEach((value, key) => console.log(key, value))
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 class CacheManager {
@@ -79,7 +79,7 @@ class CacheManager {
 }
 ```
 
-**Fichier**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
+**File**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
 
 ```javascript
 class EventBus {
@@ -110,7 +110,7 @@ class EventBus {
 }
 ```
 
-**Fichier**: [scripts/utils/KeyboardShortcutManager.js](../../scripts/utils/KeyboardShortcutManager.js)
+**File**: [scripts/utils/KeyboardShortcutManager.js](../../scripts/utils/KeyboardShortcutManager.js)
 
 ```javascript
 class KeyboardShortcutManager {
@@ -144,36 +144,36 @@ class KeyboardShortcutManager {
 
 | Aspect | Map | Object |
 |--------|-----|--------|
-| Types de clés | N'importe quel type | String ou Symbol |
-| Ordre | Garanti (insertion) | Non garanti |
-| Taille | `.size` | `Object.keys(obj).length` |
-| Itération | Directe | Nécessite Object.keys/values |
-| Performance | Meilleure pour ajouts/suppressions fréquents | Meilleure pour accès statique |
+| Key types | Any type | String or Symbol |
+| Order | Guaranteed (insertion) | Not guaranteed |
+| Size | `.size` | `Object.keys(obj).length` |
+| Iteration | Direct | Requires Object.keys/values |
+| Performance | Better for frequent add/remove | Better for static access |
 
 ---
 
 ## Set
 
-Une collection de valeurs uniques.
+A collection of unique values.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const set = new Set()
 
-// Ajout
+// Add
 set.add('value')
-set.add('value')  // Ignoré (déjà présent)
+set.add('value')  // Ignored (already present)
 
-// Vérification
+// Check
 set.has('value')  // true
 set.size          // 1
 
-// Suppression
+// Delete
 set.delete('value')
 set.clear()
 
-// Itération
+// Iteration
 for (const value of set) {
   console.log(value)
 }
@@ -183,20 +183,20 @@ const array = [...set]
 const set2 = new Set(array)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
+**File**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
 
 ```javascript
 class TagFilter {
   constructor(photographers, onFilter) {
     this._photographers = photographers
     this._onFilter = onFilter
-    this._activeTags = new Set()  // Tags actuellement sélectionnés
+    this._activeTags = new Set()  // Currently selected tags
   }
 
   _getAllTags() {
-    // Utiliser Set pour dédupliquer automatiquement
+    // Use Set to automatically deduplicate
     const allTags = this._photographers.flatMap(p => p.tags)
     return [...new Set(allTags)]
   }
@@ -227,7 +227,7 @@ class TagFilter {
 }
 ```
 
-**Fichier**: [scripts/utils/LikeManager.js](../../scripts/utils/LikeManager.js)
+**File**: [scripts/utils/LikeManager.js](../../scripts/utils/LikeManager.js)
 
 ```javascript
 class LikeManager {
@@ -254,20 +254,20 @@ class LikeManager {
 }
 ```
 
-### Cas d'usage de Set
+### Set Use Cases
 
-1. **Dédupliquer un tableau**
+1. **Deduplicate an array**
 ```javascript
 const unique = [...new Set(arrayWithDuplicates)]
 ```
 
-2. **Vérifier l'appartenance (O(1))**
+2. **Check membership (O(1))**
 ```javascript
 const validTags = new Set(['portrait', 'nature', 'art'])
 if (validTags.has(userTag)) { ... }
 ```
 
-3. **Opérations ensemblistes**
+3. **Set operations**
 ```javascript
 // Union
 const union = new Set([...setA, ...setB])
@@ -275,7 +275,7 @@ const union = new Set([...setA, ...setB])
 // Intersection
 const intersection = new Set([...setA].filter(x => setB.has(x)))
 
-// Différence
+// Difference
 const difference = new Set([...setA].filter(x => !setB.has(x)))
 ```
 
@@ -283,29 +283,29 @@ const difference = new Set([...setA].filter(x => !setB.has(x)))
 
 ## Array
 
-La structure la plus utilisée pour les listes ordonnées.
+The most used structure for ordered lists.
 
-### Caractéristiques dans Fisheye
+### Characteristics in Fisheye
 
-- Stockage de photographes, médias
-- Transformation avec map/filter/reduce
-- Tri et recherche
+- Storing photographers, media
+- Transformation with map/filter/reduce
+- Sorting and searching
 
-### Exemple de manipulation
+### Manipulation Example
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 class App {
   constructor() {
-    this._allPhotographers = []  // Stockage principal
-    this._photographers = []     // Liste filtrée
+    this._allPhotographers = []  // Main storage
+    this._photographers = []     // Filtered list
   }
 
   async main() {
     const data = await this.photographersApi.getPhotographers()
     this._allPhotographers = new PhotographersFactory(data, 'photographers')
-    this._photographers = [...this._allPhotographers]  // Copie pour filtrage
+    this._photographers = [...this._allPhotographers]  // Copy for filtering
   }
 
   _filterPhotographers(state) {
@@ -332,18 +332,18 @@ class App {
 
 ## Object
 
-Pour les données structurées avec des propriétés nommées.
+For structured data with named properties.
 
-### Usage dans Fisheye
+### Usage in Fisheye
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
 class SortFilters {
-  // Configuration sous forme d'objet
+  // Configuration as an object
   static SORT_OPTIONS = {
     popularity: {
-      label: 'Popularité',
+      label: 'Popularity',
       property: '_likes',
       type: 'numeric',
       desc: true
@@ -355,7 +355,7 @@ class SortFilters {
       desc: true
     },
     title: {
-      label: 'Titre',
+      label: 'Title',
       property: '_title',
       type: 'alphabetic',
       desc: false
@@ -368,9 +368,9 @@ class SortFilters {
 }
 ```
 
-### Object methods
+### Object Methods
 
-**Fichier**: [scripts/utils/StatsCalculator.js](../../scripts/utils/StatsCalculator.js)
+**File**: [scripts/utils/StatsCalculator.js](../../scripts/utils/StatsCalculator.js)
 
 ```javascript
 class StatsCalculator {
@@ -392,7 +392,7 @@ class StatsCalculator {
       return acc
     }, {})
 
-    // Object.entries pour itérer sur les paires clé-valeur
+    // Object.entries to iterate over key-value pairs
     return Object.entries(stats).map(([country, data]) => ({
       country,
       count: data.count,
@@ -404,40 +404,40 @@ class StatsCalculator {
 
 ---
 
-## Comparaison des structures
+## Structure Comparison
 
-| Structure | Ordre | Clés uniques | Valeurs uniques | Itération |
-|-----------|-------|--------------|-----------------|-----------|
-| Array | Oui (index) | N/A | Non | for, forEach, for...of |
-| Object | Non garanti | Oui (strings) | Non | for...in, Object.keys |
-| Map | Oui (insertion) | Oui (any type) | Non | for...of, forEach |
-| Set | Oui (insertion) | N/A | Oui | for...of, forEach |
+| Structure | Order | Unique Keys | Unique Values | Iteration |
+|-----------|-------|-------------|---------------|-----------|
+| Array | Yes (index) | N/A | No | for, forEach, for...of |
+| Object | Not guaranteed | Yes (strings) | No | for...in, Object.keys |
+| Map | Yes (insertion) | Yes (any type) | No | for...of, forEach |
+| Set | Yes (insertion) | N/A | Yes | for...of, forEach |
 
 ---
 
-## Quand utiliser quelle structure ?
+## When to Use Which Structure?
 
-| Besoin | Structure recommandée |
-|--------|----------------------|
-| Liste ordonnée | Array |
-| Données nommées | Object |
-| Cache clé-valeur | Map |
-| Valeurs uniques | Set |
+| Need | Recommended Structure |
+|------|----------------------|
+| Ordered list | Array |
+| Named data | Object |
+| Key-value cache | Map |
+| Unique values | Set |
 | Configuration | Object |
-| Tags actifs | Set |
-| Listeners mappés | Map |
+| Active tags | Set |
+| Mapped listeners | Map |
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un gestionnaire de tags avec Set et Map :
+Create a tag manager with Set and Map:
 
 ```javascript
 class TagManager {
   constructor() {
     this._tagCounts = new Map()    // tag -> count
-    this._activeTags = new Set()   // tags sélectionnés
+    this._activeTags = new Set()   // selected tags
   }
 
   addPhotographer(photographer) {
@@ -448,7 +448,7 @@ class TagManager {
   }
 
   getAllTags() {
-    // Trier par popularité
+    // Sort by popularity
     return [...this._tagCounts.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([tag, count]) => ({ tag, count }))

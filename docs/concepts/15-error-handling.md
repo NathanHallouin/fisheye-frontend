@@ -1,31 +1,31 @@
-# Gestion des erreurs (Error Handling)
+# Error Handling
 
 ## Concept
 
-Une bonne gestion des erreurs rend l'application robuste et offre une meilleure expérience utilisateur en cas de problème.
+Good error handling makes the application robust and provides a better user experience when problems occur.
 
 ---
 
 ## try/catch/finally
 
-### Syntaxe de base
+### Basic Syntax
 
 ```javascript
 try {
-  // Code qui peut échouer
+  // Code that may fail
   riskyOperation()
 } catch (error) {
-  // Gestion de l'erreur
-  console.error('Erreur:', error.message)
+  // Error handling
+  console.error('Error:', error.message)
 } finally {
-  // Toujours exécuté
+  // Always executed
   cleanup()
 }
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/api/Api.js](../../scripts/api/Api.js)
+**File**: [scripts/api/Api.js](../../scripts/api/Api.js)
 
 ```javascript
 class Api {
@@ -39,14 +39,14 @@ class Api {
 
       return await res.json()
     } catch (error) {
-      console.error('Erreur API:', error)
-      return null  // Valeur par défaut
+      console.error('API Error:', error)
+      return null  // Default value
     }
   }
 }
 ```
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 class FavoritesManager {
@@ -55,15 +55,15 @@ class FavoritesManager {
       const data = localStorage.getItem(this._storageKey)
       const parsed = data ? JSON.parse(data) : []
 
-      // Validation des données
+      // Data validation
       if (!Array.isArray(parsed)) {
-        console.warn('Données de favoris invalides, réinitialisation')
+        console.warn('Invalid favorites data, resetting')
         return []
       }
 
       return parsed
     } catch (error) {
-      console.error('Erreur de chargement des favoris:', error)
+      console.error('Error loading favorites:', error)
       return []
     }
   }
@@ -72,8 +72,8 @@ class FavoritesManager {
     try {
       localStorage.setItem(this._storageKey, JSON.stringify(this._favorites))
     } catch (error) {
-      // localStorage peut être plein ou désactivé
-      console.error('Erreur de sauvegarde:', error)
+      // localStorage may be full or disabled
+      console.error('Error saving:', error)
     }
   }
 }
@@ -81,7 +81,7 @@ class FavoritesManager {
 
 ---
 
-## Erreurs dans les Promises
+## Errors in Promises
 
 ### Promise.catch()
 
@@ -89,12 +89,12 @@ class FavoritesManager {
 fetchData()
   .then(data => processData(data))
   .catch(error => {
-    console.error('Erreur:', error)
+    console.error('Error:', error)
     return defaultValue
   })
 ```
 
-### async/await avec try/catch
+### async/await with try/catch
 
 ```javascript
 async function loadData() {
@@ -102,15 +102,15 @@ async function loadData() {
     const data = await fetchData()
     return processData(data)
   } catch (error) {
-    console.error('Erreur:', error)
+    console.error('Error:', error)
     return defaultValue
   }
 }
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 async get(key, fetchFn, ttl = this._ttl) {
@@ -127,7 +127,7 @@ async get(key, fetchFn, ttl = this._ttl) {
     ttl
   })
 
-  // Supprimer du cache si la promise échoue
+  // Remove from cache if promise fails
   promise.catch(() => {
     this._cache.delete(key)
   })
@@ -138,21 +138,21 @@ async get(key, fetchFn, ttl = this._ttl) {
 
 ---
 
-## Throw et Error personnalisé
+## Throw and Custom Error
 
-### Lancer une erreur
+### Throwing an error
 
 ```javascript
 function validateEmail(email) {
   if (!email.includes('@')) {
-    throw new Error('Email invalide')
+    throw new Error('Invalid email')
   }
 }
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/factories/MediaFactory.js](../../scripts/factories/MediaFactory.js)
+**File**: [scripts/factories/MediaFactory.js](../../scripts/factories/MediaFactory.js)
 
 ```javascript
 class MediaFactory {
@@ -163,13 +163,13 @@ class MediaFactory {
       return new CreateVideoCard(data, photographerId)
     }
 
-    // Type inconnu - erreur explicite
-    throw new Error(`Type de média inconnu: ${JSON.stringify(data)}`)
+    // Unknown type - explicit error
+    throw new Error(`Unknown media type: ${JSON.stringify(data)}`)
   }
 }
 ```
 
-### Classes d'erreur personnalisées
+### Custom error classes
 
 ```javascript
 class ValidationError extends Error {
@@ -191,12 +191,12 @@ class NetworkError extends Error {
 // Usage
 try {
   if (!email) {
-    throw new ValidationError('email', 'Email requis')
+    throw new ValidationError('email', 'Email required')
   }
 
   const response = await fetch(url)
   if (!response.ok) {
-    throw new NetworkError('Erreur serveur', response.status)
+    throw new NetworkError('Server error', response.status)
   }
 } catch (error) {
   if (error instanceof ValidationError) {
@@ -213,49 +213,49 @@ try {
 
 ## Graceful Degradation
 
-Fournir une expérience dégradée mais fonctionnelle.
+Provide a degraded but functional experience.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
+**File**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
 
 ```javascript
 async _share() {
   const shareData = this._getShareData()
 
   try {
-    // Essayer l'API native
+    // Try native API
     if (navigator.share) {
       await navigator.share(shareData)
-      this._showFeedback('Partagé!')
+      this._showFeedback('Shared!')
       return
     }
 
-    // Fallback: copier dans le presse-papier
+    // Fallback: copy to clipboard
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(shareData.url)
-      this._showFeedback('Lien copié!')
+      this._showFeedback('Link copied!')
       return
     }
 
-    // Dernier recours: méthode obsolète
+    // Last resort: obsolete method
     this._fallbackCopy(shareData.url)
-    this._showFeedback('Lien copié!')
+    this._showFeedback('Link copied!')
 
   } catch (error) {
-    // L'utilisateur a annulé
+    // User cancelled
     if (error.name === 'AbortError') {
       return
     }
 
-    // Erreur réelle
-    console.error('Erreur de partage:', error)
-    this._showFeedback('Erreur de partage')
+    // Actual error
+    console.error('Share error:', error)
+    this._showFeedback('Share error')
   }
 }
 ```
 
-**Fichier**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
+**File**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
 
 ```javascript
 async _loadImage(img) {
@@ -268,21 +268,21 @@ async _loadImage(img) {
     img.removeAttribute('data-src')
     img.classList.add('loaded')
   } catch (error) {
-    // Image de fallback ou style d'erreur
+    // Fallback image or error style
     img.classList.add('error')
-    img.alt = 'Image non disponible'
-    console.warn(`Impossible de charger: ${src}`)
+    img.alt = 'Image not available'
+    console.warn(`Unable to load: ${src}`)
   }
 }
 ```
 
 ---
 
-## Validation des données
+## Data Validation
 
-### Avant traitement
+### Before processing
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 async main() {
@@ -290,39 +290,39 @@ async main() {
 
   // Validation
   if (!data) {
-    console.error('Impossible de charger les données')
-    this._showError('Erreur de chargement')
+    console.error('Unable to load data')
+    this._showError('Loading error')
     return
   }
 
   if (!data.photographers || !Array.isArray(data.photographers)) {
-    console.error('Format de données invalide')
-    this._showError('Données corrompues')
+    console.error('Invalid data format')
+    this._showError('Corrupted data')
     return
   }
 
-  // Traitement normal
+  // Normal processing
   this._allPhotographers = new PhotographersFactory(data, 'photographers')
   this._displayPhotographers(this._allPhotographers)
 }
 ```
 
-### Pattern de validation
+### Validation pattern
 
 ```javascript
 function validatePhotographer(data) {
   const errors = []
 
   if (!data.id) {
-    errors.push('ID manquant')
+    errors.push('Missing ID')
   }
 
   if (!data.name || typeof data.name !== 'string') {
-    errors.push('Nom invalide')
+    errors.push('Invalid name')
   }
 
   if (typeof data.price !== 'number' || data.price < 0) {
-    errors.push('Prix invalide')
+    errors.push('Invalid price')
   }
 
   if (errors.length > 0) {
@@ -335,19 +335,19 @@ function validatePhotographer(data) {
 
 ---
 
-## Logging structuré
+## Structured Logging
 
-### Niveaux de log
+### Log levels
 
 ```javascript
-console.log('Info normale')
+console.log('Normal info')
 console.info('Information')
-console.warn('Avertissement')
-console.error('Erreur')
-console.debug('Debug (caché par défaut)')
+console.warn('Warning')
+console.error('Error')
+console.debug('Debug (hidden by default)')
 ```
 
-### Pattern de logging
+### Logging pattern
 
 ```javascript
 class Logger {
@@ -393,57 +393,57 @@ class Logger {
 try {
   await riskyOperation()
 } catch (error) {
-  Logger.error('Échec de l\'opération', error)
+  Logger.error('Operation failed', error)
 }
 ```
 
 ---
 
-## Bonnes pratiques
+## Best Practices
 
-### 1. Ne jamais ignorer les erreurs
+### 1. Never ignore errors
 
 ```javascript
-// Mauvais
+// Bad
 try {
   riskyOperation()
 } catch (e) {
   // Silence...
 }
 
-// Bon
+// Good
 try {
   riskyOperation()
 } catch (error) {
-  console.error('Opération échouée:', error)
-  // Ou notifier l'utilisateur
+  console.error('Operation failed:', error)
+  // Or notify the user
 }
 ```
 
-### 2. Être spécifique dans les messages
+### 2. Be specific in messages
 
 ```javascript
-// Mauvais
-throw new Error('Erreur')
+// Bad
+throw new Error('Error')
 
-// Bon
-throw new Error(`Impossible de charger le photographe ${id}: ${response.status}`)
+// Good
+throw new Error(`Unable to load photographer ${id}: ${response.status}`)
 ```
 
-### 3. Toujours retourner une valeur par défaut
+### 3. Always return a default value
 
 ```javascript
 async function loadData() {
   try {
     return await fetchData()
   } catch (error) {
-    console.error('Erreur:', error)
-    return []  // Valeur par défaut
+    console.error('Error:', error)
+    return []  // Default value
   }
 }
 ```
 
-### 4. Nettoyer les ressources dans finally
+### 4. Clean up resources in finally
 
 ```javascript
 async function processFile() {
@@ -452,7 +452,7 @@ async function processFile() {
     file = await openFile()
     return await process(file)
   } catch (error) {
-    console.error('Erreur:', error)
+    console.error('Error:', error)
     throw error
   } finally {
     if (file) {
@@ -464,9 +464,9 @@ async function processFile() {
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un wrapper d'API avec gestion d'erreurs complète :
+Create an API wrapper with complete error handling:
 
 ```javascript
 class ApiClient {
@@ -488,7 +488,7 @@ class ApiClient {
 
       if (!response.ok) {
         throw new NetworkError(
-          `Erreur HTTP: ${response.statusText}`,
+          `HTTP Error: ${response.statusText}`,
           response.status
         )
       }
@@ -499,9 +499,9 @@ class ApiClient {
         throw error
       }
 
-      // Erreur réseau (offline, timeout, etc.)
+      // Network error (offline, timeout, etc.)
       throw new NetworkError(
-        `Erreur réseau: ${error.message}`,
+        `Network error: ${error.message}`,
         0
       )
     }
@@ -519,7 +519,7 @@ class ApiClient {
   }
 }
 
-// Usage avec gestion d'erreurs
+// Usage with error handling
 const api = new ApiClient('/api')
 
 try {
@@ -528,15 +528,15 @@ try {
 } catch (error) {
   if (error instanceof NetworkError) {
     if (error.statusCode === 404) {
-      showMessage('Données non trouvées')
+      showMessage('Data not found')
     } else if (error.statusCode >= 500) {
-      showMessage('Erreur serveur, réessayez plus tard')
+      showMessage('Server error, try again later')
     } else if (error.statusCode === 0) {
-      showMessage('Vérifiez votre connexion internet')
+      showMessage('Check your internet connection')
     }
   } else {
-    showMessage('Une erreur inattendue est survenue')
-    console.error('Erreur:', error)
+    showMessage('An unexpected error occurred')
+    console.error('Error:', error)
   }
 }
 ```

@@ -1,35 +1,35 @@
 /**
- * Gestionnaire de cache pour les données asynchrones.
+ * Cache manager for asynchronous data.
  *
  * @description
- * Met en cache les résultats des appels API pour éviter les requêtes
- * redondantes. Supporte un TTL (Time To Live) configurable.
+ * Caches API call results to avoid redundant requests.
+ * Supports a configurable TTL (Time To Live).
  *
- * CONCEPTS CLÉS :
+ * KEY CONCEPTS:
  *
- * 1. Map : Structure de données pour le stockage clé-valeur
- *    Plus performante que Object pour les ajouts/suppressions fréquents
+ * 1. Map: Data structure for key-value storage
+ *    More performant than Object for frequent additions/deletions
  *
- * 2. Promise caching : On cache la Promise, pas le résultat
- *    Cela évite les requêtes en double même si elles sont simultanées
+ * 2. Promise caching: We cache the Promise, not the result
+ *    This prevents duplicate requests even if they are simultaneous
  *
- * 3. TTL (Time To Live) : Durée de validité du cache
- *    Après expiration, les données sont rechargées
+ * 3. TTL (Time To Live): Cache validity duration
+ *    After expiration, data is reloaded
  *
- * 4. Memoization : Réutilisation des résultats de calculs coûteux
+ * 4. Memoization: Reusing results of expensive computations
  */
 class CacheManager {
   /**
-   * Instance unique (Singleton).
+   * Singleton instance.
    * @type {CacheManager|null}
    */
   static _instance = null
 
   /**
-   * Retourne l'instance unique du CacheManager.
+   * Returns the unique CacheManager instance.
    *
-   * @param {number} [ttl] - TTL par défaut en millisecondes.
-   * @returns {CacheManager} L'instance unique.
+   * @param {number} [ttl] - Default TTL in milliseconds.
+   * @returns {CacheManager} The unique instance.
    */
   static getInstance(ttl) {
     if (!CacheManager._instance) {
@@ -39,41 +39,41 @@ class CacheManager {
   }
 
   /**
-   * Crée une instance de CacheManager.
+   * Creates a CacheManager instance.
    *
-   * @param {number} [ttl=300000] - TTL par défaut (5 minutes).
+   * @param {number} [ttl=300000] - Default TTL (5 minutes).
    */
   constructor(ttl = 300000) {
     /**
-     * CONCEPT : Map vs Object
+     * CONCEPT: Map vs Object
      *
-     * Map est préféré pour le cache car :
-     * - Performances meilleures pour ajouts/suppressions fréquents
-     * - Clés de n'importe quel type (pas seulement strings)
-     * - Méthode .size intégrée
-     * - Itération dans l'ordre d'insertion
+     * Map is preferred for caching because:
+     * - Better performance for frequent additions/deletions
+     * - Keys of any type (not just strings)
+     * - Built-in .size method
+     * - Iteration in insertion order
      */
     this._cache = new Map()
     this._defaultTTL = ttl
   }
 
   /**
-   * Récupère une valeur du cache ou l'obtient via fetchFn.
+   * Retrieves a value from cache or obtains it via fetchFn.
    *
    * @description
-   * CONCEPT CLÉ : Promise caching
+   * KEY CONCEPT: Promise caching
    *
-   * On stocke la PROMISE dans le cache, pas le résultat.
-   * Ainsi, si deux appels arrivent simultanément :
-   * - Le premier crée la Promise et la met en cache
-   * - Le second récupère la même Promise
-   * - Les deux attendent la même résolution
-   * - Une seule requête réseau est effectuée
+   * We store the PROMISE in the cache, not the result.
+   * Thus, if two calls arrive simultaneously:
+   * - The first creates the Promise and caches it
+   * - The second retrieves the same Promise
+   * - Both await the same resolution
+   * - Only one network request is made
    *
-   * @param {string} key - La clé de cache.
-   * @param {Function} fetchFn - Fonction async qui récupère les données.
-   * @param {number} [ttl] - TTL spécifique pour cette entrée.
-   * @returns {Promise<*>} Les données (depuis le cache ou fetchFn).
+   * @param {string} key - The cache key.
+   * @param {Function} fetchFn - Async function that retrieves the data.
+   * @param {number} [ttl] - Specific TTL for this entry.
+   * @returns {Promise<*>} The data (from cache or fetchFn).
    *
    * @example
    * const data = await cache.get('photographers', async () => {
@@ -84,23 +84,23 @@ class CacheManager {
   async get(key, fetchFn, ttl = this._defaultTTL) {
     const cached = this._cache.get(key)
 
-    // Vérifier si le cache est valide
+    // Check if cache is valid
     if (cached && this._isValid(cached, ttl)) {
-      // Retourner la Promise cachée (peut être en cours ou résolue)
+      // Return the cached Promise (may be pending or resolved)
       return cached.promise
     }
 
-    // Créer une nouvelle entrée de cache
+    // Create a new cache entry
     const entry = {
-      promise: fetchFn(), // Stocker la Promise, pas le résultat
+      promise: fetchFn(), // Store the Promise, not the result
       timestamp: Date.now(),
     }
 
     this._cache.set(key, entry)
 
-    // Gérer les erreurs : invalider le cache si l'appel échoue
+    // Handle errors: invalidate cache if call fails
     entry.promise.catch(() => {
-      // Supprimer du cache uniquement si c'est toujours la même entrée
+      // Remove from cache only if it's still the same entry
       if (this._cache.get(key) === entry) {
         this._cache.delete(key)
       }
@@ -110,11 +110,11 @@ class CacheManager {
   }
 
   /**
-   * Vérifie si une entrée de cache est encore valide.
+   * Checks if a cache entry is still valid.
    *
-   * @param {Object} entry - L'entrée de cache.
-   * @param {number} ttl - Le TTL à vérifier.
-   * @returns {boolean} True si valide.
+   * @param {Object} entry - The cache entry.
+   * @param {number} ttl - The TTL to check.
+   * @returns {boolean} True if valid.
    * @private
    */
   _isValid(entry, ttl) {
@@ -123,10 +123,10 @@ class CacheManager {
   }
 
   /**
-   * Définit une valeur dans le cache.
+   * Sets a value in the cache.
    *
-   * @param {string} key - La clé de cache.
-   * @param {*} value - La valeur à mettre en cache.
+   * @param {string} key - The cache key.
+   * @param {*} value - The value to cache.
    */
   set(key, value) {
     this._cache.set(key, {
@@ -136,11 +136,11 @@ class CacheManager {
   }
 
   /**
-   * Vérifie si une clé existe dans le cache (et est valide).
+   * Checks if a key exists in the cache (and is valid).
    *
-   * @param {string} key - La clé à vérifier.
-   * @param {number} [ttl] - TTL spécifique.
-   * @returns {boolean} True si la clé existe et est valide.
+   * @param {string} key - The key to check.
+   * @param {number} [ttl] - Specific TTL.
+   * @returns {boolean} True if the key exists and is valid.
    */
   has(key, ttl = this._defaultTTL) {
     const cached = this._cache.get(key)
@@ -148,18 +148,18 @@ class CacheManager {
   }
 
   /**
-   * Invalide une entrée du cache.
+   * Invalidates a cache entry.
    *
-   * @param {string} key - La clé à invalider.
+   * @param {string} key - The key to invalidate.
    */
   invalidate(key) {
     this._cache.delete(key)
   }
 
   /**
-   * Invalide les entrées correspondant à un pattern.
+   * Invalidates entries matching a pattern.
    *
-   * @param {string|RegExp} pattern - Le pattern à matcher.
+   * @param {string|RegExp} pattern - The pattern to match.
    *
    * @example
    * cache.invalidatePattern(/^photographer_/)
@@ -175,16 +175,16 @@ class CacheManager {
   }
 
   /**
-   * Vide tout le cache.
+   * Clears the entire cache.
    */
   clear() {
     this._cache.clear()
   }
 
   /**
-   * Retourne les statistiques du cache.
+   * Returns cache statistics.
    *
-   * @returns {Object} Les statistiques.
+   * @returns {Object} The statistics.
    */
   getStats() {
     let validCount = 0
@@ -207,12 +207,12 @@ class CacheManager {
   }
 
   /**
-   * Nettoie les entrées expirées.
+   * Cleans up expired entries.
    *
    * @description
-   * À appeler périodiquement pour libérer la mémoire.
+   * Call periodically to free memory.
    *
-   * @returns {number} Le nombre d'entrées supprimées.
+   * @returns {number} The number of entries removed.
    */
   cleanup() {
     let removed = 0
@@ -228,14 +228,13 @@ class CacheManager {
   }
 
   /**
-   * Précharge des données dans le cache.
+   * Preloads data into the cache.
    *
    * @description
-   * Utile pour charger des données dont on sait qu'elles seront
-   * nécessaires prochainement (prefetching).
+   * Useful for loading data that will be needed soon (prefetching).
    *
-   * @param {string} key - La clé de cache.
-   * @param {Function} fetchFn - Fonction async qui récupère les données.
+   * @param {string} key - The cache key.
+   * @param {Function} fetchFn - Async function that retrieves the data.
    * @returns {Promise<void>}
    */
   async prefetch(key, fetchFn) {
@@ -245,16 +244,16 @@ class CacheManager {
   }
 
   /**
-   * Wrapper pour créer une fonction memoized.
+   * Wrapper to create a memoized function.
    *
    * @description
-   * CONCEPT : Memoization
-   * Transforme une fonction en version memoized qui cache ses résultats.
+   * CONCEPT: Memoization
+   * Transforms a function into a memoized version that caches its results.
    *
-   * @param {Function} fn - La fonction à memoizer.
-   * @param {Function} [keyGenerator] - Fonction pour générer la clé de cache.
-   * @param {number} [ttl] - TTL pour les résultats.
-   * @returns {Function} La fonction memoized.
+   * @param {Function} fn - The function to memoize.
+   * @param {Function} [keyGenerator] - Function to generate the cache key.
+   * @param {number} [ttl] - TTL for results.
+   * @returns {Function} The memoized function.
    *
    * @example
    * const memoizedFetch = cache.memoize(

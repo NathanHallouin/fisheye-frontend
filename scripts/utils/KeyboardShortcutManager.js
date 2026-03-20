@@ -1,41 +1,41 @@
 /**
- * Gestionnaire de raccourcis clavier.
+ * Keyboard shortcut manager.
  *
  * @description
- * Centralise tous les raccourcis clavier de l'application.
+ * Centralizes all keyboard shortcuts of the application.
  *
- * CONCEPTS CLÉS :
+ * KEY CONCEPTS:
  *
  * 1. KeyboardEvent
- *    - e.key : la touche pressée ('a', 'Enter', 'Escape', etc.)
- *    - e.code : le code physique de la touche ('KeyA', 'Enter', 'Escape')
- *    - e.ctrlKey, e.altKey, e.shiftKey, e.metaKey : modificateurs
+ *    - e.key: the pressed key ('a', 'Enter', 'Escape', etc.)
+ *    - e.code: the physical key code ('KeyA', 'Enter', 'Escape')
+ *    - e.ctrlKey, e.altKey, e.shiftKey, e.metaKey: modifiers
  *
- * 2. Modificateurs
- *    - Ctrl (ctrlKey) : raccourcis standards (Ctrl+S, Ctrl+K)
- *    - Meta (metaKey) : Cmd sur Mac, Windows sur Windows
- *    - Alt (altKey) : raccourcis alternatifs
- *    - Shift (shiftKey) : inverser l'action (Shift+Tab)
+ * 2. Modifiers
+ *    - Ctrl (ctrlKey): standard shortcuts (Ctrl+S, Ctrl+K)
+ *    - Meta (metaKey): Cmd on Mac, Windows on Windows
+ *    - Alt (altKey): alternative shortcuts
+ *    - Shift (shiftKey): reverse the action (Shift+Tab)
  *
  * 3. preventDefault()
- *    - Empêche le comportement par défaut du navigateur
- *    - Ex: Ctrl+K ouvre la barre de recherche du navigateur, on le bloque
+ *    - Prevents the browser's default behavior
+ *    - Ex: Ctrl+K opens the browser's search bar, we block it
  *
  * 4. Event Capturing vs Bubbling
- *    - Capturing (capture: true) : descend du parent vers l'enfant
- *    - Bubbling (défaut) : remonte de l'enfant vers le parent
- *    - Pour les raccourcis globaux, on utilise capturing pour les intercepter tôt
+ *    - Capturing (capture: true): goes down from parent to child
+ *    - Bubbling (default): goes up from child to parent
+ *    - For global shortcuts, we use capturing to intercept them early
  */
 class KeyboardShortcutManager {
   /**
-   * Instance unique (Singleton).
+   * Unique instance (Singleton).
    * @type {KeyboardShortcutManager|null}
    */
   static _instance = null
 
   /**
-   * Retourne l'instance unique du KeyboardShortcutManager.
-   * @returns {KeyboardShortcutManager} L'instance unique.
+   * Returns the unique instance of KeyboardShortcutManager.
+   * @returns {KeyboardShortcutManager} The unique instance.
    */
   static getInstance() {
     if (!KeyboardShortcutManager._instance) {
@@ -45,188 +45,188 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Crée une instance de KeyboardShortcutManager.
+   * Creates a KeyboardShortcutManager instance.
    */
   constructor() {
     /**
-     * Map des raccourcis enregistrés.
-     * Clé: identifiant du raccourci (ex: 'ctrl+k')
-     * Valeur: { handler, description, enabled }
+     * Map of registered shortcuts.
+     * Key: shortcut identifier (e.g., 'ctrl+k')
+     * Value: { handler, description, enabled }
      */
     this._shortcuts = new Map()
 
     /**
-     * Contexte actif (permet de grouper les raccourcis).
-     * Ex: 'global', 'lightbox', 'modal'
+     * Active context (allows grouping shortcuts).
+     * E.g., 'global', 'lightbox', 'modal'
      */
     this._activeContext = 'global'
 
     /**
-     * État de l'overlay d'aide.
+     * Help overlay state.
      */
     this._helpOverlayVisible = false
 
     /**
-     * Élément DOM de l'overlay d'aide.
+     * Help overlay DOM element.
      */
     this._helpOverlay = null
 
-    // Initialiser le listener global
+    // Initialize the global listener
     this._init()
   }
 
   /**
-   * Initialise le listener clavier global.
+   * Initializes the global keyboard listener.
    *
    * @description
-   * CONCEPT : Event Capturing
+   * CONCEPT: Event Capturing
    *
-   * On utilise { capture: true } pour intercepter les événements
-   * AVANT qu'ils n'atteignent les éléments de la page.
-   * Cela permet de capturer Ctrl+K avant que le navigateur
-   * n'ouvre sa propre barre de recherche.
+   * We use { capture: true } to intercept events
+   * BEFORE they reach the page elements.
+   * This allows capturing Ctrl+K before the browser
+   * opens its own search bar.
    *
    * @private
    */
   _init() {
     /**
-     * CONCEPT : keydown vs keyup vs keypress
+     * CONCEPT: keydown vs keyup vs keypress
      *
-     * - keydown : déclenché quand la touche est enfoncée (répété si maintenu)
-     * - keyup : déclenché quand la touche est relâchée
-     * - keypress : OBSOLÈTE, ne pas utiliser
+     * - keydown: triggered when the key is pressed (repeated if held)
+     * - keyup: triggered when the key is released
+     * - keypress: OBSOLETE, do not use
      *
-     * On utilise keydown pour les raccourcis car :
-     * - Réponse immédiate à l'appui
-     * - Supporte les touches de modification
-     * - Peut être répété (pratique pour navigation J/K)
+     * We use keydown for shortcuts because:
+     * - Immediate response to the press
+     * - Supports modifier keys
+     * - Can be repeated (useful for J/K navigation)
      */
     document.addEventListener(
       'keydown',
       (e) => this._handleKeydown(e),
-      { capture: true }, // Capturer AVANT le bubbling
+      { capture: true }, // Capture BEFORE bubbling
     )
 
-    // Enregistrer les raccourcis par défaut
+    // Register default shortcuts
     this._registerDefaultShortcuts()
   }
 
   /**
-   * Enregistre les raccourcis par défaut de l'application.
+   * Registers the application's default shortcuts.
    * @private
    */
   _registerDefaultShortcuts() {
-    // Raccourci d'aide (toujours disponible)
+    // Help shortcut (always available)
     this.register('?', {
       handler: () => this.toggleHelpOverlay(),
-      description: "Afficher/masquer l'aide des raccourcis",
+      description: 'Show/hide shortcuts help',
       context: 'global',
     })
 
-    // Recherche
+    // Search
     this.register('ctrl+k', {
       handler: () => this._focusSearch(),
-      description: 'Ouvrir la recherche',
+      description: 'Open search',
       context: 'global',
     })
 
-    // Escape - fermer les modales/lightbox
+    // Escape - close modals/lightbox
     this.register('Escape', {
       handler: () => this._handleEscape(),
-      description: 'Fermer la modale/lightbox',
+      description: 'Close modal/lightbox',
       context: 'global',
     })
 
-    // Navigation médias (J/K comme Vim)
+    // Media navigation (J/K like Vim)
     this.register('j', {
       handler: () => this._navigateMedia('next'),
-      description: 'Média suivant',
+      description: 'Next media',
       context: 'gallery',
     })
 
     this.register('k', {
       handler: () => this._navigateMedia('prev'),
-      description: 'Média précédent',
+      description: 'Previous media',
       context: 'gallery',
     })
 
     // Like
     this.register('l', {
       handler: () => this._likeCurrentMedia(),
-      description: 'Liker le média courant',
+      description: 'Like current media',
       context: 'gallery',
     })
 
     // Lightbox navigation
     this.register('ArrowRight', {
       handler: () => this._lightboxNext(),
-      description: 'Image suivante (lightbox)',
+      description: 'Next image (lightbox)',
       context: 'lightbox',
     })
 
     this.register('ArrowLeft', {
       handler: () => this._lightboxPrev(),
-      description: 'Image précédente (lightbox)',
+      description: 'Previous image (lightbox)',
       context: 'lightbox',
     })
   }
 
   /**
-   * Gère l'événement keydown.
+   * Handles the keydown event.
    *
-   * @param {KeyboardEvent} e - L'événement clavier.
+   * @param {KeyboardEvent} e - The keyboard event.
    * @private
    */
   _handleKeydown(e) {
-    // Ignorer si on est dans un champ de saisie (sauf Escape)
+    // Ignore if we're in an input field (except Escape)
     if (this._isInputFocused(e) && e.key !== 'Escape') {
       return
     }
 
-    // Construire l'identifiant du raccourci
+    // Build the shortcut identifier
     const shortcutKey = this._buildShortcutKey(e)
 
-    // Chercher le raccourci
+    // Look for the shortcut
     const shortcut = this._shortcuts.get(shortcutKey)
 
     if (shortcut && shortcut.enabled) {
-      // Vérifier le contexte
+      // Check the context
       if (this._isContextActive(shortcut.context)) {
         /**
-         * CONCEPT : preventDefault()
+         * CONCEPT: preventDefault()
          *
-         * Empêche le comportement par défaut du navigateur.
-         * Ex: Ctrl+K ouvre normalement la barre d'adresse,
-         * on veut notre propre comportement.
+         * Prevents the browser's default behavior.
+         * E.g., Ctrl+K normally opens the address bar,
+         * we want our own behavior.
          */
         e.preventDefault()
 
         /**
-         * CONCEPT : stopPropagation()
+         * CONCEPT: stopPropagation()
          *
-         * Arrête la propagation de l'événement.
-         * Empêche les autres listeners de recevoir l'événement.
+         * Stops the event propagation.
+         * Prevents other listeners from receiving the event.
          */
         e.stopPropagation()
 
-        // Exécuter le handler
+        // Execute the handler
         shortcut.handler(e)
       }
     }
   }
 
   /**
-   * Vérifie si un champ de saisie a le focus.
+   * Checks if an input field has focus.
    *
-   * @param {KeyboardEvent} e - L'événement clavier.
-   * @returns {boolean} True si un input a le focus.
+   * @param {KeyboardEvent} e - The keyboard event.
+   * @returns {boolean} True if an input has focus.
    * @private
    */
   _isInputFocused(e) {
     const target = e.target
     const tagName = target.tagName.toLowerCase()
 
-    // Inputs, textareas, et éléments contenteditable
+    // Inputs, textareas, and contenteditable elements
     return (
       tagName === 'input' ||
       tagName === 'textarea' ||
@@ -236,27 +236,27 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Construit l'identifiant du raccourci à partir de l'événement.
+   * Builds the shortcut identifier from the event.
    *
    * @description
-   * CONCEPT : Normalisation des raccourcis
+   * CONCEPT: Shortcut Normalization
    *
-   * On construit une chaîne normalisée comme 'ctrl+shift+k'
-   * pour pouvoir la comparer avec les raccourcis enregistrés.
+   * We build a normalized string like 'ctrl+shift+k'
+   * to compare with registered shortcuts.
    *
-   * @param {KeyboardEvent} e - L'événement clavier.
-   * @returns {string} L'identifiant du raccourci.
+   * @param {KeyboardEvent} e - The keyboard event.
+   * @returns {string} The shortcut identifier.
    * @private
    */
   _buildShortcutKey(e) {
     const parts = []
 
-    // Ajouter les modificateurs dans l'ordre
+    // Add modifiers in order
     if (e.ctrlKey || e.metaKey) parts.push('ctrl')
     if (e.altKey) parts.push('alt')
     if (e.shiftKey) parts.push('shift')
 
-    // Ajouter la touche principale (en minuscule sauf touches spéciales)
+    // Add the main key (lowercase except special keys)
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
     parts.push(key)
 
@@ -264,34 +264,34 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Vérifie si un contexte est actif.
+   * Checks if a context is active.
    *
-   * @param {string} context - Le contexte à vérifier.
-   * @returns {boolean} True si le contexte est actif.
+   * @param {string} context - The context to check.
+   * @returns {boolean} True if the context is active.
    * @private
    */
   _isContextActive(context) {
-    // 'global' est toujours actif
+    // 'global' is always active
     if (context === 'global') return true
 
-    // Vérifier le contexte actif
+    // Check the active context
     return context === this._activeContext
   }
 
   /**
-   * Enregistre un nouveau raccourci.
+   * Registers a new shortcut.
    *
-   * @param {string} key - L'identifiant du raccourci (ex: 'ctrl+k', 'Escape').
-   * @param {Object} options - Options du raccourci.
-   * @param {Function} options.handler - Fonction à exécuter.
-   * @param {string} options.description - Description pour l'aide.
-   * @param {string} [options.context='global'] - Contexte du raccourci.
-   * @returns {Function} Fonction pour désinscrire le raccourci.
+   * @param {string} key - The shortcut identifier (e.g., 'ctrl+k', 'Escape').
+   * @param {Object} options - Shortcut options.
+   * @param {Function} options.handler - Function to execute.
+   * @param {string} options.description - Description for help.
+   * @param {string} [options.context='global'] - Shortcut context.
+   * @returns {Function} Function to unregister the shortcut.
    *
    * @example
    * const unregister = shortcuts.register('ctrl+s', {
    *   handler: () => console.log('Save!'),
-   *   description: 'Sauvegarder',
+   *   description: 'Save',
    *   context: 'editor'
    * })
    */
@@ -305,24 +305,24 @@ class KeyboardShortcutManager {
       enabled: true,
     })
 
-    // Retourner une fonction de désinscription
+    // Return an unregister function
     return () => this.unregister(normalizedKey)
   }
 
   /**
-   * Désinscrit un raccourci.
+   * Unregisters a shortcut.
    *
-   * @param {string} key - L'identifiant du raccourci.
+   * @param {string} key - The shortcut identifier.
    */
   unregister(key) {
     this._shortcuts.delete(key.toLowerCase())
   }
 
   /**
-   * Active ou désactive un raccourci.
+   * Enables or disables a shortcut.
    *
-   * @param {string} key - L'identifiant du raccourci.
-   * @param {boolean} enabled - État souhaité.
+   * @param {string} key - The shortcut identifier.
+   * @param {boolean} enabled - Desired state.
    */
   setEnabled(key, enabled) {
     const shortcut = this._shortcuts.get(key.toLowerCase())
@@ -332,80 +332,80 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Change le contexte actif.
+   * Changes the active context.
    *
-   * @param {string} context - Le nouveau contexte.
+   * @param {string} context - The new context.
    */
   setContext(context) {
     this._activeContext = context
   }
 
   /**
-   * Retourne au contexte global.
+   * Returns to the global context.
    */
   resetContext() {
     this._activeContext = 'global'
   }
 
   // ============================================
-  // Handlers des raccourcis par défaut
+  // Default shortcut handlers
   // ============================================
 
   /**
-   * Focus le champ de recherche.
+   * Focuses the search field.
    * @private
    */
   _focusSearch() {
     const searchInput = document.querySelector('.search-bar__input')
     if (searchInput) {
       searchInput.focus()
-      searchInput.select() // Sélectionner le texte existant
+      searchInput.select() // Select existing text
     }
   }
 
   /**
-   * Gère la touche Escape.
+   * Handles the Escape key.
    * @private
    */
   _handleEscape() {
-    // Fermer l'overlay d'aide en premier
+    // Close help overlay first
     if (this._helpOverlayVisible) {
       this.hideHelpOverlay()
       return
     }
 
-    // Fermer la lightbox si ouverte
+    // Close lightbox if open
     if (window.lightbox && window.lightbox.close) {
       window.lightbox.close()
       return
     }
 
-    // Fermer le modal de contact si ouvert
+    // Close contact modal if open
     const contactModal = document.querySelector('.contact-modal')
     if (contactModal && contactModal.style.display !== 'none') {
-      // Chercher la fonction de fermeture
+      // Look for the close function
       const closeBtn = contactModal.querySelector('.contact-modal__close')
       if (closeBtn) closeBtn.click()
       return
     }
 
-    // Défocus l'élément actif
+    // Blur the active element
     if (document.activeElement && document.activeElement !== document.body) {
       document.activeElement.blur()
     }
   }
 
   /**
-   * Navigue entre les médias.
+   * Navigates between media.
    *
-   * @param {string} direction - 'next' ou 'prev'.
+   * @param {string} direction - 'next' or 'prev'.
    * @private
    */
   _navigateMedia(direction) {
     const mediaCards = document.querySelectorAll('.media-card')
     if (mediaCards.length === 0) return
 
-    // Trouver la carte actuellement focusée ou highlighted
+    // Find the currently focused or highlighted card
     const currentIndex = this._getCurrentMediaIndex(mediaCards)
 
     let newIndex
@@ -415,21 +415,21 @@ class KeyboardShortcutManager {
       newIndex = currentIndex > 0 ? currentIndex - 1 : mediaCards.length - 1
     }
 
-    // Focus la nouvelle carte
+    // Focus the new card
     const newCard = mediaCards[newIndex]
     newCard.focus()
     newCard.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-    // Ajouter une classe pour le highlight visuel
+    // Add a class for visual highlight
     mediaCards.forEach((card) => card.classList.remove('media-card--focused'))
     newCard.classList.add('media-card--focused')
   }
 
   /**
-   * Retourne l'index du média actuellement sélectionné.
+   * Returns the index of the currently selected media.
    *
-   * @param {NodeList} mediaCards - Liste des cartes média.
-   * @returns {number} L'index courant.
+   * @param {NodeList} mediaCards - List of media cards.
+   * @returns {number} The current index.
    * @private
    */
   _getCurrentMediaIndex(mediaCards) {
@@ -438,12 +438,12 @@ class KeyboardShortcutManager {
       return Array.from(mediaCards).indexOf(focused)
     }
 
-    // Si aucun n'est focusé, retourner -1 pour commencer au début
+    // If none is focused, return -1 to start at the beginning
     return -1
   }
 
   /**
-   * Like le média actuellement sélectionné.
+   * Likes the currently selected media.
    * @private
    */
   _likeCurrentMedia() {
@@ -457,7 +457,7 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Image suivante dans la lightbox.
+   * Next image in lightbox.
    * @private
    */
   _lightboxNext() {
@@ -467,7 +467,7 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Image précédente dans la lightbox.
+   * Previous image in lightbox.
    * @private
    */
   _lightboxPrev() {
@@ -477,11 +477,11 @@ class KeyboardShortcutManager {
   }
 
   // ============================================
-  // Overlay d'aide
+  // Help overlay
   // ============================================
 
   /**
-   * Toggle l'affichage de l'overlay d'aide.
+   * Toggles the help overlay display.
    */
   toggleHelpOverlay() {
     if (this._helpOverlayVisible) {
@@ -492,7 +492,7 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Affiche l'overlay d'aide avec tous les raccourcis.
+   * Shows the help overlay with all shortcuts.
    */
   showHelpOverlay() {
     if (!this._helpOverlay) {
@@ -503,12 +503,12 @@ class KeyboardShortcutManager {
     this._helpOverlay.classList.add('shortcut-help--visible')
     this._helpOverlayVisible = true
 
-    // Focus l'overlay pour l'accessibilité
+    // Focus the overlay for accessibility
     this._helpOverlay.focus()
   }
 
   /**
-   * Masque l'overlay d'aide.
+   * Hides the help overlay.
    */
   hideHelpOverlay() {
     if (this._helpOverlay) {
@@ -518,17 +518,17 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Crée l'élément DOM de l'overlay d'aide.
+   * Creates the help overlay DOM element.
    * @private
    */
   _createHelpOverlay() {
     this._helpOverlay = document.createElement('div')
     this._helpOverlay.classList.add('shortcut-help')
     this._helpOverlay.setAttribute('role', 'dialog')
-    this._helpOverlay.setAttribute('aria-label', 'Raccourcis clavier')
+    this._helpOverlay.setAttribute('aria-label', 'Keyboard shortcuts')
     this._helpOverlay.setAttribute('tabindex', '-1')
 
-    // Fermer en cliquant sur l'overlay
+    // Close when clicking on the overlay
     this._helpOverlay.addEventListener('click', (e) => {
       if (e.target === this._helpOverlay) {
         this.hideHelpOverlay()
@@ -539,11 +539,11 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Met à jour le contenu de l'overlay d'aide.
+   * Updates the help overlay content.
    * @private
    */
   _updateHelpContent() {
-    // Grouper les raccourcis par contexte
+    // Group shortcuts by context
     const byContext = new Map()
 
     this._shortcuts.forEach((shortcut, key) => {
@@ -553,16 +553,16 @@ class KeyboardShortcutManager {
       byContext.get(shortcut.context).push({ key, ...shortcut })
     })
 
-    // Générer le HTML
+    // Generate the HTML
     let html = `
       <div class="shortcut-help__content">
-        <h2 class="shortcut-help__title">Raccourcis clavier</h2>
-        <button class="shortcut-help__close" aria-label="Fermer">&times;</button>
+        <h2 class="shortcut-help__title">Keyboard shortcuts</h2>
+        <button class="shortcut-help__close" aria-label="Close">&times;</button>
     `
 
     const contextNames = {
       global: 'Global',
-      gallery: 'Galerie',
+      gallery: 'Gallery',
       lightbox: 'Lightbox',
     }
 
@@ -590,22 +590,22 @@ class KeyboardShortcutManager {
     })
 
     html += `
-        <p class="shortcut-help__hint">Appuyez sur <kbd>?</kbd> pour fermer</p>
+        <p class="shortcut-help__hint">Press <kbd>?</kbd> to close</p>
       </div>
     `
 
     this._helpOverlay.innerHTML = html
 
-    // Attacher le listener de fermeture
+    // Attach close listener
     const closeBtn = this._helpOverlay.querySelector('.shortcut-help__close')
     closeBtn.addEventListener('click', () => this.hideHelpOverlay())
   }
 
   /**
-   * Formate une touche pour l'affichage.
+   * Formats a key for display.
    *
-   * @param {string} key - L'identifiant du raccourci.
-   * @returns {string} HTML formaté pour affichage.
+   * @param {string} key - The shortcut identifier.
+   * @returns {string} Formatted HTML for display.
    * @private
    */
   _formatKeyForDisplay(key) {
@@ -613,7 +613,7 @@ class KeyboardShortcutManager {
 
     return parts
       .map((part) => {
-        // Remplacer les noms par des symboles ou noms lisibles
+        // Replace names with symbols or readable names
         const displayMap = {
           ctrl: 'Ctrl',
           alt: 'Alt',
@@ -624,7 +624,7 @@ class KeyboardShortcutManager {
           arrowdown: '↓',
           escape: 'Esc',
           enter: '↵',
-          ' ': 'Espace',
+          ' ': 'Space',
         }
         const display = displayMap[part] || part.toUpperCase()
         return `<kbd>${display}</kbd>`
@@ -633,9 +633,9 @@ class KeyboardShortcutManager {
   }
 
   /**
-   * Retourne tous les raccourcis enregistrés.
+   * Returns all registered shortcuts.
    *
-   * @returns {Map} Map des raccourcis.
+   * @returns {Map} Map of shortcuts.
    */
   getShortcuts() {
     return new Map(this._shortcuts)

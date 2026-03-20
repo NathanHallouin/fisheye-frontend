@@ -1,28 +1,28 @@
 /**
- * Classes d'erreurs personnalisées pour une meilleure gestion des erreurs.
+ * Custom error classes for better error handling.
  *
- * CONCEPT : Custom Error Classes
+ * CONCEPT: Custom Error Classes
  *
- * Créer des classes d'erreur personnalisées permet de:
- * - Identifier le type d'erreur avec instanceof
- * - Ajouter des propriétés spécifiques (statusCode, field, etc.)
- * - Gérer différemment selon le type d'erreur
- * - Avoir des messages plus descriptifs
+ * Creating custom error classes allows you to:
+ * - Identify the error type with instanceof
+ * - Add specific properties (statusCode, field, etc.)
+ * - Handle errors differently based on type
+ * - Have more descriptive messages
  *
- * Toutes les erreurs héritent de Error et préservent la stack trace.
+ * All errors inherit from Error and preserve the stack trace.
  */
 
 /**
- * Classe de base pour les erreurs personnalisées de l'application.
+ * Base class for custom application errors.
  * @extends Error
  */
 class AppError extends Error {
   /**
-   * Crée une erreur applicative.
-   * @param {string} message - Message d'erreur.
-   * @param {Object} [options] - Options supplémentaires.
-   * @param {string} [options.code] - Code d'erreur unique.
-   * @param {Error} [options.cause] - Erreur originale (chaînage).
+   * Creates an application error.
+   * @param {string} message - Error message.
+   * @param {Object} [options] - Additional options.
+   * @param {string} [options.code] - Unique error code.
+   * @param {Error} [options.cause] - Original error (chaining).
    */
   constructor(message, options = {}) {
     super(message)
@@ -30,20 +30,20 @@ class AppError extends Error {
     this.code = options.code || 'APP_ERROR'
     this.timestamp = new Date().toISOString()
 
-    // Chaînage d'erreurs (ES2022)
+    // Error chaining (ES2022)
     if (options.cause) {
       this.cause = options.cause
     }
 
-    // Capture de la stack trace (V8)
+    // Stack trace capture (V8)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor)
     }
   }
 
   /**
-   * Retourne une représentation JSON de l'erreur.
-   * @returns {Object} L'erreur au format JSON.
+   * Returns a JSON representation of the error.
+   * @returns {Object} The error in JSON format.
    */
   toJSON() {
     return {
@@ -57,17 +57,17 @@ class AppError extends Error {
 }
 
 /**
- * Erreur réseau (fetch échoué, timeout, etc.).
+ * Network error (failed fetch, timeout, etc.).
  * @extends AppError
  */
 class NetworkError extends AppError {
   /**
-   * Crée une erreur réseau.
-   * @param {string} message - Message d'erreur.
-   * @param {Object} [options] - Options supplémentaires.
-   * @param {number} [options.statusCode] - Code HTTP.
-   * @param {string} [options.url] - URL de la requête.
-   * @param {string} [options.method] - Méthode HTTP.
+   * Creates a network error.
+   * @param {string} message - Error message.
+   * @param {Object} [options] - Additional options.
+   * @param {number} [options.statusCode] - HTTP status code.
+   * @param {string} [options.url] - Request URL.
+   * @param {string} [options.method] - HTTP method.
    */
   constructor(message, options = {}) {
     super(message, { ...options, code: options.code || 'NETWORK_ERROR' })
@@ -78,57 +78,57 @@ class NetworkError extends AppError {
   }
 
   /**
-   * Vérifie si l'erreur est due à un problème côté client (4xx).
-   * @returns {boolean} True si erreur client.
+   * Checks if the error is due to a client-side issue (4xx).
+   * @returns {boolean} True if client error.
    */
   isClientError() {
     return this.statusCode >= 400 && this.statusCode < 500
   }
 
   /**
-   * Vérifie si l'erreur est due à un problème côté serveur (5xx).
-   * @returns {boolean} True si erreur serveur.
+   * Checks if the error is due to a server-side issue (5xx).
+   * @returns {boolean} True if server error.
    */
   isServerError() {
     return this.statusCode >= 500
   }
 
   /**
-   * Retourne un message utilisateur approprié.
-   * @returns {string} Message pour l'utilisateur.
+   * Returns an appropriate user message.
+   * @returns {string} Message for the user.
    */
   getUserMessage() {
     if (this.statusCode === 404) {
-      return 'La ressource demandée est introuvable.'
+      return 'The requested resource was not found.'
     }
     if (this.statusCode === 403) {
-      return "Vous n'avez pas accès à cette ressource."
+      return 'You do not have access to this resource.'
     }
     if (this.statusCode === 401) {
-      return 'Authentification requise.'
+      return 'Authentication required.'
     }
     if (this.isServerError()) {
-      return 'Une erreur serveur est survenue. Veuillez réessayer plus tard.'
+      return 'A server error occurred. Please try again later.'
     }
     if (!navigator.onLine) {
-      return 'Vous semblez être hors ligne. Vérifiez votre connexion.'
+      return 'You appear to be offline. Check your connection.'
     }
-    return 'Erreur de connexion. Veuillez réessayer.'
+    return 'Connection error. Please try again.'
   }
 }
 
 /**
- * Erreur de validation de données.
+ * Data validation error.
  * @extends AppError
  */
 class ValidationError extends AppError {
   /**
-   * Crée une erreur de validation.
-   * @param {string} message - Message d'erreur.
-   * @param {Object} [options] - Options supplémentaires.
-   * @param {string} [options.field] - Nom du champ invalide.
-   * @param {*} [options.value] - Valeur invalide.
-   * @param {string} [options.rule] - Règle de validation violée.
+   * Creates a validation error.
+   * @param {string} message - Error message.
+   * @param {Object} [options] - Additional options.
+   * @param {string} [options.field] - Invalid field name.
+   * @param {*} [options.value] - Invalid value.
+   * @param {string} [options.rule] - Violated validation rule.
    */
   constructor(message, options = {}) {
     super(message, { ...options, code: options.code || 'VALIDATION_ERROR' })
@@ -139,8 +139,8 @@ class ValidationError extends AppError {
   }
 
   /**
-   * Retourne un message formaté pour l'affichage.
-   * @returns {string} Message formaté.
+   * Returns a formatted message for display.
+   * @returns {string} Formatted message.
    */
   getFieldMessage() {
     if (this.field) {
@@ -151,17 +151,17 @@ class ValidationError extends AppError {
 }
 
 /**
- * Erreur pour les ressources non trouvées.
+ * Error for resources not found.
  * @extends AppError
  */
 class NotFoundError extends AppError {
   /**
-   * Crée une erreur "non trouvé".
-   * @param {string} resourceType - Type de ressource (photographe, media, etc.).
-   * @param {string|number} identifier - Identifiant de la ressource.
+   * Creates a "not found" error.
+   * @param {string} resourceType - Resource type (photographer, media, etc.).
+   * @param {string|number} identifier - Resource identifier.
    */
   constructor(resourceType, identifier) {
-    super(`${resourceType} avec l'identifiant "${identifier}" introuvable.`, {
+    super(`${resourceType} with identifier "${identifier}" not found.`, {
       code: 'NOT_FOUND',
     })
     this.name = 'NotFoundError'
@@ -171,15 +171,15 @@ class NotFoundError extends AppError {
 }
 
 /**
- * Erreur de configuration ou d'environnement.
+ * Configuration or environment error.
  * @extends AppError
  */
 class ConfigError extends AppError {
   /**
-   * Crée une erreur de configuration.
-   * @param {string} message - Message d'erreur.
-   * @param {Object} [options] - Options supplémentaires.
-   * @param {string} [options.configKey] - Clé de configuration manquante/invalide.
+   * Creates a configuration error.
+   * @param {string} message - Error message.
+   * @param {Object} [options] - Additional options.
+   * @param {string} [options.configKey] - Missing/invalid configuration key.
    */
   constructor(message, options = {}) {
     super(message, { ...options, code: 'CONFIG_ERROR' })
@@ -189,17 +189,17 @@ class ConfigError extends AppError {
 }
 
 /**
- * Erreur de timeout.
+ * Timeout error.
  * @extends AppError
  */
 class TimeoutError extends AppError {
   /**
-   * Crée une erreur de timeout.
-   * @param {string} operation - Nom de l'opération qui a timeout.
-   * @param {number} timeout - Durée du timeout en ms.
+   * Creates a timeout error.
+   * @param {string} operation - Name of the operation that timed out.
+   * @param {number} timeout - Timeout duration in ms.
    */
   constructor(operation, timeout) {
-    super(`L'opération "${operation}" a dépassé le délai de ${timeout}ms.`, {
+    super(`Operation "${operation}" exceeded the ${timeout}ms timeout.`, {
       code: 'TIMEOUT',
     })
     this.name = 'TimeoutError'
@@ -209,19 +209,19 @@ class TimeoutError extends AppError {
 }
 
 /**
- * Erreur pour les opérations non supportées.
+ * Error for unsupported operations.
  * @extends AppError
  */
 class UnsupportedError extends AppError {
   /**
-   * Crée une erreur "non supporté".
-   * @param {string} feature - Fonctionnalité non supportée.
-   * @param {string} [alternative] - Alternative suggérée.
+   * Creates an "unsupported" error.
+   * @param {string} feature - Unsupported feature.
+   * @param {string} [alternative] - Suggested alternative.
    */
   constructor(feature, alternative = null) {
     const message = alternative
-      ? `"${feature}" n'est pas supporté. Alternative: ${alternative}`
-      : `"${feature}" n'est pas supporté par ce navigateur.`
+      ? `"${feature}" is not supported. Alternative: ${alternative}`
+      : `"${feature}" is not supported by this browser.`
 
     super(message, { code: 'UNSUPPORTED' })
     this.name = 'UnsupportedError'
@@ -231,19 +231,19 @@ class UnsupportedError extends AppError {
 }
 
 /**
- * Erreur de permission ou d'autorisation.
+ * Permission or authorization error.
  * @extends AppError
  */
 class PermissionError extends AppError {
   /**
-   * Crée une erreur de permission.
-   * @param {string} permission - Permission requise.
-   * @param {string} [action] - Action tentée.
+   * Creates a permission error.
+   * @param {string} permission - Required permission.
+   * @param {string} [action] - Attempted action.
    */
   constructor(permission, action = null) {
     const message = action
-      ? `Permission "${permission}" requise pour ${action}.`
-      : `Permission "${permission}" refusée.`
+      ? `Permission "${permission}" required for ${action}.`
+      : `Permission "${permission}" denied.`
 
     super(message, { code: 'PERMISSION_DENIED' })
     this.name = 'PermissionError'
@@ -253,13 +253,13 @@ class PermissionError extends AppError {
 }
 
 /**
- * Utilitaire pour gérer les erreurs de manière centralisée.
+ * Utility for centralized error handling.
  */
 class ErrorHandler {
   /**
-   * Gère une erreur et retourne un message utilisateur approprié.
-   * @param {Error} error - L'erreur à gérer.
-   * @returns {string} Message pour l'utilisateur.
+   * Handles an error and returns an appropriate user message.
+   * @param {Error} error - The error to handle.
+   * @returns {string} Message for the user.
    */
   static getDisplayMessage(error) {
     if (error instanceof NetworkError) {
@@ -271,11 +271,11 @@ class ErrorHandler {
     }
 
     if (error instanceof NotFoundError) {
-      return `${error.resourceType} introuvable.`
+      return `${error.resourceType} not found.`
     }
 
     if (error instanceof TimeoutError) {
-      return "L'opération a pris trop de temps. Veuillez réessayer."
+      return 'The operation took too long. Please try again.'
     }
 
     if (error instanceof UnsupportedError) {
@@ -283,21 +283,21 @@ class ErrorHandler {
     }
 
     if (error instanceof PermissionError) {
-      return "Vous n'avez pas la permission d'effectuer cette action."
+      return 'You do not have permission to perform this action.'
     }
 
-    // Erreur générique
-    return 'Une erreur inattendue est survenue.'
+    // Generic error
+    return 'An unexpected error occurred.'
   }
 
   /**
-   * Détermine si l'erreur est récupérable (peut être retentée).
-   * @param {Error} error - L'erreur à analyser.
-   * @returns {boolean} True si l'erreur peut être retentée.
+   * Determines if the error is recoverable (can be retried).
+   * @param {Error} error - The error to analyze.
+   * @returns {boolean} True if the error can be retried.
    */
   static isRetryable(error) {
     if (error instanceof NetworkError) {
-      // Les erreurs serveur peuvent être retentées
+      // Server errors can be retried
       return error.isServerError() || error.statusCode === null
     }
 
@@ -309,9 +309,9 @@ class ErrorHandler {
   }
 
   /**
-   * Log une erreur avec contexte.
-   * @param {Error} error - L'erreur à logger.
-   * @param {Object} [context] - Contexte additionnel.
+   * Logs an error with context.
+   * @param {Error} error - The error to log.
+   * @param {Object} [context] - Additional context.
    */
   static log(error, context = {}) {
     const errorInfo = {
@@ -323,10 +323,10 @@ class ErrorHandler {
       timestamp: new Date().toISOString(),
     }
 
-    // En développement, afficher l'erreur complète
+    // In development, display the full error
     console.error('[ErrorHandler]', errorInfo)
 
-    // Ici on pourrait envoyer à un service de monitoring
+    // Here we could send to a monitoring service
     // sendToMonitoring(errorInfo)
   }
 }

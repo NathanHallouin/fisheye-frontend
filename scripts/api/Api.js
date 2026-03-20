@@ -1,9 +1,9 @@
 class Api {
   /**
-   * @param {string} url - L'URL de l'API.
-   * @param {Object} [options] - Options de configuration.
-   * @param {boolean} [options.useCache=true] - Utiliser le cache.
-   * @param {number} [options.cacheTTL=300000] - TTL du cache (5 min par défaut).
+   * @param {string} url - The API URL.
+   * @param {Object} [options] - Configuration options.
+   * @param {boolean} [options.useCache=true] - Use cache.
+   * @param {number} [options.cacheTTL=300000] - Cache TTL (5 min by default).
    */
   constructor(url, options = {}) {
     this._url = url
@@ -14,32 +14,32 @@ class Api {
   }
 
   /**
-   * Effectue une requête GET pour récupérer les données.
+   * Performs a GET request to retrieve data.
    *
    * @description
-   * CONCEPT : Cache de Promises
-   * Si le cache est activé, on utilise le CacheManager pour éviter
-   * les requêtes redondantes. Le cache stocke la Promise elle-même,
-   * ce qui évite les requêtes en double même si elles sont simultanées.
+   * CONCEPT: Promise Cache
+   * If caching is enabled, we use the CacheManager to avoid
+   * redundant requests. The cache stores the Promise itself,
+   * which prevents duplicate requests even if they are simultaneous.
    *
    * @async
-   * @returns {Promise<Object|null>} Les données JSON ou null en cas d'erreur.
+   * @returns {Promise<Object|null>} The JSON data or null on error.
    */
   async get() {
-    // Si le cache est activé et disponible
+    // If cache is enabled and available
     if (this._useCache && this._cache) {
       return this._cache.get(this._url, () => this._fetch(), this._cacheTTL)
     }
 
-    // Sinon, requête directe
+    // Otherwise, direct request
     return this._fetch()
   }
 
   /**
-   * Effectue la requête fetch.
+   * Performs the fetch request.
    *
    * @async
-   * @returns {Promise<Object|null>} Les données JSON ou null en cas d'erreur.
+   * @returns {Promise<Object|null>} The JSON data or null on error.
    * @private
    */
   async _fetch() {
@@ -47,16 +47,16 @@ class Api {
       const res = await fetch(this._url)
       return await res.json()
     } catch (err) {
-      console.error('Une erreur est survenue', err)
+      console.error('An error occurred', err)
       return null
     }
   }
 
   /**
-   * Force le rechargement des données (ignore le cache).
+   * Forces data reload (ignores cache).
    *
    * @async
-   * @returns {Promise<Object|null>} Les données JSON ou null en cas d'erreur.
+   * @returns {Promise<Object|null>} The JSON data or null on error.
    */
   async refresh() {
     if (this._cache) {
@@ -66,7 +66,7 @@ class Api {
   }
 
   /**
-   * Invalide le cache pour cette URL.
+   * Invalidates the cache for this URL.
    */
   invalidateCache() {
     if (this._cache) {
@@ -76,20 +76,20 @@ class Api {
 }
 
 /**
- * Classe pour récupérer les données des photographes via l'API.
+ * Class to retrieve photographer data via the API.
  * @extends Api
  */
 class PhotographerApi extends Api {
   /**
-   * @param {string} url - L'URL de l'API des photographes.
+   * @param {string} url - The photographers API URL.
    */
   constructor(url) {
     super(url)
   }
   /**
-   * Récupère les données des photographes.
+   * Retrieves photographer data.
    * @async
-   * @returns {Promise<Object|null>} Les données JSON ou null en cas d'erreur.
+   * @returns {Promise<Object|null>} The JSON data or null on error.
    */
   async getPhotographers() {
     return await this.get()

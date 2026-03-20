@@ -1,10 +1,10 @@
 /**
- * Classe utilitaire pour la validation de formulaires.
- * Fournit des méthodes statiques pour valider différents types de champs.
+ * Utility class for form validation.
+ * Provides static methods to validate different types of fields.
  */
 class Validator {
   /**
-   * Patterns regex pour la validation.
+   * Regex patterns for validation.
    */
   static PATTERNS = {
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -13,7 +13,7 @@ class Validator {
   }
 
   /**
-   * Messages d'erreur par défaut.
+   * Default error messages.
    */
   static MESSAGES = {
     required: 'Ce champ est requis',
@@ -25,9 +25,9 @@ class Validator {
   }
 
   /**
-   * Valide qu'un champ n'est pas vide.
-   * @param {string} value - La valeur à valider.
-   * @returns {{valid: boolean, message: string}} Résultat de la validation.
+   * Validates that a field is not empty.
+   * @param {string} value - The value to validate.
+   * @returns {{valid: boolean, message: string}} Validation result.
    */
   static required(value) {
     const trimmed = value?.trim() || ''
@@ -38,14 +38,14 @@ class Validator {
   }
 
   /**
-   * Valide une adresse email.
-   * @param {string} value - L'email à valider.
-   * @returns {{valid: boolean, message: string}} Résultat de la validation.
+   * Validates an email address.
+   * @param {string} value - The email to validate.
+   * @returns {{valid: boolean, message: string}} Validation result.
    */
   static email(value) {
     const trimmed = value?.trim() || ''
     if (trimmed.length === 0) {
-      return { valid: true, message: '' } // Laisser required gérer les champs vides
+      return { valid: true, message: '' } // Let required handle empty fields
     }
     return {
       valid: Validator.PATTERNS.email.test(trimmed),
@@ -54,10 +54,10 @@ class Validator {
   }
 
   /**
-   * Valide une longueur minimale.
-   * @param {string} value - La valeur à valider.
-   * @param {number} min - La longueur minimale.
-   * @returns {{valid: boolean, message: string}} Résultat de la validation.
+   * Validates a minimum length.
+   * @param {string} value - The value to validate.
+   * @param {number} min - The minimum length.
+   * @returns {{valid: boolean, message: string}} Validation result.
    */
   static minLength(value, min) {
     const trimmed = value?.trim() || ''
@@ -71,10 +71,10 @@ class Validator {
   }
 
   /**
-   * Valide une longueur maximale.
-   * @param {string} value - La valeur à valider.
-   * @param {number} max - La longueur maximale.
-   * @returns {{valid: boolean, message: string}} Résultat de la validation.
+   * Validates a maximum length.
+   * @param {string} value - The value to validate.
+   * @param {number} max - The maximum length.
+   * @returns {{valid: boolean, message: string}} Validation result.
    */
   static maxLength(value, max) {
     const trimmed = value?.trim() || ''
@@ -85,9 +85,9 @@ class Validator {
   }
 
   /**
-   * Valide un nom (prénom ou nom de famille).
-   * @param {string} value - Le nom à valider.
-   * @returns {{valid: boolean, message: string}} Résultat de la validation.
+   * Validates a name (first name or last name).
+   * @param {string} value - The name to validate.
+   * @returns {{valid: boolean, message: string}} Validation result.
    */
   static name(value) {
     const trimmed = value?.trim() || ''
@@ -101,11 +101,11 @@ class Validator {
   }
 
   /**
-   * Valide avec un pattern regex personnalisé.
-   * @param {string} value - La valeur à valider.
-   * @param {RegExp} pattern - Le pattern regex.
-   * @param {string} [message] - Message d'erreur personnalisé.
-   * @returns {{valid: boolean, message: string}} Résultat de la validation.
+   * Validates with a custom regex pattern.
+   * @param {string} value - The value to validate.
+   * @param {RegExp} pattern - The regex pattern.
+   * @param {string} [message] - Custom error message.
+   * @returns {{valid: boolean, message: string}} Validation result.
    */
   static pattern(value, pattern, message = Validator.MESSAGES.pattern) {
     const trimmed = value?.trim() || ''
@@ -119,10 +119,10 @@ class Validator {
   }
 
   /**
-   * Valide un champ avec plusieurs règles.
-   * @param {string} value - La valeur à valider.
-   * @param {Array<{rule: string, params?: any}>} rules - Les règles à appliquer.
-   * @returns {{valid: boolean, message: string, errors: string[]}} Résultat de la validation.
+   * Validates a field with multiple rules.
+   * @param {string} value - The value to validate.
+   * @param {Array<{rule: string, params?: any}>} rules - The rules to apply.
+   * @returns {{valid: boolean, message: string, errors: string[]}} Validation result.
    */
   static validate(value, rules) {
     const errors = []
@@ -167,9 +167,9 @@ class Validator {
   }
 
   /**
-   * Crée un validateur de formulaire pour un ensemble de champs.
-   * @param {Object} config - Configuration des champs et leurs règles.
-   * @returns {Function} Fonction de validation du formulaire.
+   * Creates a form validator for a set of fields.
+   * @param {Object} config - Configuration of fields and their rules.
+   * @returns {Function} Form validation function.
    */
   static createFormValidator(config) {
     return (formData) => {

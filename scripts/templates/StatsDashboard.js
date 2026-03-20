@@ -1,56 +1,56 @@
 /**
- * Composant pour afficher un tableau de bord de statistiques.
+ * Component to display a statistics dashboard.
  *
  * @description
- * Crée une interface visuelle pour afficher les statistiques calculées
- * par StatsCalculator. Utilise DOM manipulation pour construire
- * dynamiquement le dashboard.
+ * Creates a visual interface to display statistics calculated
+ * by StatsCalculator. Uses DOM manipulation to dynamically build
+ * the dashboard.
  */
 class StatsDashboard {
   /**
-   * Crée une instance de StatsDashboard.
+   * Creates a StatsDashboard instance.
    *
-   * @param {StatsCalculator} statsCalculator - Instance du calculateur de stats.
+   * @param {StatsCalculator} statsCalculator - Stats calculator instance.
    */
   constructor(statsCalculator) {
     this._stats = statsCalculator
   }
 
   /**
-   * Crée le dashboard complet.
+   * Creates the complete dashboard.
    *
-   * @returns {HTMLElement} L'élément conteneur du dashboard.
+   * @returns {HTMLElement} The dashboard container element.
    */
   createDashboard() {
     const container = document.createElement('div')
     container.classList.add('stats-dashboard')
 
-    // Récupérer toutes les statistiques
+    // Retrieve all statistics
     const summary = this._stats.getFullSummary()
 
-    // Section des statistiques générales
+    // General statistics section
     container.appendChild(this._createOverviewSection(summary))
 
-    // Section des photographes
+    // Photographers section
     container.appendChild(this._createPhotographersSection(summary))
 
-    // Section des médias
+    // Media section
     container.appendChild(this._createMediaSection(summary))
 
-    // Section des tags
+    // Tags section
     container.appendChild(this._createTagsSection(summary))
 
-    // Section par pays
+    // By country section
     container.appendChild(this._createCountrySection(summary))
 
     return container
   }
 
   /**
-   * Crée la section d'aperçu général.
+   * Creates the general overview section.
    *
-   * @param {Object} summary - Les données du résumé.
-   * @returns {HTMLElement} La section d'aperçu.
+   * @param {Object} summary - The summary data.
+   * @returns {HTMLElement} The overview section.
    * @private
    */
   _createOverviewSection(summary) {
@@ -61,20 +61,20 @@ class StatsDashboard {
     const title = document.createElement('h2')
     title.id = 'overview-title'
     title.classList.add('stats-section__title')
-    title.textContent = 'Aperçu général'
+    title.textContent = 'General Overview'
 
     const grid = document.createElement('div')
     grid.classList.add('stats-grid')
 
-    // Cartes de statistiques principales
+    // Main statistics cards
     const cards = [
       {
-        label: 'Photographes',
+        label: 'Photographers',
         value: summary.photographers.total,
         icon: '📷',
       },
       {
-        label: 'Médias',
+        label: 'Media',
         value: summary.media.total,
         icon: '🖼️',
       },
@@ -84,8 +84,8 @@ class StatsDashboard {
         icon: '❤️',
       },
       {
-        label: 'Prix moyen',
-        value: `${summary.photographers.priceStats.average}€/jour`,
+        label: 'Average price',
+        value: `${summary.photographers.priceStats.average}€/day`,
         icon: '💰',
       },
     ]
@@ -101,10 +101,10 @@ class StatsDashboard {
   }
 
   /**
-   * Crée la section des photographes.
+   * Creates the photographers section.
    *
-   * @param {Object} summary - Les données du résumé.
-   * @returns {HTMLElement} La section des photographes.
+   * @param {Object} summary - The summary data.
+   * @returns {HTMLElement} The photographers section.
    * @private
    */
   _createPhotographersSection(summary) {
@@ -115,18 +115,18 @@ class StatsDashboard {
     const title = document.createElement('h2')
     title.id = 'photographers-title'
     title.classList.add('stats-section__title')
-    title.textContent = 'Photographes'
+    title.textContent = 'Photographers'
 
     section.appendChild(title)
 
-    // Carte du plus populaire
+    // Most popular card
     if (summary.highlights.mostPopular) {
       const highlight = document.createElement('div')
       highlight.classList.add('stats-highlight')
 
       const highlightTitle = document.createElement('h3')
       highlightTitle.classList.add('stats-highlight__title')
-      highlightTitle.textContent = 'Plus populaire'
+      highlightTitle.textContent = 'Most Popular'
 
       const highlightContent = document.createElement('div')
       highlightContent.classList.add('stats-highlight__content')
@@ -146,13 +146,13 @@ class StatsDashboard {
       section.appendChild(highlight)
     }
 
-    // Statistiques de prix
+    // Price statistics
     const priceStats = document.createElement('div')
     priceStats.classList.add('stats-price')
 
     const priceTitle = document.createElement('h3')
     priceTitle.classList.add('stats-price__title')
-    priceTitle.textContent = 'Tarifs journaliers'
+    priceTitle.textContent = 'Daily Rates'
 
     const priceGrid = document.createElement('div')
     priceGrid.classList.add('stats-price__grid')
@@ -161,7 +161,7 @@ class StatsDashboard {
       { label: 'Minimum', value: `${summary.photographers.priceStats.min}€` },
       { label: 'Maximum', value: `${summary.photographers.priceStats.max}€` },
       {
-        label: 'Moyenne',
+        label: 'Average',
         value: `${summary.photographers.priceStats.average}€`,
       },
     ]
@@ -191,10 +191,10 @@ class StatsDashboard {
   }
 
   /**
-   * Crée la section des médias.
+   * Creates the media section.
    *
-   * @param {Object} summary - Les données du résumé.
-   * @returns {HTMLElement} La section des médias.
+   * @param {Object} summary - The summary data.
+   * @returns {HTMLElement} The media section.
    * @private
    */
   _createMediaSection(summary) {
@@ -205,11 +205,11 @@ class StatsDashboard {
     const title = document.createElement('h2')
     title.id = 'media-title'
     title.classList.add('stats-section__title')
-    title.textContent = 'Médias'
+    title.textContent = 'Media'
 
     section.appendChild(title)
 
-    // Répartition images/vidéos
+    // Image/video distribution
     const distribution = document.createElement('div')
     distribution.classList.add('stats-distribution')
 
@@ -217,13 +217,13 @@ class StatsDashboard {
     const imagePercent = Math.round((summary.media.images / total) * 100)
     const videoPercent = 100 - imagePercent
 
-    // Barre de progression
+    // Progress bar
     const bar = document.createElement('div')
     bar.classList.add('stats-bar')
     bar.setAttribute('role', 'img')
     bar.setAttribute(
       'aria-label',
-      `${imagePercent}% images, ${videoPercent}% vidéos`,
+      `${imagePercent}% images, ${videoPercent}% videos`,
     )
 
     const imageBar = document.createElement('div')
@@ -237,7 +237,7 @@ class StatsDashboard {
     bar.appendChild(imageBar)
     bar.appendChild(videoBar)
 
-    // Légende
+    // Legend
     const legend = document.createElement('div')
     legend.classList.add('stats-legend')
 
@@ -248,7 +248,7 @@ class StatsDashboard {
       'images',
     )
     const videoLegend = this._createLegendItem(
-      'Vidéos',
+      'Videos',
       summary.media.videos,
       videoPercent,
       'videos',
@@ -265,10 +265,10 @@ class StatsDashboard {
   }
 
   /**
-   * Crée la section des tags.
+   * Creates the tags section.
    *
-   * @param {Object} summary - Les données du résumé.
-   * @returns {HTMLElement} La section des tags.
+   * @param {Object} summary - The summary data.
+   * @returns {HTMLElement} The tags section.
    * @private
    */
   _createTagsSection(summary) {
@@ -279,15 +279,15 @@ class StatsDashboard {
     const title = document.createElement('h2')
     title.id = 'tags-title'
     title.classList.add('stats-section__title')
-    title.textContent = 'Médias par catégorie'
+    title.textContent = 'Media by Category'
 
     section.appendChild(title)
 
-    // Liste des tags avec barres de progression
+    // Tags list with progress bars
     const tagsList = document.createElement('div')
     tagsList.classList.add('stats-tags')
 
-    // Trouver le maximum pour calculer les pourcentages relatifs
+    // Find maximum to calculate relative percentages
     const maxCount = Math.max(...summary.media.byTag.map((t) => t.count))
 
     summary.media.byTag.forEach((tagData) => {
@@ -308,7 +308,7 @@ class StatsDashboard {
       tagHeader.appendChild(tagName)
       tagHeader.appendChild(tagCount)
 
-      // Barre de progression relative
+      // Relative progress bar
       const tagBar = document.createElement('div')
       tagBar.classList.add('stats-tag__bar')
 
@@ -329,10 +329,10 @@ class StatsDashboard {
   }
 
   /**
-   * Crée la section par pays.
+   * Creates the by country section.
    *
-   * @param {Object} summary - Les données du résumé.
-   * @returns {HTMLElement} La section par pays.
+   * @param {Object} summary - The summary data.
+   * @returns {HTMLElement} The by country section.
    * @private
    */
   _createCountrySection(summary) {
@@ -343,18 +343,18 @@ class StatsDashboard {
     const title = document.createElement('h2')
     title.id = 'countries-title'
     title.classList.add('stats-section__title')
-    title.textContent = 'Par pays'
+    title.textContent = 'By Country'
 
     section.appendChild(title)
 
     const table = document.createElement('table')
     table.classList.add('stats-table')
 
-    // En-tête
+    // Header
     const thead = document.createElement('thead')
     const headerRow = document.createElement('tr')
 
-    const headers = ['Pays', 'Photographes', 'Prix moyen']
+    const headers = ['Country', 'Photographers', 'Average Price']
     headers.forEach((headerText) => {
       const th = document.createElement('th')
       th.scope = 'col'
@@ -365,7 +365,7 @@ class StatsDashboard {
     thead.appendChild(headerRow)
     table.appendChild(thead)
 
-    // Corps
+    // Body
     const tbody = document.createElement('tbody')
 
     summary.photographers.byCountry.forEach((countryData) => {
@@ -393,13 +393,13 @@ class StatsDashboard {
   }
 
   /**
-   * Crée une carte de statistique.
+   * Creates a statistics card.
    *
-   * @param {Object} data - Les données de la carte.
-   * @param {string} data.label - Le libellé.
-   * @param {string|number} data.value - La valeur.
-   * @param {string} data.icon - L'icône emoji.
-   * @returns {HTMLElement} La carte de statistique.
+   * @param {Object} data - The card data.
+   * @param {string} data.label - The label.
+   * @param {string|number} data.value - The value.
+   * @param {string} data.icon - The emoji icon.
+   * @returns {HTMLElement} The statistics card.
    * @private
    */
   _createStatCard(data) {
@@ -431,13 +431,13 @@ class StatsDashboard {
   }
 
   /**
-   * Crée un élément de légende.
+   * Creates a legend item.
    *
-   * @param {string} label - Le libellé.
-   * @param {number} count - Le nombre.
-   * @param {number} percent - Le pourcentage.
-   * @param {string} type - Le type (pour la classe CSS).
-   * @returns {HTMLElement} L'élément de légende.
+   * @param {string} label - The label.
+   * @param {number} count - The count.
+   * @param {number} percent - The percentage.
+   * @param {string} type - The type (for CSS class).
+   * @returns {HTMLElement} The legend item.
    * @private
    */
   _createLegendItem(label, count, percent, type) {
@@ -458,10 +458,10 @@ class StatsDashboard {
   }
 
   /**
-   * Formate un nombre avec des séparateurs de milliers.
+   * Formats a number with thousand separators.
    *
-   * @param {number} num - Le nombre à formater.
-   * @returns {string} Le nombre formaté.
+   * @param {number} num - The number to format.
+   * @returns {string} The formatted number.
    * @private
    */
   _formatNumber(num) {

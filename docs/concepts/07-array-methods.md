@@ -1,24 +1,24 @@
-# Méthodes de tableau (Array Methods)
+# Array Methods
 
 ## Concept
 
-JavaScript offre de nombreuses méthodes pour manipuler les tableaux de manière fonctionnelle. Ces méthodes sont essentielles pour transformer, filtrer et agréger des données.
+JavaScript offers many methods to manipulate arrays in a functional way. These methods are essential for transforming, filtering, and aggregating data.
 
 ---
 
 ## map()
 
-Transforme chaque élément du tableau et retourne un nouveau tableau.
+Transforms each element of the array and returns a new array.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const result = array.map((element, index, array) => transformation)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/factories/PhotographersFactory.js](../../scripts/factories/PhotographersFactory.js)
+**File**: [scripts/factories/PhotographersFactory.js](../../scripts/factories/PhotographersFactory.js)
 
 ```javascript
 constructor(data, type) {
@@ -28,7 +28,7 @@ constructor(data, type) {
 }
 ```
 
-**Fichier**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
+**File**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
 
 ```javascript
 _getAllTags() {
@@ -45,17 +45,17 @@ _getAllTags() {
 
 ## filter()
 
-Retourne un nouveau tableau contenant les éléments qui passent le test.
+Returns a new array containing elements that pass the test.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const result = array.filter((element, index, array) => condition)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 _filterPhotographers(state) {
@@ -74,7 +74,7 @@ _filterPhotographers(state) {
 }
 ```
 
-**Fichier**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
+**File**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
 
 ```javascript
 filter(photographers) {
@@ -92,18 +92,18 @@ filter(photographers) {
 
 ## find() / findIndex()
 
-Trouve le premier élément qui satisfait la condition.
+Finds the first element that satisfies the condition.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const element = array.find((element) => condition)
 const index = array.findIndex((element) => condition)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 isFavorite(photographerId) {
@@ -119,7 +119,7 @@ remove(photographerId) {
 }
 ```
 
-**Fichier**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
+**File**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
 
 ```javascript
 _findCurrentIndex() {
@@ -133,9 +133,9 @@ _findCurrentIndex() {
 
 ## reduce()
 
-Réduit le tableau à une seule valeur en accumulant les résultats.
+Reduces the array to a single value by accumulating results.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const result = array.reduce((accumulator, current, index, array) => {
@@ -143,9 +143,9 @@ const result = array.reduce((accumulator, current, index, array) => {
 }, initialValue)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/StatsCalculator.js](../../scripts/utils/StatsCalculator.js)
+**File**: [scripts/utils/StatsCalculator.js](../../scripts/utils/StatsCalculator.js)
 
 ```javascript
 getTotalLikes() {
@@ -161,10 +161,10 @@ _getLikesByPhotographer() {
 }
 ```
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
-// Grouper les médias par catégorie
+// Group media by category
 const grouped = media.reduce((acc, item) => {
   const key = item.category || 'other'
   if (!acc[key]) acc[key] = []
@@ -177,25 +177,25 @@ const grouped = media.reduce((acc, item) => {
 
 ## sort()
 
-Trie le tableau en place (mute le tableau original).
+Sorts the array in place (mutates the original array).
 
-### Syntaxe
+### Syntax
 
 ```javascript
-array.sort((a, b) => comparison)  // Retourne négatif, zéro, ou positif
+array.sort((a, b) => comparison)  // Returns negative, zero, or positive
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
 sort(data) {
-  const sortedData = [...data]  // Copie pour éviter mutation
+  const sortedData = [...data]  // Copy to avoid mutation
 
   switch (this._currentSort) {
     case 'popularity':
-      sortedData.sort((a, b) => b._likes - a._likes)  // Décroissant
+      sortedData.sort((a, b) => b._likes - a._likes)  // Descending
       break
     case 'date':
       sortedData.sort((a, b) => new Date(b._date) - new Date(a._date))
@@ -215,9 +215,9 @@ sort(data) {
 
 ## forEach()
 
-Exécute une fonction pour chaque élément (ne retourne rien).
+Executes a function for each element (returns nothing).
 
-### Syntaxe
+### Syntax
 
 ```javascript
 array.forEach((element, index, array) => {
@@ -225,9 +225,9 @@ array.forEach((element, index, array) => {
 })
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 _displayPhotographers(photographers) {
@@ -244,24 +244,24 @@ _displayPhotographers(photographers) {
 
 ## some() / every()
 
-Testent si au moins un (some) ou tous (every) les éléments passent le test.
+Test whether at least one (some) or all (every) elements pass the test.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const hasMatch = array.some((element) => condition)
 const allMatch = array.every((element) => condition)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 _filterPhotographers(state) {
   if (state.tags && state.tags.length > 0) {
     filtered = filtered.filter(photographer =>
-      state.tags.some(tag => photographer.hasTag(tag))  // Au moins un tag
+      state.tags.some(tag => photographer.hasTag(tag))  // At least one tag
     )
   }
   return filtered
@@ -272,17 +272,17 @@ _filterPhotographers(state) {
 
 ## includes()
 
-Vérifie si un tableau contient une valeur.
+Checks if an array contains a value.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const hasValue = array.includes(value)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
+**File**: [scripts/utils/UrlStateManager.js](../../scripts/utils/UrlStateManager.js)
 
 ```javascript
 hasTag(tag) {
@@ -294,22 +294,22 @@ hasTag(tag) {
 
 ## flatMap()
 
-Combine map() et flat() - transforme et aplatit en une étape.
+Combines map() and flat() - transforms and flattens in one step.
 
-### Syntaxe
+### Syntax
 
 ```javascript
 const result = array.flatMap((element) => transformation)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
+**File**: [scripts/templates/TagFilter.js](../../scripts/templates/TagFilter.js)
 
 ```javascript
 _getAllTags() {
-  // Chaque photographe a un tableau de tags
-  // flatMap aplatit tous les tableaux en un seul
+  // Each photographer has an array of tags
+  // flatMap flattens all arrays into one
   const allTags = this._photographers.flatMap(p => p.tags)
   // ['portrait', 'art', 'portrait', 'nature'] -> Set -> ['portrait', 'art', 'nature']
   return [...new Set(allTags)]
@@ -320,23 +320,23 @@ _getAllTags() {
 
 ## splice()
 
-Modifie le tableau en supprimant/ajoutant des éléments (mutation).
+Modifies the array by removing/adding elements (mutation).
 
-### Syntaxe
+### Syntax
 
 ```javascript
 array.splice(startIndex, deleteCount, ...itemsToAdd)
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 remove(photographerId) {
   const index = this._favorites.findIndex(fav => fav.id === photographerId)
   if (index !== -1) {
-    this._favorites.splice(index, 1)  // Supprime 1 élément à index
+    this._favorites.splice(index, 1)  // Removes 1 element at index
     this._save()
   }
 }
@@ -344,60 +344,60 @@ remove(photographerId) {
 
 ---
 
-## Tableau récapitulatif
+## Summary Table
 
-| Méthode | Retourne | Mute | Usage |
-|---------|----------|------|-------|
-| `map()` | Nouveau tableau | Non | Transformer |
-| `filter()` | Nouveau tableau | Non | Filtrer |
-| `find()` | Élément ou undefined | Non | Chercher premier match |
-| `findIndex()` | Index ou -1 | Non | Chercher index |
-| `reduce()` | Valeur unique | Non | Agréger |
-| `sort()` | Tableau trié | **Oui** | Trier |
-| `forEach()` | undefined | Non | Side effects |
-| `some()` | boolean | Non | Test partiel |
-| `every()` | boolean | Non | Test total |
-| `includes()` | boolean | Non | Vérifier présence |
-| `flatMap()` | Nouveau tableau | Non | Map + flatten |
-| `splice()` | Éléments supprimés | **Oui** | Modifier |
+| Method | Returns | Mutates | Usage |
+|--------|---------|---------|-------|
+| `map()` | New array | No | Transform |
+| `filter()` | New array | No | Filter |
+| `find()` | Element or undefined | No | Find first match |
+| `findIndex()` | Index or -1 | No | Find index |
+| `reduce()` | Single value | No | Aggregate |
+| `sort()` | Sorted array | **Yes** | Sort |
+| `forEach()` | undefined | No | Side effects |
+| `some()` | boolean | No | Partial test |
+| `every()` | boolean | No | Total test |
+| `includes()` | boolean | No | Check presence |
+| `flatMap()` | New array | No | Map + flatten |
+| `splice()` | Removed elements | **Yes** | Modify |
 
 ---
 
-## Chaînage de méthodes
+## Method Chaining
 
-Les méthodes peuvent être chaînées pour des transformations complexes :
+Methods can be chained for complex transformations:
 
 ```javascript
 const result = photographers
-  .filter(p => p.price < 200)                    // Filtrer par prix
-  .map(p => ({ name: p.name, price: p.price }))  // Extraire propriétés
-  .sort((a, b) => a.price - b.price)             // Trier par prix
+  .filter(p => p.price < 200)                    // Filter by price
+  .map(p => ({ name: p.name, price: p.price }))  // Extract properties
+  .sort((a, b) => a.price - b.price)             // Sort by price
 
-// Résultat: [{ name: 'Alice', price: 100 }, { name: 'Bob', price: 150 }]
+// Result: [{ name: 'Alice', price: 100 }, { name: 'Bob', price: 150 }]
 ```
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Implémenter ces fonctions avec les méthodes de tableau :
+Implement these functions with array methods:
 
 ```javascript
-// 1. Trouver les photographes parisiens
+// 1. Find Parisian photographers
 const parisian = photographers.filter(p => p.city === 'Paris')
 
-// 2. Calculer le prix moyen
+// 2. Calculate average price
 const avgPrice = photographers.reduce((sum, p) => sum + p.price, 0) / photographers.length
 
-// 3. Obtenir les noms triés alphabétiquement
+// 3. Get alphabetically sorted names
 const names = photographers
   .map(p => p.name)
   .sort((a, b) => a.localeCompare(b, 'fr'))
 
-// 4. Vérifier si un photographe existe par ID
+// 4. Check if a photographer exists by ID
 const exists = photographers.some(p => p.id === targetId)
 
-// 5. Grouper par ville
+// 5. Group by city
 const byCity = photographers.reduce((acc, p) => {
   if (!acc[p.city]) acc[p.city] = []
   acc[p.city].push(p)

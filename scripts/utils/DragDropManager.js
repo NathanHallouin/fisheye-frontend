@@ -1,35 +1,35 @@
 /**
- * Gestionnaire de Drag & Drop (glisser-déposer).
+ * Drag & Drop Manager.
  *
  * @description
- * Permet de réorganiser des éléments par glisser-déposer.
+ * Allows reorganizing elements by drag and drop.
  *
- * CONCEPTS CLÉS : Événements de Drag & Drop
+ * KEY CONCEPTS: Drag & Drop Events
  *
- * Sur l'élément DRAGGABLE (qu'on déplace) :
- * - dragstart : Début du drag (configurer dataTransfer)
- * - drag : Pendant le drag (peu utilisé)
- * - dragend : Fin du drag (nettoyage)
+ * On the DRAGGABLE element (what we move):
+ * - dragstart: Start of drag (configure dataTransfer)
+ * - drag: During drag (rarely used)
+ * - dragend: End of drag (cleanup)
  *
- * Sur la DROP ZONE (où on dépose) :
- * - dragenter : Un élément entre dans la zone
- * - dragover : Un élément survole la zone (DOIT appeler preventDefault!)
- * - dragleave : Un élément quitte la zone
- * - drop : Un élément est déposé
+ * On the DROP ZONE (where we drop):
+ * - dragenter: An element enters the zone
+ * - dragover: An element hovers over the zone (MUST call preventDefault!)
+ * - dragleave: An element leaves the zone
+ * - drop: An element is dropped
  *
- * CONCEPT : dataTransfer
- * Objet qui transporte les données pendant le drag.
- * Permet de passer des informations de dragstart à drop.
+ * CONCEPT: dataTransfer
+ * Object that carries data during drag.
+ * Allows passing information from dragstart to drop.
  */
 class DragDropManager {
   /**
-   * Crée une instance de DragDropManager.
+   * Creates a DragDropManager instance.
    *
-   * @param {Object} options - Options de configuration.
-   * @param {HTMLElement} options.container - Le conteneur des éléments.
-   * @param {string} options.itemSelector - Sélecteur des éléments draggables.
-   * @param {Function} [options.onReorder] - Callback après réorganisation.
-   * @param {string} [options.handleSelector] - Sélecteur de la poignée (optionnel).
+   * @param {Object} options - Configuration options.
+   * @param {HTMLElement} options.container - The element container.
+   * @param {string} options.itemSelector - Selector for draggable elements.
+   * @param {Function} [options.onReorder] - Callback after reordering.
+   * @param {string} [options.handleSelector] - Handle selector (optional).
    */
   constructor(options) {
     this._container = options.container
@@ -45,23 +45,23 @@ class DragDropManager {
   }
 
   /**
-   * Initialise le drag & drop.
+   * Initializes drag & drop.
    * @private
    */
   _init() {
-    // Rendre les éléments draggables
+    // Make elements draggable
     this._setupDraggables()
 
-    // Configurer la drop zone (le conteneur)
+    // Configure the drop zone (the container)
     this._setupDropZone()
   }
 
   /**
-   * Configure les éléments draggables.
+   * Configures draggable elements.
    *
    * @description
-   * CONCEPT : attribut draggable="true"
-   * Cet attribut HTML5 rend un élément draggable nativement.
+   * CONCEPT: draggable="true" attribute
+   * This HTML5 attribute makes an element natively draggable.
    *
    * @private
    */
@@ -72,38 +72,38 @@ class DragDropManager {
       this._makeDraggable(item)
     })
 
-    // Observer les nouveaux éléments ajoutés
+    // Observe new elements added
     this._setupMutationObserver()
   }
 
   /**
-   * Rend un élément draggable.
+   * Makes an element draggable.
    *
-   * @param {HTMLElement} element - L'élément à rendre draggable.
+   * @param {HTMLElement} element - The element to make draggable.
    * @private
    */
   _makeDraggable(element) {
-    // Rendre draggable
+    // Make draggable
     element.setAttribute('draggable', 'true')
     element.classList.add('draggable')
 
     /**
-     * CONCEPT : dragstart event
+     * CONCEPT: dragstart event
      *
-     * Déclenché quand l'utilisateur commence à faire glisser.
-     * C'est ici qu'on configure :
-     * - dataTransfer.setData() : les données à transférer
-     * - dataTransfer.effectAllowed : le type d'effet (move, copy, link)
+     * Triggered when the user starts dragging.
+     * This is where we configure:
+     * - dataTransfer.setData(): the data to transfer
+     * - dataTransfer.effectAllowed: the effect type (move, copy, link)
      */
     element.addEventListener('dragstart', (e) => {
       this._handleDragStart(e, element)
     })
 
     /**
-     * CONCEPT : dragend event
+     * CONCEPT: dragend event
      *
-     * Déclenché quand le drag se termine (drop ou annulation).
-     * Utilisé pour nettoyer l'état visuel.
+     * Triggered when the drag ends (drop or cancellation).
+     * Used to clean up the visual state.
      */
     element.addEventListener('dragend', (e) => {
       this._handleDragEnd(e, element)
@@ -111,30 +111,30 @@ class DragDropManager {
   }
 
   /**
-   * Configure la zone de drop (le conteneur).
+   * Configures the drop zone (the container).
    *
    * @description
-   * IMPORTANT : dragover DOIT appeler preventDefault()
-   * Sinon, le drop ne fonctionnera pas !
+   * IMPORTANT: dragover MUST call preventDefault()
+   * Otherwise, drop won't work!
    *
    * @private
    */
   _setupDropZone() {
     /**
-     * CONCEPT : dragover event
+     * CONCEPT: dragover event
      *
-     * Déclenché continuellement quand un élément survole la zone.
-     * OBLIGATOIRE d'appeler preventDefault() pour permettre le drop.
+     * Triggered continuously when an element hovers over the zone.
+     * MANDATORY to call preventDefault() to allow drop.
      */
     this._container.addEventListener('dragover', (e) => {
-      e.preventDefault() // CRUCIAL pour permettre le drop !
+      e.preventDefault() // CRUCIAL to allow drop!
       this._handleDragOver(e)
     })
 
     /**
-     * CONCEPT : dragenter event
+     * CONCEPT: dragenter event
      *
-     * Déclenché une fois quand l'élément entre dans la zone.
+     * Triggered once when the element enters the zone.
      */
     this._container.addEventListener('dragenter', (e) => {
       e.preventDefault()
@@ -142,19 +142,19 @@ class DragDropManager {
     })
 
     /**
-     * CONCEPT : dragleave event
+     * CONCEPT: dragleave event
      *
-     * Déclenché quand l'élément quitte la zone.
+     * Triggered when the element leaves the zone.
      */
     this._container.addEventListener('dragleave', (e) => {
       this._handleDragLeave(e)
     })
 
     /**
-     * CONCEPT : drop event
+     * CONCEPT: drop event
      *
-     * Déclenché quand l'élément est déposé.
-     * On récupère les données avec dataTransfer.getData().
+     * Triggered when the element is dropped.
+     * We retrieve the data with dataTransfer.getData().
      */
     this._container.addEventListener('drop', (e) => {
       e.preventDefault()
@@ -163,69 +163,69 @@ class DragDropManager {
   }
 
   /**
-   * Gère le début du drag.
+   * Handles drag start.
    *
-   * @param {DragEvent} e - L'événement drag.
-   * @param {HTMLElement} element - L'élément draggé.
+   * @param {DragEvent} e - The drag event.
+   * @param {HTMLElement} element - The dragged element.
    * @private
    */
   _handleDragStart(e, element) {
     this._draggedElement = element
 
-    // Sauvegarder l'ordre initial pour rollback éventuel
+    // Save initial order for potential rollback
     this._saveInitialOrder()
 
     /**
-     * CONCEPT : dataTransfer.setData()
+     * CONCEPT: dataTransfer.setData()
      *
-     * Stocke des données à récupérer lors du drop.
-     * Le premier argument est le type MIME (text/plain, text/html, etc.)
-     * Le second est la donnée (string uniquement).
+     * Stores data to retrieve during drop.
+     * First argument is the MIME type (text/plain, text/html, etc.)
+     * Second is the data (string only).
      */
     e.dataTransfer.setData('text/plain', element.dataset.id || '')
     e.dataTransfer.effectAllowed = 'move'
 
-    // Feedback visuel
+    // Visual feedback
     element.classList.add('draggable--dragging')
 
-    // Créer un placeholder
+    // Create a placeholder
     this._createPlaceholder(element)
 
-    // Émettre un événement
+    // Emit an event
     this._emit('dragstart', { element })
   }
 
   /**
-   * Gère le survol pendant le drag.
+   * Handles hovering during drag.
    *
-   * @param {DragEvent} e - L'événement drag.
+   * @param {DragEvent} e - The drag event.
    * @private
    */
   _handleDragOver(e) {
     if (!this._draggedElement) return
 
-    // Trouver l'élément survolé
+    // Find the hovered element
     const target = this._getDropTarget(e)
 
     if (target && target !== this._draggedElement) {
-      // Déterminer si on insère avant ou après
+      // Determine if we insert before or after
       const rect = target.getBoundingClientRect()
       const midY = rect.top + rect.height / 2
 
       if (e.clientY < midY) {
-        // Insérer AVANT
+        // Insert BEFORE
         target.parentNode.insertBefore(this._placeholder, target)
       } else {
-        // Insérer APRÈS
+        // Insert AFTER
         target.parentNode.insertBefore(this._placeholder, target.nextSibling)
       }
     }
   }
 
   /**
-   * Gère l'entrée dans la drop zone.
+   * Handles entering the drop zone.
    *
-   * @param {DragEvent} e - L'événement drag.
+   * @param {DragEvent} e - The drag event.
    * @private
    */
   _handleDragEnter(e) {
@@ -233,65 +233,65 @@ class DragDropManager {
   }
 
   /**
-   * Gère la sortie de la drop zone.
+   * Handles leaving the drop zone.
    *
-   * @param {DragEvent} e - L'événement drag.
+   * @param {DragEvent} e - The drag event.
    * @private
    */
   _handleDragLeave(e) {
-    // Vérifier qu'on quitte vraiment le conteneur (pas un enfant)
+    // Verify we're actually leaving the container (not a child)
     if (!this._container.contains(e.relatedTarget)) {
       this._container.classList.remove('drop-zone--active')
     }
   }
 
   /**
-   * Gère le drop (dépôt).
+   * Handles drop.
    *
-   * @param {DragEvent} e - L'événement drag.
+   * @param {DragEvent} e - The drag event.
    * @private
    */
   _handleDrop(e) {
     if (!this._draggedElement || !this._placeholder) return
 
     /**
-     * CONCEPT : dataTransfer.getData()
+     * CONCEPT: dataTransfer.getData()
      *
-     * Récupère les données définies dans dragstart.
+     * Retrieves the data defined in dragstart.
      */
     const data = e.dataTransfer.getData('text/plain')
 
-    // Insérer l'élément à la place du placeholder
+    // Insert the element at the placeholder's position
     this._placeholder.parentNode.insertBefore(
       this._draggedElement,
       this._placeholder,
     )
 
-    // Nettoyer
+    // Cleanup
     this._cleanup()
 
-    // Récupérer le nouvel ordre
+    // Get the new order
     const newOrder = this._getCurrentOrder()
 
-    // Callback avec le nouvel ordre
+    // Callback with the new order
     this._onReorder(newOrder, this._initialOrder)
 
-    // Émettre un événement
+    // Emit an event
     this._emit('drop', { element: this._draggedElement, order: newOrder })
   }
 
   /**
-   * Gère la fin du drag.
+   * Handles drag end.
    *
-   * @param {DragEvent} e - L'événement drag.
-   * @param {HTMLElement} element - L'élément draggé.
+   * @param {DragEvent} e - The drag event.
+   * @param {HTMLElement} element - The dragged element.
    * @private
    */
   _handleDragEnd(e, element) {
     element.classList.remove('draggable--dragging')
     this._container.classList.remove('drop-zone--active')
 
-    // Nettoyer si le drop n'a pas eu lieu
+    // Cleanup if drop didn't occur
     if (this._placeholder) {
       this._cleanup()
     }
@@ -300,17 +300,17 @@ class DragDropManager {
   }
 
   /**
-   * Trouve l'élément cible sous le curseur.
+   * Finds the target element under the cursor.
    *
-   * @param {DragEvent} e - L'événement drag.
-   * @returns {HTMLElement|null} L'élément cible.
+   * @param {DragEvent} e - The drag event.
+   * @returns {HTMLElement|null} The target element.
    * @private
    */
   _getDropTarget(e) {
-    // Utiliser elementFromPoint pour trouver l'élément
+    // Use elementFromPoint to find the element
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
 
-    // Trouver le premier élément qui match le sélecteur
+    // Find the first element that matches the selector
     for (const el of elements) {
       if (el.matches(this._itemSelector) && el !== this._draggedElement) {
         return el
@@ -321,9 +321,9 @@ class DragDropManager {
   }
 
   /**
-   * Crée un placeholder pour visualiser la position de drop.
+   * Creates a placeholder to visualize the drop position.
    *
-   * @param {HTMLElement} element - L'élément draggé.
+   * @param {HTMLElement} element - The dragged element.
    * @private
    */
   _createPlaceholder(element) {
@@ -332,12 +332,12 @@ class DragDropManager {
     this._placeholder.style.width = `${element.offsetWidth}px`
     this._placeholder.style.height = `${element.offsetHeight}px`
 
-    // Insérer après l'élément
+    // Insert after the element
     element.parentNode.insertBefore(this._placeholder, element.nextSibling)
   }
 
   /**
-   * Sauvegarde l'ordre initial des éléments.
+   * Saves the initial order of elements.
    * @private
    */
   _saveInitialOrder() {
@@ -345,9 +345,9 @@ class DragDropManager {
   }
 
   /**
-   * Retourne l'ordre actuel des éléments.
+   * Returns the current order of elements.
    *
-   * @returns {string[]} Les IDs dans l'ordre actuel.
+   * @returns {string[]} The IDs in current order.
    * @private
    */
   _getCurrentOrder() {
@@ -356,7 +356,7 @@ class DragDropManager {
   }
 
   /**
-   * Nettoie l'état après un drag.
+   * Cleans up state after a drag.
    * @private
    */
   _cleanup() {
@@ -368,7 +368,7 @@ class DragDropManager {
   }
 
   /**
-   * Configure un MutationObserver pour les nouveaux éléments.
+   * Configures a MutationObserver for new elements.
    * @private
    */
   _setupMutationObserver() {
@@ -386,10 +386,10 @@ class DragDropManager {
   }
 
   /**
-   * Émet un événement personnalisé.
+   * Emits a custom event.
    *
-   * @param {string} name - Nom de l'événement.
-   * @param {Object} detail - Détails de l'événement.
+   * @param {string} name - Event name.
+   * @param {Object} detail - Event details.
    * @private
    */
   _emit(name, detail) {
@@ -401,7 +401,7 @@ class DragDropManager {
   }
 
   /**
-   * Désactive le drag & drop.
+   * Disables drag & drop.
    */
   disable() {
     const items = this._container.querySelectorAll(this._itemSelector)
@@ -412,16 +412,16 @@ class DragDropManager {
   }
 
   /**
-   * Réactive le drag & drop.
+   * Re-enables drag & drop.
    */
   enable() {
     this._setupDraggables()
   }
 
   /**
-   * Définit l'ordre des éléments programmatiquement.
+   * Sets the order of elements programmatically.
    *
-   * @param {string[]} order - Les IDs dans l'ordre voulu.
+   * @param {string[]} order - The IDs in desired order.
    */
   setOrder(order) {
     order.forEach((id) => {

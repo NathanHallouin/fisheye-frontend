@@ -1,28 +1,28 @@
 /**
- * Classe utilitaire pour calculer des statistiques sur les données.
+ * Utility class for calculating statistics on data.
  *
  * @description
- * Démontre l'utilisation avancée de Array.reduce() pour :
- * - Agréger des données (sommes, moyennes)
- * - Grouper des éléments par propriété
- * - Transformer des tableaux en objets
- * - Trouver des extremums (min/max)
+ * Demonstrates advanced usage of Array.reduce() for:
+ * - Aggregating data (sums, averages)
+ * - Grouping elements by property
+ * - Transforming arrays into objects
+ * - Finding extrema (min/max)
  *
- * CONCEPT CLÉ : Array.reduce()
- * reduce() parcourt un tableau et "réduit" ses éléments en une seule valeur.
- * Cette valeur peut être un nombre, un objet, un tableau, etc.
+ * KEY CONCEPT: Array.reduce()
+ * reduce() iterates through an array and "reduces" its elements to a single value.
+ * This value can be a number, an object, an array, etc.
  *
- * Syntaxe : array.reduce((accumulator, currentValue) => { ... }, initialValue)
- * - accumulator : la valeur accumulée (résultat en cours)
- * - currentValue : l'élément actuel du tableau
- * - initialValue : la valeur initiale de l'accumulator
+ * Syntax: array.reduce((accumulator, currentValue) => { ... }, initialValue)
+ * - accumulator: the accumulated value (result in progress)
+ * - currentValue: the current element of the array
+ * - initialValue: the initial value of the accumulator
  */
 class StatsCalculator {
   /**
-   * Crée une instance de StatsCalculator.
+   * Creates a StatsCalculator instance.
    *
-   * @param {Array<Object>} photographers - Liste des photographes.
-   * @param {Array<Object>} media - Liste des médias.
+   * @param {Array<Object>} photographers - List of photographers.
+   * @param {Array<Object>} media - List of media.
    */
   constructor(photographers, media) {
     this._photographers = photographers
@@ -30,50 +30,50 @@ class StatsCalculator {
   }
 
   /**
-   * Calcule le total de likes pour chaque photographe.
+   * Calculates the total likes for each photographer.
    *
    * @description
-   * REDUCE : Grouper et sommer
-   * On crée un objet où chaque clé est un photographerId
-   * et chaque valeur est le total des likes.
+   * REDUCE: Group and sum
+   * We create an object where each key is a photographerId
+   * and each value is the total likes.
    *
-   * @returns {Object} Un objet { photographerId: totalLikes }
+   * @returns {Object} An object { photographerId: totalLikes }
    *
    * @example
-   * // Entrée : [{photographerId: 1, likes: 10}, {photographerId: 1, likes: 20}]
-   * // Sortie : { 1: 30 }
+   * // Input: [{photographerId: 1, likes: 10}, {photographerId: 1, likes: 20}]
+   * // Output: { 1: 30 }
    */
   getLikesByPhotographer() {
     return this._media.reduce((acc, media) => {
       const id = media.photographerId
-      // Si la clé n'existe pas, on l'initialise à 0
-      // Puis on ajoute les likes du média actuel
+      // If the key doesn't exist, initialize it to 0
+      // Then add the current media's likes
       acc[id] = (acc[id] || 0) + media.likes
       return acc
-    }, {}) // Valeur initiale : objet vide
+    }, {}) // Initial value: empty object
   }
 
   /**
-   * Calcule le total global de tous les likes.
+   * Calculates the global total of all likes.
    *
    * @description
-   * REDUCE : Somme simple
-   * L'accumulator est un nombre, on additionne à chaque itération.
+   * REDUCE: Simple sum
+   * The accumulator is a number, we add at each iteration.
    *
-   * @returns {number} Le total de tous les likes.
+   * @returns {number} The total of all likes.
    */
   getTotalLikes() {
     return this._media.reduce((total, media) => total + media.likes, 0)
   }
 
   /**
-   * Calcule la moyenne des prix des photographes.
+   * Calculates the average price of photographers.
    *
    * @description
-   * REDUCE : Calcul de moyenne
-   * On somme d'abord, puis on divise par le nombre d'éléments.
+   * REDUCE: Average calculation
+   * We sum first, then divide by the number of elements.
    *
-   * @returns {number} La moyenne des prix (arrondie à 2 décimales).
+   * @returns {number} The average price (rounded to 2 decimals).
    */
   getAveragePrice() {
     if (this._photographers.length === 0) return 0
@@ -86,11 +86,11 @@ class StatsCalculator {
   }
 
   /**
-   * Calcule les statistiques de prix (min, max, moyenne).
+   * Calculates price statistics (min, max, average).
    *
    * @description
-   * REDUCE : Calculs multiples en un seul passage
-   * L'accumulator est un objet contenant plusieurs valeurs.
+   * REDUCE: Multiple calculations in a single pass
+   * The accumulator is an object containing multiple values.
    *
    * @returns {Object} { min, max, average, total }
    */
@@ -121,18 +121,18 @@ class StatsCalculator {
   }
 
   /**
-   * Groupe les médias par type (image ou vidéo).
+   * Groups media by type (image or video).
    *
    * @description
-   * REDUCE : Groupement par propriété
-   * On crée un objet avec deux tableaux : images et videos.
+   * REDUCE: Grouping by property
+   * We create an object with two arrays: images and videos.
    *
    * @returns {Object} { images: [...], videos: [...] }
    */
   getMediaByType() {
     return this._media.reduce(
       (acc, media) => {
-        // Détermine le type selon la propriété présente
+        // Determine type based on the property present
         if (media.video) {
           acc.videos.push(media)
         } else {
@@ -145,17 +145,17 @@ class StatsCalculator {
   }
 
   /**
-   * Groupe les médias par photographe avec leurs détails.
+   * Groups media by photographer with their details.
    *
    * @description
-   * REDUCE : Groupement complexe
-   * Chaque photographe devient une clé avec un objet contenant
-   * son nom, ses médias, et le total de ses likes.
+   * REDUCE: Complex grouping
+   * Each photographer becomes a key with an object containing
+   * their name, media, and total likes.
    *
    * @returns {Object} { photographerId: { name, media, totalLikes } }
    */
   getMediaGroupedByPhotographer() {
-    // Créer un dictionnaire des photographes pour accès rapide O(1)
+    // Create a photographer dictionary for fast O(1) access
     const photographerMap = this._photographers.reduce((map, photographer) => {
       map[photographer.id] = photographer
       return map
@@ -181,28 +181,28 @@ class StatsCalculator {
   }
 
   /**
-   * Trouve le photographe le plus populaire (plus de likes).
+   * Finds the most popular photographer (most likes).
    *
    * @description
-   * REDUCE : Trouver un extremum (maximum)
-   * L'accumulator garde trace du meilleur candidat trouvé.
+   * REDUCE: Finding an extremum (maximum)
+   * The accumulator keeps track of the best candidate found.
    *
-   * @returns {Object|null} Le photographe avec le plus de likes, ou null.
+   * @returns {Object|null} The photographer with the most likes, or null.
    */
   getMostPopularPhotographer() {
     const likesByPhotographer = this.getLikesByPhotographer()
 
-    // Object.entries() convertit un objet en tableau de paires [clé, valeur]
+    // Object.entries() converts an object to an array of [key, value] pairs
     const entries = Object.entries(likesByPhotographer)
 
     if (entries.length === 0) return null
 
-    // Trouver l'entrée avec le plus de likes
+    // Find the entry with the most likes
     const [bestId, bestLikes] = entries.reduce((best, current) => {
       return current[1] > best[1] ? current : best
     }, entries[0])
 
-    // Trouver le photographe correspondant
+    // Find the corresponding photographer
     const photographer = this._photographers.find(
       (p) => p.id === parseInt(bestId, 10),
     )
@@ -216,22 +216,22 @@ class StatsCalculator {
   }
 
   /**
-   * Compte le nombre de médias par tag de photographe.
+   * Counts the number of media per photographer tag.
    *
    * @description
-   * REDUCE : Comptage avec lookup
-   * Combine les données de deux sources (photographes et médias).
+   * REDUCE: Counting with lookup
+   * Combines data from two sources (photographers and media).
    *
    * @returns {Object} { tag: count }
    */
   getMediaCountByTag() {
-    // D'abord, créer un map photographerId -> tags
+    // First, create a photographerId -> tags map
     const photographerTags = this._photographers.reduce((map, photographer) => {
       map[photographer.id] = photographer.tags || []
       return map
     }, {})
 
-    // Ensuite, compter les médias pour chaque tag
+    // Then, count media for each tag
     return this._media.reduce((acc, media) => {
       const tags = photographerTags[media.photographerId] || []
 
@@ -244,11 +244,11 @@ class StatsCalculator {
   }
 
   /**
-   * Calcule les statistiques par pays.
+   * Calculates statistics by country.
    *
    * @description
-   * REDUCE : Agrégation complexe par groupe
-   * Groupe les photographes par pays et calcule des stats pour chaque groupe.
+   * REDUCE: Complex aggregation by group
+   * Groups photographers by country and calculates stats for each group.
    *
    * @returns {Object} { country: { count, avgPrice, photographers } }
    */
@@ -273,13 +273,13 @@ class StatsCalculator {
   }
 
   /**
-   * Génère un résumé complet de toutes les statistiques.
+   * Generates a complete summary of all statistics.
    *
    * @description
-   * Combine toutes les méthodes pour un aperçu global.
-   * Utilise Object.keys() et Object.values() pour traiter les résultats.
+   * Combines all methods for a global overview.
+   * Uses Object.keys() and Object.values() to process results.
    *
-   * @returns {Object} Résumé complet des statistiques.
+   * @returns {Object} Complete summary of statistics.
    */
   getFullSummary() {
     const mediaByType = this.getMediaByType()

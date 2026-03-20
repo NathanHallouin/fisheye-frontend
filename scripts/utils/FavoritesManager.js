@@ -1,20 +1,20 @@
 /**
- * Gestionnaire des favoris avec persistance localStorage.
+ * Favorites manager with localStorage persistence.
  *
  * @description
- * Cette classe implémente plusieurs concepts JavaScript clés :
- * - localStorage : Stockage persistant côté client
- * - JSON.parse() / JSON.stringify() : Sérialisation/désérialisation
- * - Array.find() : Recherche dans un tableau
- * - Pattern Singleton : Une seule instance partagée
- * - Custom Events : Communication entre composants
+ * This class implements several key JavaScript concepts:
+ * - localStorage: Client-side persistent storage
+ * - JSON.parse() / JSON.stringify(): Serialization/deserialization
+ * - Array.find(): Search in an array
+ * - Singleton Pattern: A single shared instance
+ * - Custom Events: Communication between components
  *
- * Le localStorage persiste même après fermeture du navigateur.
- * Capacité : ~5-10 MB selon le navigateur.
+ * localStorage persists even after closing the browser.
+ * Capacity: ~5-10 MB depending on the browser.
  */
 class FavoritesManager {
   /**
-   * Instance unique (Singleton).
+   * Unique instance (Singleton).
    * @type {FavoritesManager|null}
    * @private
    * @static
@@ -22,7 +22,7 @@ class FavoritesManager {
   static _instance = null
 
   /**
-   * Clé utilisée dans localStorage.
+   * Key used in localStorage.
    * @type {string}
    * @private
    * @static
@@ -30,21 +30,21 @@ class FavoritesManager {
   static STORAGE_KEY = 'fisheye_favorites'
 
   /**
-   * Nom de l'événement personnalisé émis lors des changements.
+   * Name of the custom event emitted on changes.
    * @type {string}
    * @static
    */
   static CHANGE_EVENT = 'favorites-changed'
 
   /**
-   * Retourne l'instance unique du FavoritesManager (Singleton).
+   * Returns the unique instance of FavoritesManager (Singleton).
    *
    * @description
-   * CONCEPT CLÉ : Pattern Singleton
-   * Garantit qu'une seule instance existe dans toute l'application.
-   * Utile pour les gestionnaires d'état globaux.
+   * KEY CONCEPT: Singleton Pattern
+   * Ensures that only one instance exists throughout the application.
+   * Useful for global state managers.
    *
-   * @returns {FavoritesManager} L'instance unique.
+   * @returns {FavoritesManager} The unique instance.
    * @static
    */
   static getInstance() {
@@ -55,87 +55,87 @@ class FavoritesManager {
   }
 
   /**
-   * Crée une instance de FavoritesManager.
-   * Utiliser getInstance() plutôt que new FavoritesManager().
+   * Creates a FavoritesManager instance.
+   * Use getInstance() rather than new FavoritesManager().
    */
   constructor() {
-    // Charger les favoris depuis localStorage au démarrage
+    // Load favorites from localStorage at startup
     this._favorites = this._load()
   }
 
   /**
-   * Charge les favoris depuis localStorage.
+   * Loads favorites from localStorage.
    *
    * @description
-   * CONCEPT CLÉ : localStorage et JSON.parse()
+   * KEY CONCEPT: localStorage and JSON.parse()
    *
-   * localStorage stocke uniquement des chaînes de caractères.
-   * Pour stocker des objets/tableaux, on doit :
-   * 1. Sérialiser avec JSON.stringify() lors de la sauvegarde
-   * 2. Désérialiser avec JSON.parse() lors de la lecture
+   * localStorage stores only strings.
+   * To store objects/arrays, you must:
+   * 1. Serialize with JSON.stringify() when saving
+   * 2. Deserialize with JSON.parse() when reading
    *
-   * JSON.parse() peut échouer si les données sont corrompues,
-   * d'où le try/catch.
+   * JSON.parse() can fail if the data is corrupted,
+   * hence the try/catch.
    *
-   * @returns {Array<Object>} Les favoris chargés ou un tableau vide.
+   * @returns {Array<Object>} The loaded favorites or an empty array.
    * @private
    */
   _load() {
     try {
-      // localStorage.getItem retourne null si la clé n'existe pas
+      // localStorage.getItem returns null if the key doesn't exist
       const data = localStorage.getItem(FavoritesManager.STORAGE_KEY)
 
       if (data === null) {
         return []
       }
 
-      // JSON.parse convertit la chaîne JSON en objet JavaScript
+      // JSON.parse converts the JSON string to a JavaScript object
       const parsed = JSON.parse(data)
 
-      // Vérifier que c'est bien un tableau
+      // Verify it's actually an array
       return Array.isArray(parsed) ? parsed : []
     } catch (error) {
-      // En cas d'erreur (données corrompues), retourner un tableau vide
-      console.error('Erreur lors du chargement des favoris:', error)
+      // In case of error (corrupted data), return an empty array
+      console.error('Error loading favorites:', error)
       return []
     }
   }
 
   /**
-   * Sauvegarde les favoris dans localStorage.
+   * Saves favorites to localStorage.
    *
    * @description
-   * CONCEPT CLÉ : JSON.stringify()
+   * KEY CONCEPT: JSON.stringify()
    *
-   * Convertit un objet JavaScript en chaîne JSON.
-   * Attention : les fonctions, undefined, et symboles sont ignorés.
+   * Converts a JavaScript object to a JSON string.
+   * Note: functions, undefined, and symbols are ignored.
    *
    * @private
    */
   _save() {
     try {
-      // JSON.stringify convertit l'objet en chaîne JSON
+      // JSON.stringify converts the object to a JSON string
       const data = JSON.stringify(this._favorites)
 
-      // localStorage.setItem stocke la chaîne
+      // localStorage.setItem stores the string
       localStorage.setItem(FavoritesManager.STORAGE_KEY, data)
 
-      // Émettre un événement pour notifier les autres composants
+      // Emit an event to notify other components
       this._emitChange()
     } catch (error) {
-      // Peut échouer si le quota est dépassé
-      console.error('Erreur lors de la sauvegarde des favoris:', error)
+      // Can fail if quota is exceeded
+      console.error('Error saving favorites:', error)
     }
   }
 
   /**
-   * Émet un événement personnalisé pour notifier les changements.
+   * Emits a custom event to notify changes.
    *
    * @description
-   * CONCEPT CLÉ : Custom Events
+   * KEY CONCEPT: Custom Events
    *
-   * Permet aux composants de réagir aux changements sans couplage direct.
-   * Pattern Observer/Pub-Sub via l'API native du DOM.
+   * Allows components to react to changes without direct coupling.
+   * Observer/Pub-Sub pattern via the native DOM API.
    *
    * @private
    */
@@ -150,20 +150,20 @@ class FavoritesManager {
   }
 
   /**
-   * Ajoute un photographe aux favoris.
+   * Adds a photographer to favorites.
    *
-   * @param {Object} photographer - Les données du photographe.
-   * @param {number} photographer.id - L'identifiant unique.
-   * @param {string} photographer.name - Le nom.
-   * @returns {boolean} True si ajouté, false si déjà présent.
+   * @param {Object} photographer - The photographer's data.
+   * @param {number} photographer.id - The unique identifier.
+   * @param {string} photographer.name - The name.
+   * @returns {boolean} True if added, false if already present.
    */
   add(photographer) {
-    // Vérifier si déjà en favori
+    // Check if already in favorites
     if (this.isFavorite(photographer.id)) {
       return false
     }
 
-    // Stocker uniquement les données essentielles
+    // Store only essential data
     const favoriteData = {
       id: photographer.id,
       name: photographer.name,
@@ -181,36 +181,36 @@ class FavoritesManager {
   }
 
   /**
-   * Retire un photographe des favoris.
+   * Removes a photographer from favorites.
    *
    * @description
-   * CONCEPT CLÉ : Array.findIndex() et Array.splice()
+   * KEY CONCEPT: Array.findIndex() and Array.splice()
    *
-   * findIndex() trouve l'index de l'élément correspondant.
-   * splice() modifie le tableau en place (suppression).
+   * findIndex() finds the index of the matching element.
+   * splice() modifies the array in place (deletion).
    *
-   * @param {number} photographerId - L'identifiant du photographe.
-   * @returns {boolean} True si retiré, false si non trouvé.
+   * @param {number} photographerId - The photographer's identifier.
+   * @returns {boolean} True if removed, false if not found.
    */
   remove(photographerId) {
-    // findIndex retourne -1 si non trouvé
+    // findIndex returns -1 if not found
     const index = this._favorites.findIndex((fav) => fav.id === photographerId)
 
     if (index === -1) {
       return false
     }
 
-    // splice(index, 1) supprime 1 élément à l'index donné
+    // splice(index, 1) removes 1 element at the given index
     this._favorites.splice(index, 1)
     this._save()
     return true
   }
 
   /**
-   * Ajoute ou retire un photographe des favoris.
+   * Adds or removes a photographer from favorites.
    *
-   * @param {Object} photographer - Les données du photographe.
-   * @returns {boolean} True si maintenant en favori, false sinon.
+   * @param {Object} photographer - The photographer's data.
+   * @returns {boolean} True if now in favorites, false otherwise.
    */
   toggle(photographer) {
     if (this.isFavorite(photographer.id)) {
@@ -223,52 +223,52 @@ class FavoritesManager {
   }
 
   /**
-   * Vérifie si un photographe est en favori.
+   * Checks if a photographer is in favorites.
    *
    * @description
-   * CONCEPT CLÉ : Array.some()
+   * KEY CONCEPT: Array.some()
    *
-   * some() retourne true si AU MOINS UN élément satisfait la condition.
-   * Plus efficace que find() quand on veut juste un booléen.
+   * some() returns true if AT LEAST ONE element satisfies the condition.
+   * More efficient than find() when you just want a boolean.
    *
-   * @param {number} photographerId - L'identifiant du photographe.
-   * @returns {boolean} True si en favori.
+   * @param {number} photographerId - The photographer's identifier.
+   * @returns {boolean} True if in favorites.
    */
   isFavorite(photographerId) {
     return this._favorites.some((fav) => fav.id === photographerId)
   }
 
   /**
-   * Retourne tous les favoris.
+   * Returns all favorites.
    *
    * @description
-   * Retourne une COPIE pour éviter les modifications externes.
+   * Returns a COPY to prevent external modifications.
    *
-   * @returns {Array<Object>} Copie des favoris.
+   * @returns {Array<Object>} Copy of favorites.
    */
   getAll() {
-    // Spread pour retourner une copie
+    // Spread to return a copy
     return [...this._favorites]
   }
 
   /**
-   * Retourne un favori par son ID.
+   * Returns a favorite by its ID.
    *
    * @description
-   * CONCEPT CLÉ : Array.find()
+   * KEY CONCEPT: Array.find()
    *
-   * find() retourne le PREMIER élément qui satisfait la condition,
-   * ou undefined si aucun ne correspond.
+   * find() returns the FIRST element that satisfies the condition,
+   * or undefined if none matches.
    *
-   * @param {number} photographerId - L'identifiant du photographe.
-   * @returns {Object|undefined} Le favori ou undefined.
+   * @param {number} photographerId - The photographer's identifier.
+   * @returns {Object|undefined} The favorite or undefined.
    */
   getById(photographerId) {
     return this._favorites.find((fav) => fav.id === photographerId)
   }
 
   /**
-   * Retourne le nombre de favoris.
+   * Returns the number of favorites.
    * @returns {number}
    */
   count() {
@@ -276,7 +276,7 @@ class FavoritesManager {
   }
 
   /**
-   * Supprime tous les favoris.
+   * Removes all favorites.
    */
   clear() {
     this._favorites = []
@@ -284,46 +284,46 @@ class FavoritesManager {
   }
 
   /**
-   * Écoute les changements de favoris.
+   * Listens to favorites changes.
    *
-   * @param {Function} callback - Fonction appelée lors des changements.
-   * @returns {Function} Fonction pour arrêter l'écoute.
+   * @param {Function} callback - Function called on changes.
+   * @returns {Function} Function to stop listening.
    *
    * @example
    * const unsubscribe = FavoritesManager.getInstance().onChange((data) => {
-   *   console.log('Favoris:', data.favorites)
+   *   console.log('Favorites:', data.favorites)
    *   console.log('Total:', data.count)
    * })
    *
-   * // Plus tard, pour arrêter l'écoute :
+   * // Later, to stop listening:
    * unsubscribe()
    */
   onChange(callback) {
     const handler = (event) => callback(event.detail)
     document.addEventListener(FavoritesManager.CHANGE_EVENT, handler)
 
-    // Retourner une fonction de nettoyage (unsubscribe)
+    // Return a cleanup function (unsubscribe)
     return () => {
       document.removeEventListener(FavoritesManager.CHANGE_EVENT, handler)
     }
   }
 
   /**
-   * Exporte les favoris au format JSON.
-   * Utile pour la sauvegarde ou le partage.
+   * Exports favorites to JSON format.
+   * Useful for backup or sharing.
    *
-   * @returns {string} Les favoris en JSON.
+   * @returns {string} The favorites in JSON.
    */
   export() {
     return JSON.stringify(this._favorites, null, 2)
   }
 
   /**
-   * Importe des favoris depuis une chaîne JSON.
+   * Imports favorites from a JSON string.
    *
-   * @param {string} jsonString - Les favoris en JSON.
-   * @param {boolean} merge - Si true, fusionne avec les existants.
-   * @returns {boolean} True si l'import a réussi.
+   * @param {string} jsonString - The favorites in JSON.
+   * @param {boolean} merge - If true, merge with existing ones.
+   * @returns {boolean} True if import succeeded.
    */
   import(jsonString, merge = false) {
     try {
@@ -334,7 +334,7 @@ class FavoritesManager {
       }
 
       if (merge) {
-        // Fusionner en évitant les doublons
+        // Merge while avoiding duplicates
         imported.forEach((item) => {
           if (!this.isFavorite(item.id)) {
             this._favorites.push(item)
@@ -347,7 +347,7 @@ class FavoritesManager {
       this._save()
       return true
     } catch (error) {
-      console.error("Erreur lors de l'import:", error)
+      console.error('Error during import:', error)
       return false
     }
   }

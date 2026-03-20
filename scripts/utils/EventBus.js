@@ -1,35 +1,35 @@
 /**
- * Bus d'événements centralisé (Pattern Observer/Pub-Sub).
+ * Centralized event bus (Observer/Pub-Sub Pattern).
  *
  * @description
- * Permet aux composants de communiquer sans se connaître directement.
- * Un composant peut émettre un événement, et tous les abonnés le reçoivent.
+ * Allows components to communicate without knowing each other directly.
+ * A component can emit an event, and all subscribers receive it.
  *
- * CONCEPT : Pattern Observer (Pub/Sub)
+ * CONCEPT: Observer Pattern (Pub/Sub)
  *
- * - Publisher (émetteur) : émet des événements sans savoir qui écoute
- * - Subscriber (abonné) : écoute des événements sans savoir qui émet
- * - Event Bus : intermédiaire qui route les événements
+ * - Publisher (emitter): emits events without knowing who is listening
+ * - Subscriber: listens to events without knowing who emits
+ * - Event Bus: intermediary that routes events
  *
- * Avantages :
- * - Découplage : les composants ne dépendent pas les uns des autres
- * - Flexibilité : ajouter/retirer des abonnés facilement
- * - Testabilité : on peut mocker l'EventBus
+ * Advantages:
+ * - Decoupling: components don't depend on each other
+ * - Flexibility: easily add/remove subscribers
+ * - Testability: can mock the EventBus
  *
- * DEUX IMPLÉMENTATIONS :
- * 1. Basée sur EventTarget natif (plus simple, intégrée au DOM)
- * 2. Basée sur Map (plus de contrôle, fonctionne hors DOM)
+ * TWO IMPLEMENTATIONS:
+ * 1. Based on native EventTarget (simpler, integrated with DOM)
+ * 2. Based on Map (more control, works outside DOM)
  */
 class EventBus {
   /**
-   * Instance unique (Singleton).
+   * Singleton instance.
    * @type {EventBus|null}
    */
   static _instance = null
 
   /**
-   * Retourne l'instance unique de l'EventBus.
-   * @returns {EventBus} L'instance unique.
+   * Returns the unique EventBus instance.
+   * @returns {EventBus} The unique instance.
    */
   static getInstance() {
     if (!EventBus._instance) {
@@ -39,94 +39,94 @@ class EventBus {
   }
 
   /**
-   * Crée une instance d'EventBus.
+   * Creates an EventBus instance.
    *
    * @description
-   * On peut utiliser deux approches :
-   * 1. EventTarget natif : exploite l'API DOM
-   * 2. Map custom : plus de contrôle
+   * Two approaches can be used:
+   * 1. Native EventTarget: leverages the DOM API
+   * 2. Custom Map: more control
    *
-   * Ici on combine les deux pour montrer les deux approches.
+   * Here we combine both to demonstrate the two approaches.
    */
   constructor() {
     /**
-     * CONCEPT : EventTarget
+     * CONCEPT: EventTarget
      *
-     * EventTarget est la classe de base pour tout ce qui peut
-     * émettre/recevoir des événements dans le DOM.
-     * On peut créer notre propre EventTarget !
+     * EventTarget is the base class for anything that can
+     * emit/receive events in the DOM.
+     * We can create our own EventTarget!
      */
     this._target = new EventTarget()
 
     /**
-     * Map pour stocker les listeners avec plus de métadonnées.
-     * Permet de supporter des features avancées comme once, priority, etc.
+     * Map to store listeners with more metadata.
+     * Allows supporting advanced features like once, priority, etc.
      */
     this._listeners = new Map()
 
-    // Historique des événements (pour debugging)
+    // Event history (for debugging)
     this._history = []
     this._historySize = 50
   }
 
   /**
-   * S'abonne à un événement.
+   * Subscribes to an event.
    *
    * @description
-   * CONCEPT : S'abonner (Subscribe)
-   * Le callback sera appelé chaque fois que l'événement est émis.
+   * CONCEPT: Subscribe
+   * The callback will be called each time the event is emitted.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @param {Function} callback - Fonction à appeler.
-   * @param {Object} [options] - Options d'abonnement.
-   * @param {boolean} [options.once=false] - Se désabonner après le premier appel.
-   * @param {number} [options.priority=0] - Priorité (plus haut = appelé en premier).
-   * @returns {Function} Fonction pour se désabonner.
+   * @param {string} eventName - Event name.
+   * @param {Function} callback - Function to call.
+   * @param {Object} [options] - Subscription options.
+   * @param {boolean} [options.once=false] - Unsubscribe after the first call.
+   * @param {number} [options.priority=0] - Priority (higher = called first).
+   * @returns {Function} Function to unsubscribe.
    *
    * @example
    * const unsubscribe = eventBus.on('user-login', (data) => {
-   *   console.log('Utilisateur connecté:', data.username)
+   *   console.log('User logged in:', data.username)
    * })
    *
-   * // Plus tard, pour se désabonner :
+   * // Later, to unsubscribe:
    * unsubscribe()
    */
   on(eventName, callback, options = {}) {
     const { once = false, priority = 0 } = options
 
-    // Créer la liste de listeners si elle n'existe pas
+    // Create the listener list if it doesn't exist
     if (!this._listeners.has(eventName)) {
       this._listeners.set(eventName, [])
     }
 
-    // Ajouter le listener avec ses métadonnées
+    // Add the listener with its metadata
     const listener = { callback, once, priority }
     const listeners = this._listeners.get(eventName)
     listeners.push(listener)
 
-    // Trier par priorité (plus haute en premier)
+    // Sort by priority (highest first)
     listeners.sort((a, b) => b.priority - a.priority)
 
-    // Retourner une fonction de désabonnement
+    // Return an unsubscribe function
     return () => this.off(eventName, callback)
   }
 
   /**
-   * S'abonne à un événement pour UN SEUL appel.
+   * Subscribes to an event for ONE call only.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @param {Function} callback - Fonction à appeler.
-   * @returns {Function} Fonction pour se désabonner.
+   * @param {string} eventName - Event name.
+   * @param {Function} callback - Function to call.
+   * @returns {Function} Function to unsubscribe.
    */
   once(eventName, callback) {
     return this.on(eventName, callback, { once: true })
   }
 
   /**
-   * Se désabonne d'un événement.
+   * Unsubscribes from an event.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @param {Function} callback - Fonction à retirer.
+   * @param {string} eventName - Event name.
+   * @param {Function} callback - Function to remove.
    */
   off(eventName, callback) {
     const listeners = this._listeners.get(eventName)
@@ -137,60 +137,60 @@ class EventBus {
       listeners.splice(index, 1)
     }
 
-    // Nettoyer si plus de listeners
+    // Clean up if no more listeners
     if (listeners.length === 0) {
       this._listeners.delete(eventName)
     }
   }
 
   /**
-   * Émet un événement.
+   * Emits an event.
    *
    * @description
-   * CONCEPT : Émettre (Publish/Emit)
-   * Tous les abonnés seront notifiés avec les données fournies.
+   * CONCEPT: Emit (Publish)
+   * All subscribers will be notified with the provided data.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @param {*} [data] - Données à transmettre.
+   * @param {string} eventName - Event name.
+   * @param {*} [data] - Data to transmit.
    *
    * @example
    * eventBus.emit('user-login', { username: 'john', timestamp: Date.now() })
    */
   emit(eventName, data) {
-    // Ajouter à l'historique
+    // Add to history
     this._addToHistory(eventName, data)
 
     const listeners = this._listeners.get(eventName)
     if (!listeners || listeners.length === 0) return
 
-    // Copier la liste pour éviter les problèmes si un listener se désabonne
+    // Copy the list to avoid issues if a listener unsubscribes
     const listenersCopy = [...listeners]
 
-    // Appeler chaque listener
+    // Call each listener
     listenersCopy.forEach((listener) => {
       try {
         listener.callback(data)
 
-        // Si once=true, se désabonner après le premier appel
+        // If once=true, unsubscribe after the first call
         if (listener.once) {
           this.off(eventName, listener.callback)
         }
       } catch (error) {
-        console.error(`EventBus: Erreur dans listener de "${eventName}"`, error)
+        console.error(`EventBus: Error in listener for "${eventName}"`, error)
       }
     })
   }
 
   /**
-   * Émet un événement de manière asynchrone.
+   * Emits an event asynchronously.
    *
    * @description
-   * Utilise setTimeout(0) pour différer l'émission,
-   * permettant à d'autres code de s'exécuter d'abord.
+   * Uses setTimeout(0) to defer the emission,
+   * allowing other code to execute first.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @param {*} [data] - Données à transmettre.
-   * @returns {Promise<void>} Promise résolue après émission.
+   * @param {string} eventName - Event name.
+   * @param {*} [data] - Data to transmit.
+   * @returns {Promise<void>} Promise resolved after emission.
    */
   emitAsync(eventName, data) {
     return new Promise((resolve) => {
@@ -202,10 +202,10 @@ class EventBus {
   }
 
   /**
-   * Vérifie si un événement a des abonnés.
+   * Checks if an event has subscribers.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @returns {boolean} True si des abonnés existent.
+   * @param {string} eventName - Event name.
+   * @returns {boolean} True if subscribers exist.
    */
   hasListeners(eventName) {
     const listeners = this._listeners.get(eventName)
@@ -213,10 +213,10 @@ class EventBus {
   }
 
   /**
-   * Retourne le nombre d'abonnés pour un événement.
+   * Returns the number of subscribers for an event.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @returns {number} Le nombre d'abonnés.
+   * @param {string} eventName - Event name.
+   * @returns {number} The number of subscribers.
    */
   listenerCount(eventName) {
     const listeners = this._listeners.get(eventName)
@@ -224,9 +224,9 @@ class EventBus {
   }
 
   /**
-   * Supprime tous les abonnés d'un événement.
+   * Removes all subscribers from an event.
    *
-   * @param {string} eventName - Nom de l'événement.
+   * @param {string} eventName - Event name.
    */
   removeAllListeners(eventName) {
     if (eventName) {
@@ -237,10 +237,10 @@ class EventBus {
   }
 
   /**
-   * Ajoute un événement à l'historique.
+   * Adds an event to the history.
    *
-   * @param {string} eventName - Nom de l'événement.
-   * @param {*} data - Données de l'événement.
+   * @param {string} eventName - Event name.
+   * @param {*} data - Event data.
    * @private
    */
   _addToHistory(eventName, data) {
@@ -250,50 +250,50 @@ class EventBus {
       timestamp: Date.now(),
     })
 
-    // Limiter la taille de l'historique
+    // Limit history size
     if (this._history.length > this._historySize) {
       this._history.shift()
     }
   }
 
   /**
-   * Retourne l'historique des événements.
+   * Returns the event history.
    *
-   * @returns {Array} L'historique.
+   * @returns {Array} The history.
    */
   getHistory() {
     return [...this._history]
   }
 
   /**
-   * Vide l'historique.
+   * Clears the history.
    */
   clearHistory() {
     this._history = []
   }
 
   /**
-   * Retourne tous les noms d'événements ayant des abonnés.
+   * Returns all event names that have subscribers.
    *
-   * @returns {string[]} Les noms d'événements.
+   * @returns {string[]} The event names.
    */
   getEventNames() {
     return [...this._listeners.keys()]
   }
 
   /**
-   * Crée un namespace d'événements.
+   * Creates an event namespace.
    *
    * @description
-   * Permet de grouper des événements sous un préfixe commun.
+   * Allows grouping events under a common prefix.
    *
-   * @param {string} namespace - Le préfixe du namespace.
-   * @returns {Object} Un objet avec des méthodes scoped.
+   * @param {string} namespace - The namespace prefix.
+   * @returns {Object} An object with scoped methods.
    *
    * @example
    * const userEvents = eventBus.namespace('user')
-   * userEvents.on('login', callback)  // Écoute 'user:login'
-   * userEvents.emit('logout', data)   // Émet 'user:logout'
+   * userEvents.on('login', callback)  // Listens to 'user:login'
+   * userEvents.emit('logout', data)   // Emits 'user:logout'
    */
   namespace(namespace) {
     const prefix = `${namespace}:`
@@ -308,13 +308,13 @@ class EventBus {
   }
 }
 
-// Événements prédéfinis pour l'application Fisheye
+// Predefined events for the Fisheye application
 EventBus.Events = {
   // Navigation
   PAGE_CHANGE: 'page:change',
   FILTER_CHANGE: 'filter:change',
 
-  // Utilisateur
+  // User
   FAVORITE_ADD: 'favorite:add',
   FAVORITE_REMOVE: 'favorite:remove',
   LIKE_TOGGLE: 'like:toggle',
@@ -325,7 +325,7 @@ EventBus.Events = {
   LIGHTBOX_OPEN: 'lightbox:open',
   LIGHTBOX_CLOSE: 'lightbox:close',
 
-  // Données
+  // Data
   DATA_LOADED: 'data:loaded',
   DATA_ERROR: 'data:error',
 }

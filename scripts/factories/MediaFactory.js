@@ -1,9 +1,9 @@
 class MediaFactory {
   /**
-   * @param {Object} data - Les données du média.
-   * @param {string} type - Le type de média ('image' ou 'video').
-   * @param {number} likeId - L'identifiant du like.
-   * @throws {string} Si le type est inconnu.
+   * @param {Object} data - The media data.
+   * @param {string} type - The media type ('image' or 'video').
+   * @param {number} likeId - The like identifier.
+   * @throws {string} If the type is unknown.
    */
   constructor(data, type, likeId) {
     if (type === 'image') {

@@ -2,66 +2,66 @@
 
 ## Concept
 
-Les **Web Workers** permettent d'exécuter du JavaScript dans un thread séparé du thread principal (UI). Cela évite de bloquer l'interface utilisateur lors de calculs lourds.
+**Web Workers** allow executing JavaScript in a thread separate from the main (UI) thread. This prevents blocking the user interface during heavy computations.
 
-## Caractéristiques
+## Characteristics
 
-- Exécution dans un thread séparé
-- Communication par messages (`postMessage` / `onmessage`)
-- Pas d'accès au DOM
-- Les données sont copiées, pas partagées (sauf SharedArrayBuffer)
+- Execution in a separate thread
+- Communication via messages (`postMessage` / `onmessage`)
+- No DOM access
+- Data is copied, not shared (except SharedArrayBuffer)
 
-## Cas d'utilisation
+## Use Cases
 
-- Tri et filtrage de grandes quantités de données
-- Calculs mathématiques complexes
-- Parsing de fichiers volumineux
-- Compression/décompression de données
+- Sorting and filtering large amounts of data
+- Complex mathematical calculations
+- Parsing large files
+- Data compression/decompression
 
-## Syntaxe de base
+## Basic Syntax
 
-### Thread principal (main.js)
+### Main thread (main.js)
 
 ```javascript
-// Créer un worker
+// Create a worker
 const worker = new Worker('worker.js')
 
-// Envoyer des données au worker
+// Send data to the worker
 worker.postMessage({ data: largeArray, sortBy: 'likes' })
 
-// Recevoir les résultats
+// Receive results
 worker.onmessage = (e) => {
   const sortedData = e.data
   renderUI(sortedData)
 }
 
-// Gérer les erreurs
+// Handle errors
 worker.onerror = (e) => {
-  console.error('Erreur worker:', e.message)
+  console.error('Worker error:', e.message)
 }
 
-// Terminer le worker
+// Terminate the worker
 worker.terminate()
 ```
 
 ### Worker (worker.js)
 
 ```javascript
-// Écouter les messages du thread principal
+// Listen for messages from the main thread
 self.onmessage = (e) => {
   const { data, sortBy } = e.data
 
-  // Effectuer le calcul
+  // Perform the computation
   const sorted = [...data].sort((a, b) => b[sortBy] - a[sortBy])
 
-  // Renvoyer le résultat
+  // Send back the result
   self.postMessage(sorted)
 }
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Fichier: `scripts/workers/sortWorker.js`
+### File: `scripts/workers/sortWorker.js`
 
 ```javascript
 self.onmessage = function(e) {
@@ -81,7 +81,7 @@ self.onmessage = function(e) {
         result = searchData(payload.data, payload.query, payload.fields)
         break
       default:
-        throw new Error(`Type inconnu: ${type}`)
+        throw new Error(`Unknown type: ${type}`)
     }
 
     self.postMessage({ type: 'SUCCESS', id, result })
@@ -98,7 +98,7 @@ function sortData(data, sortBy, order = 'desc') {
 }
 ```
 
-### Fichier: `scripts/utils/WorkerManager.js`
+### File: `scripts/utils/WorkerManager.js`
 
 ```javascript
 class WorkerManager {
@@ -125,7 +125,7 @@ class WorkerManager {
     }
   }
 
-  // API basée sur Promises
+  // Promise-based API
   sort(data, sortBy, order = 'desc') {
     return new Promise((resolve, reject) => {
       const id = `req_${++this._idCounter}`
@@ -141,7 +141,7 @@ class WorkerManager {
   }
 }
 
-// Utilisation
+// Usage
 const workerManager = new WorkerManager('./scripts/workers/sortWorker.js')
 
 const sortedMedia = await workerManager.sort(media, 'likes', 'desc')
@@ -157,14 +157,14 @@ class SortWorker {
 
   static getInstance() {
     if (!SortWorker.isSupported()) {
-      console.warn('Web Workers non supportés, fallback synchrone')
+      console.warn('Web Workers not supported, synchronous fallback')
       return null
     }
     return new WorkerManager('./scripts/workers/sortWorker.js')
   }
 }
 
-// Utilisation avec fallback
+// Usage with fallback
 async function sortMedia(data, sortBy) {
   const worker = SortWorker.getInstance()
 
@@ -172,30 +172,30 @@ async function sortMedia(data, sortBy) {
     return await worker.sort(data, sortBy)
   }
 
-  // Fallback synchrone
+  // Synchronous fallback
   return [...data].sort((a, b) => b[sortBy] - a[sortBy])
 }
 ```
 
 ## Limitations
 
-1. **Pas d'accès au DOM** : Impossible de manipuler le document
-2. **Pas de window** : Certaines APIs ne sont pas disponibles
-3. **Données copiées** : La communication a un coût (sérialisation)
-4. **Overhead** : Créer un worker a un coût, réutiliser si possible
+1. **No DOM access**: Cannot manipulate the document
+2. **No window**: Some APIs are not available
+3. **Data copied**: Communication has a cost (serialization)
+4. **Overhead**: Creating a worker has a cost, reuse if possible
 
-## Optimisations
+## Optimizations
 
 ### Transferable Objects
 
 ```javascript
-// Transférer au lieu de copier (plus rapide pour les gros buffers)
+// Transfer instead of copy (faster for large buffers)
 const buffer = new ArrayBuffer(1024 * 1024)
 worker.postMessage({ buffer }, [buffer])
-// buffer n'est plus utilisable dans le thread principal
+// buffer is no longer usable in the main thread
 ```
 
-### Pool de Workers
+### Worker Pool
 
 ```javascript
 class WorkerPool {
@@ -220,13 +220,13 @@ class WorkerPool {
 }
 ```
 
-## Avantages
+## Advantages
 
-1. **UI réactive** : Les calculs lourds ne bloquent pas l'interface
-2. **Parallelisme** : Utilisation de plusieurs cœurs CPU
-3. **Isolation** : Le code du worker ne peut pas affecter le thread principal
+1. **Responsive UI**: Heavy computations don't block the interface
+2. **Parallelism**: Utilization of multiple CPU cores
+3. **Isolation**: Worker code cannot affect the main thread
 
-## Voir aussi
+## See Also
 
 - [MDN - Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 - [Promises](03-promises-async-await.md)

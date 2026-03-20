@@ -1,8 +1,8 @@
-# Design Patterns (Patrons de conception)
+# Design Patterns
 
 ## Concept
 
-Les design patterns sont des solutions réutilisables à des problèmes courants en développement logiciel. Ils fournissent des templates pour structurer le code de manière maintenable.
+Design patterns are reusable solutions to common problems in software development. They provide templates for structuring code in a maintainable way.
 
 ---
 
@@ -10,19 +10,19 @@ Les design patterns sont des solutions réutilisables à des problèmes courants
 
 ### Concept
 
-Le Factory Pattern délègue la création d'objets à une classe factory, permettant de créer différents types d'objets selon des paramètres.
+The Factory Pattern delegates object creation to a factory class, allowing different types of objects to be created based on parameters.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/factories/MediaFactory.js](../../scripts/factories/MediaFactory.js)
+**File**: [scripts/factories/MediaFactory.js](../../scripts/factories/MediaFactory.js)
 
 ```javascript
 class MediaFactory {
   /**
-   * Crée une carte média selon le type.
-   * @param {Object} data - Données du média
-   * @param {number} photographerId - ID du photographe
-   * @returns {CreateImageCard|CreateVideoCard} Instance de carte
+   * Creates a media card based on type.
+   * @param {Object} data - Media data
+   * @param {number} photographerId - Photographer ID
+   * @returns {CreateImageCard|CreateVideoCard} Card instance
    */
   constructor(data, photographerId) {
     if (data.image) {
@@ -30,12 +30,12 @@ class MediaFactory {
     } else if (data.video) {
       return new CreateVideoCard(data, photographerId)
     }
-    throw new Error('Type de média inconnu')
+    throw new Error('Unknown media type')
   }
 }
 ```
 
-**Fichier**: [scripts/factories/PhotographersFactory.js](../../scripts/factories/PhotographersFactory.js)
+**File**: [scripts/factories/PhotographersFactory.js](../../scripts/factories/PhotographersFactory.js)
 
 ```javascript
 class PhotographersFactory {
@@ -45,21 +45,21 @@ class PhotographersFactory {
     } else if (type === 'media') {
       return data.media.map((data) => new PhotographerMedia(data))
     }
-    throw new Error('Type inconnu')
+    throw new Error('Unknown type')
   }
 }
 ```
 
-### Avantages
+### Advantages
 
-- **Découplage** - Le code client ne connaît pas les classes concrètes
-- **Extensibilité** - Ajouter un nouveau type est simple
-- **Centralisation** - La logique de création est en un seul endroit
+- **Decoupling** - Client code doesn't know the concrete classes
+- **Extensibility** - Adding a new type is simple
+- **Centralization** - Creation logic is in one place
 
 ### Usage
 
 ```javascript
-// Sans savoir quel type sera créé
+// Without knowing which type will be created
 const mediaCard = new MediaFactory(mediaData, photographerId)
 const element = mediaCard.createCard()
 ```
@@ -70,18 +70,18 @@ const element = mediaCard.createCard()
 
 ### Concept
 
-Le Singleton garantit qu'une classe n'a qu'une seule instance et fournit un point d'accès global à celle-ci.
+The Singleton guarantees that a class has only one instance and provides a global access point to it.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
+**File**: [scripts/utils/FavoritesManager.js](../../scripts/utils/FavoritesManager.js)
 
 ```javascript
 class FavoritesManager {
   static _instance = null
 
   /**
-   * Retourne l'instance unique du manager.
+   * Returns the unique manager instance.
    * @returns {FavoritesManager}
    */
   static getInstance() {
@@ -92,7 +92,7 @@ class FavoritesManager {
   }
 
   constructor() {
-    // Empêcher l'instanciation directe
+    // Prevent direct instantiation
     if (FavoritesManager._instance) {
       return FavoritesManager._instance
     }
@@ -108,7 +108,7 @@ const manager2 = FavoritesManager.getInstance()
 console.log(manager1 === manager2)  // true
 ```
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 class CacheManager {
@@ -128,18 +128,18 @@ class CacheManager {
 }
 ```
 
-### Autres singletons dans le projet
+### Other Singletons in the Project
 
 - `EventBus.getInstance()`
 - `LazyLoader.getInstance()`
 - `UrlStateManager.getInstance()`
 - `KeyboardShortcutManager.getInstance()`
 
-### Avantages
+### Advantages
 
-- **Instance unique** - État partagé cohérent
-- **Accès global** - Disponible partout
-- **Lazy loading** - Créé seulement quand nécessaire
+- **Unique instance** - Consistent shared state
+- **Global access** - Available everywhere
+- **Lazy loading** - Created only when needed
 
 ---
 
@@ -147,11 +147,11 @@ class CacheManager {
 
 ### Concept
 
-Le pattern Observer permet à des objets (observers) de s'abonner à un sujet (subject) pour être notifiés des changements.
+The Observer pattern allows objects (observers) to subscribe to a subject to be notified of changes.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
+**File**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
 
 ```javascript
 class EventBus {
@@ -170,9 +170,9 @@ class EventBus {
   }
 
   /**
-   * S'abonner à un événement.
-   * @param {string} eventName - Nom de l'événement
-   * @param {Function} callback - Fonction à appeler
+   * Subscribe to an event.
+   * @param {string} eventName - Event name
+   * @param {Function} callback - Function to call
    * @param {Object} options - Options (once, priority)
    */
   on(eventName, callback, options = {}) {
@@ -184,7 +184,7 @@ class EventBus {
   }
 
   /**
-   * Se désabonner d'un événement.
+   * Unsubscribe from an event.
    */
   off(eventName, callback) {
     const listener = this._listeners.get(callback)
@@ -195,9 +195,9 @@ class EventBus {
   }
 
   /**
-   * Émettre un événement.
-   * @param {string} eventName - Nom de l'événement
-   * @param {*} data - Données à transmettre
+   * Emit an event.
+   * @param {string} eventName - Event name
+   * @param {*} data - Data to transmit
    */
   emit(eventName, data) {
     this._target.dispatchEvent(
@@ -212,23 +212,23 @@ class EventBus {
 ```javascript
 const eventBus = EventBus.getInstance()
 
-// S'abonner
+// Subscribe
 eventBus.on('like:toggle', (data) => {
   console.log(`Media ${data.mediaId} liked: ${data.isLiked}`)
 })
 
-// Émettre
+// Emit
 eventBus.emit('like:toggle', { mediaId: 123, isLiked: true })
 
-// Se désabonner
+// Unsubscribe
 eventBus.off('like:toggle', callback)
 ```
 
-### Avantages
+### Advantages
 
-- **Découplage** - Les composants ne se connaissent pas
-- **Flexibilité** - Ajouter/retirer des observers facilement
-- **Communication** - Entre composants sans dépendances
+- **Decoupling** - Components don't know each other
+- **Flexibility** - Add/remove observers easily
+- **Communication** - Between components without dependencies
 
 ---
 
@@ -236,21 +236,21 @@ eventBus.off('like:toggle', callback)
 
 ### Concept
 
-Le Strategy Pattern permet de définir une famille d'algorithmes interchangeables.
+The Strategy Pattern allows defining a family of interchangeable algorithms.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
 class SortFilters {
   static SORT_OPTIONS = {
-    popularity: { label: 'Popularité', property: '_likes', type: 'numeric', desc: true },
+    popularity: { label: 'Popularity', property: '_likes', type: 'numeric', desc: true },
     date: { label: 'Date', property: '_date', type: 'date', desc: true },
-    title: { label: 'Titre', property: '_title', type: 'alphabetic', desc: false }
+    title: { label: 'Title', property: '_title', type: 'alphabetic', desc: false }
   }
 
-  // Stratégies de comparaison
+  // Comparison strategies
   static SortComparators = {
     numeric: (property, desc) => (a, b) => {
       const valA = a[property]
@@ -287,11 +287,11 @@ class SortFilters {
 }
 ```
 
-### Avantages
+### Advantages
 
-- **Interchangeable** - Changer d'algorithme sans modifier le code client
-- **Testable** - Chaque stratégie peut être testée indépendamment
-- **Extensible** - Ajouter une nouvelle stratégie est simple
+- **Interchangeable** - Switch algorithms without modifying client code
+- **Testable** - Each strategy can be tested independently
+- **Extensible** - Adding a new strategy is simple
 
 ---
 
@@ -299,18 +299,18 @@ class SortFilters {
 
 ### Concept
 
-Le Module Pattern encapsule du code avec un scope privé, exposant seulement une API publique.
+The Module Pattern encapsulates code with a private scope, exposing only a public API.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-Avec les classes ES6, ce pattern est naturellement implémenté :
+With ES6 classes, this pattern is naturally implemented:
 
 ```javascript
 class LikeManager {
-  // Privé (convention _)
+  // Private (convention _)
   _likedMedia = new Set()
 
-  // Privé
+  // Private
   _saveLikes() {
     localStorage.setItem('likes', JSON.stringify([...this._likedMedia]))
   }
@@ -338,20 +338,20 @@ class LikeManager {
 
 ### Concept
 
-Le Decorator Pattern ajoute des fonctionnalités à un objet dynamiquement.
+The Decorator Pattern adds functionality to an object dynamically.
 
-### Implémentation - Memoization
+### Implementation - Memoization
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 class CacheManager {
   /**
-   * Décore une fonction avec du caching.
-   * @param {Function} fn - Fonction à memoizer
-   * @param {Function} keyGenerator - Générateur de clé
-   * @param {number} ttl - Durée de vie
-   * @returns {Function} Fonction décorée
+   * Decorates a function with caching.
+   * @param {Function} fn - Function to memoize
+   * @param {Function} keyGenerator - Key generator
+   * @param {number} ttl - Time to live
+   * @returns {Function} Decorated function
    */
   memoize(fn, keyGenerator = (...args) => args.join(':'), ttl = this._ttl) {
     return async (...args) => {
@@ -369,16 +369,16 @@ const cachedFetch = cache.memoize(
 )
 ```
 
-### Implémentation - Debounce
+### Implementation - Debounce
 
-**Fichier**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
+**File**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
 
 ```javascript
 /**
- * Décore une fonction avec un délai de debounce.
- * @param {Function} fn - Fonction à décorer
- * @param {number} delay - Délai en ms
- * @returns {Function} Fonction décorée
+ * Decorates a function with a debounce delay.
+ * @param {Function} fn - Function to decorate
+ * @param {number} delay - Delay in ms
+ * @returns {Function} Decorated function
  */
 export function debounce(fn, delay) {
   let timeoutId
@@ -397,22 +397,22 @@ const debouncedSearch = debounce((query) => {
 
 ---
 
-## Récapitulatif
+## Summary
 
-| Pattern | Usage dans Fisheye | Fichier principal |
-|---------|-------------------|-------------------|
-| **Factory** | Création de cartes média | MediaFactory.js |
-| **Singleton** | Managers globaux | FavoritesManager.js |
-| **Observer** | Communication entre composants | EventBus.js |
-| **Strategy** | Algorithmes de tri | SortFilters.js |
-| **Module** | Encapsulation de classes | Toutes les classes |
+| Pattern | Usage in Fisheye | Main File |
+|---------|------------------|-----------|
+| **Factory** | Media card creation | MediaFactory.js |
+| **Singleton** | Global managers | FavoritesManager.js |
+| **Observer** | Component communication | EventBus.js |
+| **Strategy** | Sorting algorithms | SortFilters.js |
+| **Module** | Class encapsulation | All classes |
 | **Decorator** | Memoization, debounce | CacheManager.js |
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Implémenter un NotificationManager avec les patterns Singleton et Observer :
+Implement a NotificationManager with Singleton and Observer patterns:
 
 ```javascript
 class NotificationManager {
@@ -454,8 +454,8 @@ class NotificationManager {
 const notifications = NotificationManager.getInstance()
 
 notifications.subscribe('success', (msg) => {
-  console.log('Succès:', msg)
+  console.log('Success:', msg)
 })
 
-notifications.notify('success', 'Photographe ajouté aux favoris!')
+notifications.notify('success', 'Photographer added to favorites!')
 ```

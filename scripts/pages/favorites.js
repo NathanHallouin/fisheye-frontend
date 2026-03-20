@@ -1,9 +1,9 @@
 /**
- * Classe pour gérer la page des favoris.
+ * Class to manage the favorites page.
  *
  * @description
- * Cette page affiche les photographes favoris sauvegardés dans localStorage.
- * Elle réagit aux changements en temps réel via les Custom Events.
+ * This page displays favorite photographers saved in localStorage.
+ * It reacts to changes in real-time via Custom Events.
  */
 class FavoritesPage {
   constructor() {
@@ -15,7 +15,7 @@ class FavoritesPage {
   }
 
   /**
-   * Initialise la page.
+   * Initializes the page.
    */
   init() {
     this._render()
@@ -23,32 +23,32 @@ class FavoritesPage {
   }
 
   /**
-   * Attache les événements.
+   * Attaches events.
    * @private
    */
   _attachEvents() {
-    // Bouton supprimer tout
+    // Delete all button
     this.$clearButton.addEventListener('click', () => {
       this._handleClearAll()
     })
 
-    // Écouter les changements de favoris
+    // Listen for favorites changes
     this._favoritesManager.onChange(() => {
       this._render()
     })
   }
 
   /**
-   * Affiche la liste des favoris.
+   * Displays the favorites list.
    * @private
    */
   _render() {
     const favorites = this._favoritesManager.getAll()
 
-    // Mettre à jour le compteur
+    // Update the counter
     this._updateCount(favorites.length)
 
-    // Afficher/masquer le message vide
+    // Show/hide the empty message
     if (favorites.length === 0) {
       this.$favoritesList.innerHTML = ''
       this.$favoritesEmpty.hidden = false
@@ -59,12 +59,12 @@ class FavoritesPage {
     this.$favoritesEmpty.hidden = true
     this.$clearButton.hidden = false
 
-    // Vider la liste actuelle
+    // Clear the current list
     this.$favoritesList.innerHTML = ''
 
-    // Créer une carte pour chaque favori
+    // Create a card for each favorite
     favorites.forEach((favoriteData) => {
-      // Convertir les données en format attendu par PhotographerProfil
+      // Convert data to format expected by PhotographerProfil
       const photographer = this._createPhotographerFromFavorite(favoriteData)
       const card = new PhotographerCard(photographer)
       this.$favoritesList.appendChild(card.createPhotographerCard())
@@ -72,18 +72,18 @@ class FavoritesPage {
   }
 
   /**
-   * Crée un objet photographe compatible depuis les données de favori.
+   * Creates a compatible photographer object from favorite data.
    *
    * @description
-   * Les données stockées dans localStorage sont simplifiées.
-   * On doit les adapter au format attendu par PhotographerCard.
+   * Data stored in localStorage is simplified.
+   * We need to adapt it to the format expected by PhotographerCard.
    *
-   * @param {Object} favoriteData - Les données du favori.
-   * @returns {Object} Un objet compatible avec PhotographerCard.
+   * @param {Object} favoriteData - The favorite data.
+   * @returns {Object} An object compatible with PhotographerCard.
    * @private
    */
   _createPhotographerFromFavorite(favoriteData) {
-    // Créer un objet qui mime l'interface de PhotographerProfil
+    // Create an object that mimics the PhotographerProfil interface
     return {
       id: favoriteData.id,
       name: favoriteData.name,
@@ -104,8 +104,8 @@ class FavoritesPage {
   }
 
   /**
-   * Met à jour le texte du compteur.
-   * @param {number} count - Le nombre de favoris.
+   * Updates the counter text.
+   * @param {number} count - The number of favorites.
    * @private
    */
   _updateCount(count) {
@@ -119,11 +119,11 @@ class FavoritesPage {
   }
 
   /**
-   * Gère la suppression de tous les favoris.
+   * Handles deletion of all favorites.
    * @private
    */
   _handleClearAll() {
-    // Demander confirmation
+    // Ask for confirmation
     const confirmed = window.confirm(
       'Êtes-vous sûr de vouloir supprimer tous vos favoris ?',
     )
@@ -134,6 +134,6 @@ class FavoritesPage {
   }
 }
 
-// Initialiser la page
+// Initialize the page
 const favoritesPage = new FavoritesPage()
 favoritesPage.init()

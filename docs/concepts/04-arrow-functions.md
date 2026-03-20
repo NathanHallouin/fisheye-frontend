@@ -1,13 +1,13 @@
-# Arrow Functions (Fonctions fléchées)
+# Arrow Functions
 
 ## Concept
 
-Les arrow functions sont une syntaxe concise pour écrire des fonctions en JavaScript. Elles ont un comportement différent concernant le mot-clé `this`.
+Arrow functions are a concise syntax for writing functions in JavaScript. They have different behavior regarding the `this` keyword.
 
-## Syntaxe
+## Syntax
 
 ```javascript
-// Fonction traditionnelle
+// Traditional function
 function add(a, b) {
   return a + b
 }
@@ -17,21 +17,21 @@ const add = (a, b) => {
   return a + b
 }
 
-// Syntaxe courte (return implicite)
+// Short syntax (implicit return)
 const add = (a, b) => a + b
 
-// Un seul paramètre (parenthèses optionnelles)
+// Single parameter (parentheses optional)
 const double = n => n * 2
 
-// Sans paramètre
-const greet = () => 'Bonjour!'
+// No parameters
+const greet = () => 'Hello!'
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Callbacks avec map/filter
+### Callbacks with map/filter
 
-**Fichier**: [scripts/factories/PhotographersFactory.js](../../scripts/factories/PhotographersFactory.js)
+**File**: [scripts/factories/PhotographersFactory.js](../../scripts/factories/PhotographersFactory.js)
 
 ```javascript
 constructor(data, type) {
@@ -41,7 +41,7 @@ constructor(data, type) {
 }
 ```
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 const filtered = this._photographers.filter((photographer) => {
@@ -49,9 +49,9 @@ const filtered = this._photographers.filter((photographer) => {
 })
 ```
 
-### Event listeners
+### Event Listeners
 
-**Fichier**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
+**File**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
 
 ```javascript
 this.$input.addEventListener('input', (e) => {
@@ -63,7 +63,7 @@ this.$input.addEventListener('focus', () => {
 })
 ```
 
-**Fichier**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
+**File**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
 
 ```javascript
 $button.addEventListener('click', (e) => {
@@ -73,9 +73,9 @@ $button.addEventListener('click', (e) => {
 })
 ```
 
-### Fonctions de tri
+### Sort Functions
 
-**Fichier**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
+**File**: [scripts/templates/SortFilters.js](../../scripts/templates/SortFilters.js)
 
 ```javascript
 static SortComparators = {
@@ -93,7 +93,7 @@ static SortComparators = {
 
 ### Debounce
 
-**Fichier**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
+**File**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
 
 ```javascript
 export function debounce(fn, delay) {
@@ -105,11 +105,11 @@ export function debounce(fn, delay) {
 }
 ```
 
-## Le comportement de `this`
+## The Behavior of `this`
 
-### Différence clé
+### Key Difference
 
-Les arrow functions **n'ont pas leur propre `this`**. Elles héritent du `this` de leur contexte englobant.
+Arrow functions **do not have their own `this`**. They inherit `this` from their enclosing context.
 
 ```javascript
 class Counter {
@@ -117,31 +117,31 @@ class Counter {
     this.count = 0
   }
 
-  // Problème avec fonction traditionnelle
+  // Problem with traditional function
   startTraditional() {
     setInterval(function() {
-      this.count++  // 'this' est undefined ou window!
+      this.count++  // 'this' is undefined or window!
     }, 1000)
   }
 
-  // Solution avec arrow function
+  // Solution with arrow function
   startArrow() {
     setInterval(() => {
-      this.count++  // 'this' fait référence à l'instance Counter
+      this.count++  // 'this' refers to the Counter instance
     }, 1000)
   }
 }
 ```
 
-### Exemple dans Fisheye
+### Example in Fisheye
 
-**Fichier**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
+**File**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
 
 ```javascript
 on(eventName, callback, options = {}) {
   const { once = false, priority = 0 } = options
 
-  const wrappedCallback = (e) => callback(e.detail)  // Arrow function préserve le contexte
+  const wrappedCallback = (e) => callback(e.detail)  // Arrow function preserves context
 
   this._listeners.set(callback, {
     wrapped: wrappedCallback,
@@ -152,85 +152,85 @@ on(eventName, callback, options = {}) {
 }
 ```
 
-## Syntaxes courtes
+## Short Syntax Forms
 
-### Return implicite
+### Implicit Return
 
 ```javascript
-// Avec accolades - return explicite requis
+// With braces - explicit return required
 const getPrice = (item) => {
   return item.price * item.quantity
 }
 
-// Sans accolades - return implicite
+// Without braces - implicit return
 const getPrice = (item) => item.price * item.quantity
 
-// Retourner un objet (parenthèses requises)
+// Returning an object (parentheses required)
 const createUser = (name) => ({ name, createdAt: Date.now() })
 ```
 
-### Utilisations courantes
+### Common Uses
 
 ```javascript
-// Transformation simple
+// Simple transformation
 const names = photographers.map(p => p.name)
 
-// Filtrage
+// Filtering
 const expensive = items.filter(item => item.price > 100)
 
-// Tri
+// Sorting
 const sorted = numbers.sort((a, b) => a - b)
 
 // Find
 const found = users.find(user => user.id === targetId)
 ```
 
-## Quand utiliser arrow functions vs fonctions traditionnelles
+## When to Use Arrow Functions vs Traditional Functions
 
-### Utiliser arrow functions pour :
+### Use arrow functions for:
 
 1. **Callbacks** - `map`, `filter`, `forEach`, etc.
-2. **Event listeners inline** - Quand vous avez besoin du `this` de la classe
-3. **Fonctions courtes** - Transformations simples
+2. **Inline event listeners** - When you need the class's `this`
+3. **Short functions** - Simple transformations
 
-### Utiliser fonctions traditionnelles pour :
+### Use traditional functions for:
 
-1. **Méthodes de classe** - Syntaxe de méthode de classe
-2. **Méthodes d'objet** - Quand vous avez besoin du `this` de l'objet
-3. **Constructeurs** - Les arrow functions ne peuvent pas être utilisées avec `new`
+1. **Class methods** - Class method syntax
+2. **Object methods** - When you need the object's `this`
+3. **Constructors** - Arrow functions cannot be used with `new`
 
 ```javascript
 class Example {
-  // Méthode de classe (syntaxe normale)
+  // Class method (normal syntax)
   handleClick() {
     // ...
   }
 
-  // Event listener avec arrow function
+  // Event listener with arrow function
   init() {
     button.addEventListener('click', (e) => {
-      this.handleClick()  // 'this' fonctionne grâce à l'arrow function
+      this.handleClick()  // 'this' works thanks to the arrow function
     })
   }
 }
 ```
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Utilisation | Exemple | Fichier |
-|------------|---------|---------|
+| Usage | Example | File |
+|-------|---------|------|
 | map() callback | `data.map(d => new Model(d))` | PhotographersFactory.js |
 | filter() callback | `items.filter(i => i.active)` | App.js, SearchBar.js |
-| Event listeners | `btn.addEventListener('click', () => {...})` | Tous les templates |
-| sort() comparateur | `arr.sort((a, b) => a - b)` | SortFilters.js |
+| Event listeners | `btn.addEventListener('click', () => {...})` | All templates |
+| sort() comparator | `arr.sort((a, b) => a - b)` | SortFilters.js |
 | setTimeout callback | `setTimeout(() => fn(), delay)` | debounce.js |
 
-## Exercice pratique
+## Practical Exercise
 
-Refactorer ce code avec des arrow functions :
+Refactor this code with arrow functions:
 
 ```javascript
-// Avant
+// Before
 const prices = products.map(function(product) {
   return product.price
 })
@@ -243,12 +243,12 @@ const total = expensive.reduce(function(sum, price) {
   return sum + price
 }, 0)
 
-// Après
+// After
 const prices = products.map(product => product.price)
 const expensive = prices.filter(price => price > 50)
 const total = expensive.reduce((sum, price) => sum + price, 0)
 
-// Ou en chaîne
+// Or chained
 const total = products
   .map(p => p.price)
   .filter(price => price > 50)

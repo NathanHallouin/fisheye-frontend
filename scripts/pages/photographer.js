@@ -1,6 +1,6 @@
 class PhotographerPage {
   /**
-   * Initialise l'API, le conteneur principal et les sections médias/filtres.
+   * Initializes the API, main container, and media/filter sections.
    */
   constructor() {
     this.photographersApi = new PhotographerApi('./data/photographers.json')
@@ -12,11 +12,11 @@ class PhotographerPage {
   }
 
   /**
-   * Met à jour dynamiquement le <title> et la meta description selon le photographe affiché.
+   * Dynamically updates the <title> and meta description based on the displayed photographer.
    * @param {PhotographerProfil} profil
    */
   updateHead(profil) {
-    // Titre dynamique
+    // Dynamic title
     document.title = `Fisheye – ${profil.name}, photographe à ${profil.city}`
     // Meta description
     let metaDesc = document.querySelector('meta[name="description"]')
@@ -73,7 +73,7 @@ class PhotographerPage {
   }
 
   /**
-   * Méthode principale asynchrone pour charger et afficher le profil photographe, les médias, les filtres et les modales.
+   * Main asynchronous method to load and display the photographer profile, media, filters, and modals.
    * @async
    * @returns {Promise<void>}
    */
@@ -83,7 +83,7 @@ class PhotographerPage {
     const photographerProfil = new PhotographerProfil(
       photographerAllData.dataPhotographer,
     )
-    // Ajout dynamique SEO
+    // Dynamic SEO addition
     this.updateHead(photographerProfil)
     const createHeaderPhotographer = new PhotographerHeader(photographerProfil)
     this.$addDom.appendChild(createHeaderPhotographer.createHeader())

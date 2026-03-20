@@ -1,10 +1,10 @@
 /**
- * Classe représentant un formulaire de contact affiché dans une modale.
- * Inclut la validation en temps réel et l'auto-sauvegarde.
+ * Class representing a contact form displayed in a modal.
+ * Includes real-time validation and auto-save.
  */
 class ContactForm {
   /**
-   * Configuration de validation pour chaque champ.
+   * Validation configuration for each field.
    */
   static VALIDATION_RULES = {
     prenom: [
@@ -28,8 +28,8 @@ class ContactForm {
   }
 
   /**
-   * Crée une instance de ContactForm.
-   * @param {string} userData - Le nom du photographe ou de l'utilisateur à contacter.
+   * Creates an instance of ContactForm.
+   * @param {string} userData - The name of the photographer or user to contact.
    */
   constructor(userData) {
     this._userData = userData
@@ -45,14 +45,14 @@ class ContactForm {
   }
 
   /**
-   * Attache l'instance du formulaire de contact à l'objet global window.
+   * Attaches the contact form instance to the global window object.
    */
   attachWindow() {
     window.contactForm = this
   }
 
   /**
-   * Crée et insère le DOM du formulaire de contact dans la page.
+   * Creates and inserts the contact form DOM into the page.
    */
   createForm() {
     const modal = document.createElement('div')
@@ -81,16 +81,16 @@ class ContactForm {
     form.onsubmit = (e) => contactForm.validate(e)
     const fieldset = document.createElement('fieldset')
     fieldset.classList.add('modal-fieldset')
-    // Champ Prénom
+    // First Name field
     const fieldPrenom = this._createField('prenom', 'Prénom', 'text', 'given-name')
 
-    // Champ Nom
+    // Last Name field
     const fieldNom = this._createField('nom', 'Nom', 'text', 'family-name')
 
-    // Champ Email
+    // Email field
     const fieldEmail = this._createField('email', 'Email', 'email', 'email')
 
-    // Champ Message
+    // Message field
     const fieldMessage = this._createTextareaField('message', 'Message')
 
     fieldset.appendChild(fieldPrenom)
@@ -118,7 +118,7 @@ class ContactForm {
   }
 
   /**
-   * Affiche la modale du formulaire de contact.
+   * Displays the contact form modal.
    */
   displayModal() {
     const $modal = document.getElementById('contact-modal')
@@ -137,13 +137,13 @@ class ContactForm {
     })
     this.focusModal($modal)
 
-    // Setup auto-save après l'ouverture
+    // Setup auto-save after opening
     this._setupAutoSave()
   }
 
   /**
-   * Gère le focus cyclique dans la modale pour l'accessibilité.
-   * @param {HTMLElement} $modal - L'élément modal à gérer.
+   * Handles cyclic focus within the modal for accessibility.
+   * @param {HTMLElement} $modal - The modal element to manage.
    */
   focusModal($modal) {
     const focusElements = $modal.querySelectorAll('button, input')
@@ -170,7 +170,7 @@ class ContactForm {
   }
 
   /**
-   * Ferme la modale du formulaire de contact et rend le contenu principal accessible.
+   * Closes the contact form modal and makes the main content accessible.
    */
   closeModal() {
     const modal = document.getElementById('contact-modal')
@@ -183,8 +183,8 @@ class ContactForm {
   }
 
   /**
-   * Récupère les valeurs saisies dans le formulaire de contact.
-   * @returns {{getPrenom: string, getNom: string, getEmail: string, getMessage: string}} Les données du formulaire.
+   * Retrieves the values entered in the contact form.
+   * @returns {{getPrenom: string, getNom: string, getEmail: string, getMessage: string}} The form data.
    */
   getDataInput() {
     const getPrenom = document.querySelector('#prenom').value
@@ -195,7 +195,7 @@ class ContactForm {
   }
 
   /**
-   * Réinitialise les champs du formulaire de contact.
+   * Resets the contact form fields.
    */
   deleteDataInput() {
     document.querySelectorAll('.modal-input').forEach((e) => {
@@ -206,13 +206,13 @@ class ContactForm {
   }
 
   /**
-   * Valide le formulaire, affiche les données dans la console et réinitialise le formulaire.
-   * @param {Event} event - L'événement de soumission du formulaire.
+   * Validates the form, logs the data to the console and resets the form.
+   * @param {Event} event - The form submission event.
    */
   validate(event) {
     event.preventDefault()
 
-    // Valider tous les champs avant soumission
+    // Validate all fields before submission
     const isValid = this._validateAllFields()
     if (!isValid) {
       return
@@ -226,23 +226,23 @@ class ContactForm {
     console.log(`Message: ${data.getMessage}`)
     console.log('Envoyé')
 
-    // Effacer les données et le brouillon
+    // Clear data and draft
     this.deleteDataInput()
     if (this._formAutoSave) {
       this._formAutoSave.clear()
     }
 
-    // Afficher une notification de succès
+    // Show success notification
     this._showSuccessToast()
   }
 
   /**
-   * Crée un champ de formulaire avec label et conteneur d'erreur.
-   * @param {string} id - L'identifiant du champ.
-   * @param {string} labelText - Le texte du label.
-   * @param {string} type - Le type d'input.
-   * @param {string} autocomplete - La valeur d'autocomplete.
-   * @returns {HTMLElement} Le conteneur du champ.
+   * Creates a form field with label and error container.
+   * @param {string} id - The field identifier.
+   * @param {string} labelText - The label text.
+   * @param {string} type - The input type.
+   * @param {string} autocomplete - The autocomplete value.
+   * @returns {HTMLElement} The field container.
    */
   _createField(id, labelText, type, autocomplete) {
     const wrapper = document.createElement('div')
@@ -261,7 +261,7 @@ class ContactForm {
     input.setAttribute('aria-describedby', `${id}-error`)
     input.autocomplete = autocomplete
 
-    // Validation en temps réel
+    // Real-time validation
     input.addEventListener('blur', () => this._validateField(id, input.value))
     input.addEventListener('input', () => {
       if (this._fieldErrors.has(id)) {
@@ -282,10 +282,10 @@ class ContactForm {
   }
 
   /**
-   * Crée un champ textarea avec label et conteneur d'erreur.
-   * @param {string} id - L'identifiant du champ.
-   * @param {string} labelText - Le texte du label.
-   * @returns {HTMLElement} Le conteneur du champ.
+   * Creates a textarea field with label and error container.
+   * @param {string} id - The field identifier.
+   * @param {string} labelText - The label text.
+   * @returns {HTMLElement} The field container.
    */
   _createTextareaField(id, labelText) {
     const wrapper = document.createElement('div')
@@ -302,7 +302,7 @@ class ContactForm {
     textarea.classList.add('modal-textarea')
     textarea.setAttribute('aria-describedby', `${id}-error`)
 
-    // Validation en temps réel
+    // Real-time validation
     textarea.addEventListener('blur', () => this._validateField(id, textarea.value))
     textarea.addEventListener('input', () => {
       if (this._fieldErrors.has(id)) {
@@ -323,16 +323,16 @@ class ContactForm {
   }
 
   /**
-   * Valide un champ individuel.
-   * @param {string} fieldId - L'identifiant du champ.
-   * @param {string} value - La valeur du champ.
-   * @returns {boolean} True si valide.
+   * Validates an individual field.
+   * @param {string} fieldId - The field identifier.
+   * @param {string} value - The field value.
+   * @returns {boolean} True if valid.
    */
   _validateField(fieldId, value) {
     const rules = ContactForm.VALIDATION_RULES[fieldId]
     if (!rules) return true
 
-    // Vérifier si Validator est disponible
+    // Check if Validator is available
     if (typeof Validator === 'undefined') {
       return true
     }
@@ -357,8 +357,8 @@ class ContactForm {
   }
 
   /**
-   * Valide tous les champs du formulaire.
-   * @returns {boolean} True si tous les champs sont valides.
+   * Validates all form fields.
+   * @returns {boolean} True if all fields are valid.
    */
   _validateAllFields() {
     let isValid = true
@@ -371,7 +371,7 @@ class ContactForm {
       }
     }
 
-    // Focus sur le premier champ en erreur
+    // Focus on the first field with error
     if (!isValid) {
       const firstError = fields.find((id) => this._fieldErrors.has(id))
       if (firstError) {
@@ -383,10 +383,10 @@ class ContactForm {
   }
 
   /**
-   * Initialise l'auto-sauvegarde du formulaire.
+   * Initializes form auto-save.
    */
   _initAutoSave() {
-    // Vérifier si FormAutoSave est disponible
+    // Check if FormAutoSave is available
     if (typeof FormAutoSave === 'undefined') {
       return
     }
@@ -394,13 +394,13 @@ class ContactForm {
     this._formAutoSave = new FormAutoSave('contact', {
       debounceDelay: 500,
       onSave: () => {
-        console.log('Brouillon sauvegardé')
+        console.log('Draft saved')
       }
     })
   }
 
   /**
-   * Configure l'auto-sauvegarde après l'ouverture du modal.
+   * Sets up auto-save after opening the modal.
    */
   _setupAutoSave() {
     if (!this._formAutoSave) return
@@ -409,13 +409,13 @@ class ContactForm {
     if ($form) {
       this._formAutoSave.registerForm($form)
 
-      // Créer l'indicateur de sauvegarde
+      // Create the save indicator
       const $fieldset = $form.querySelector('fieldset')
       if ($fieldset) {
         this._formAutoSave.createIndicator($fieldset)
       }
 
-      // Restaurer les données sauvegardées
+      // Restore saved data
       if (this._formAutoSave.hasSavedData()) {
         this._formAutoSave.restore()
       }
@@ -423,7 +423,7 @@ class ContactForm {
   }
 
   /**
-   * Affiche un toast de succès.
+   * Shows a success toast.
    */
   _showSuccessToast() {
     if (typeof Toast !== 'undefined') {

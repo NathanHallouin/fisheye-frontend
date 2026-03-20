@@ -1,26 +1,26 @@
 /**
- * Gestionnaire d'infinite scroll (défilement infini).
+ * Infinite scroll manager.
  *
  * @description
- * Charge plus de contenu automatiquement quand l'utilisateur
- * approche de la fin de la page, sans pagination traditionnelle.
+ * Automatically loads more content when the user
+ * approaches the end of the page, without traditional pagination.
  *
- * CONCEPTS CLÉS :
- * - IntersectionObserver : Détection de l'élément sentinelle
- * - Throttle : Limitation des appels de chargement
- * - État de chargement : Gestion async du loading state
- * - Promises : Chargement asynchrone des données
+ * KEY CONCEPTS:
+ * - IntersectionObserver: Sentinel element detection
+ * - Throttle: Limiting load calls
+ * - Loading state: Async loading state management
+ * - Promises: Asynchronous data loading
  */
 class InfiniteScroll {
   /**
-   * Crée une instance d'InfiniteScroll.
+   * Creates an InfiniteScroll instance.
    *
-   * @param {Object} options - Les options de configuration.
-   * @param {HTMLElement} options.container - Le conteneur des éléments.
-   * @param {Function} options.loadMore - Fonction async qui charge plus d'éléments.
-   * @param {number} [options.pageSize=6] - Nombre d'éléments par page.
-   * @param {number} [options.threshold=100] - Distance en px avant le bas pour déclencher.
-   * @param {boolean} [options.hasMore=true] - S'il reste des éléments à charger.
+   * @param {Object} options - Configuration options.
+   * @param {HTMLElement} options.container - The element container.
+   * @param {Function} options.loadMore - Async function that loads more elements.
+   * @param {number} [options.pageSize=6] - Number of elements per page.
+   * @param {number} [options.threshold=100] - Distance in px before bottom to trigger.
+   * @param {boolean} [options.hasMore=true] - Whether there are more elements to load.
    */
   constructor(options) {
     this._container = options.container
@@ -39,26 +39,26 @@ class InfiniteScroll {
   }
 
   /**
-   * Initialise l'infinite scroll.
+   * Initializes infinite scroll.
    * @private
    */
   _init() {
-    // Créer l'élément sentinelle (détecte quand on approche du bas)
+    // Create the sentinel element (detects when approaching the bottom)
     this._createSentinel()
 
-    // Créer l'indicateur de chargement
+    // Create the loading indicator
     this._createLoadingIndicator()
 
-    // Configurer l'IntersectionObserver
+    // Configure the IntersectionObserver
     this._setupObserver()
   }
 
   /**
-   * Crée l'élément sentinelle.
+   * Creates the sentinel element.
    *
    * @description
-   * La sentinelle est un élément invisible placé à la fin du contenu.
-   * Quand elle devient visible, on charge plus de contenu.
+   * The sentinel is an invisible element placed at the end of content.
+   * When it becomes visible, we load more content.
    *
    * @private
    */
@@ -67,7 +67,7 @@ class InfiniteScroll {
     this._sentinel.classList.add('infinite-scroll__sentinel')
     this._sentinel.setAttribute('aria-hidden', 'true')
 
-    // Insérer après le conteneur
+    // Insert after the container
     this._container.parentNode.insertBefore(
       this._sentinel,
       this._container.nextSibling,
@@ -75,7 +75,7 @@ class InfiniteScroll {
   }
 
   /**
-   * Crée l'indicateur de chargement.
+   * Creates the loading indicator.
    * @private
    */
   _createLoadingIndicator() {
@@ -84,11 +84,11 @@ class InfiniteScroll {
     this._loadingIndicator.setAttribute('aria-live', 'polite')
     this._loadingIndicator.innerHTML = `
       <div class="infinite-scroll__spinner" aria-hidden="true"></div>
-      <span class="infinite-scroll__text">Chargement...</span>
+      <span class="infinite-scroll__text">Loading...</span>
     `
     this._loadingIndicator.hidden = true
 
-    // Insérer avant la sentinelle
+    // Insert before the sentinel
     this._sentinel.parentNode.insertBefore(
       this._loadingIndicator,
       this._sentinel,
@@ -96,19 +96,19 @@ class InfiniteScroll {
   }
 
   /**
-   * Configure l'IntersectionObserver pour la sentinelle.
+   * Configures the IntersectionObserver for the sentinel.
    *
    * @description
-   * CONCEPT : rootMargin pour pré-chargement
-   * En utilisant rootMargin avec une valeur positive en bas,
-   * on déclenche le chargement AVANT que la sentinelle soit visible.
+   * CONCEPT: rootMargin for preloading
+   * By using rootMargin with a positive value at the bottom,
+   * we trigger loading BEFORE the sentinel is visible.
    *
    * @private
    */
   _setupObserver() {
     const options = {
       root: null,
-      rootMargin: `0px 0px ${this._threshold}px 0px`, // Déclencher X px avant
+      rootMargin: `0px 0px ${this._threshold}px 0px`, // Trigger X px before
       threshold: 0,
     }
 
@@ -117,32 +117,32 @@ class InfiniteScroll {
       options,
     )
 
-    // Commencer à observer la sentinelle
+    // Start observing the sentinel
     this._observer.observe(this._sentinel)
   }
 
   /**
-   * Gère l'intersection de la sentinelle.
+   * Handles sentinel intersection.
    *
-   * @param {IntersectionObserverEntry[]} entries - Les entrées d'intersection.
+   * @param {IntersectionObserverEntry[]} entries - The intersection entries.
    * @private
    */
   _handleIntersection(entries) {
     const entry = entries[0]
 
-    // Si la sentinelle est visible et qu'on n'est pas en train de charger
+    // If the sentinel is visible and we're not loading
     if (entry.isIntersecting && !this._isLoading && this._hasMore) {
       this._loadNextPage()
     }
   }
 
   /**
-   * Charge la page suivante.
+   * Loads the next page.
    *
    * @description
-   * CONCEPT : Gestion de l'état de chargement
-   * On utilise un flag isLoading pour éviter les chargements multiples
-   * simultanés (debounce naturel).
+   * CONCEPT: Loading state management
+   * We use an isLoading flag to avoid multiple simultaneous loads
+   * (natural debounce).
    *
    * @private
    */
@@ -153,26 +153,26 @@ class InfiniteScroll {
     this._showLoader()
 
     try {
-      // Appeler la fonction de chargement fournie
-      // Elle doit retourner { items: [], hasMore: boolean }
+      // Call the provided load function
+      // It should return { items: [], hasMore: boolean }
       const result = await this._loadMore(this._currentPage, this._pageSize)
 
       if (result) {
-        // Mettre à jour l'état
+        // Update state
         this._hasMore = result.hasMore !== false
         this._currentPage++
 
-        // Émettre un événement avec les nouveaux éléments
+        // Emit an event with the new elements
         this._emitLoadEvent(result.items)
       }
     } catch (error) {
-      console.error('InfiniteScroll: Erreur de chargement', error)
+      console.error('InfiniteScroll: Loading error', error)
       this._emitErrorEvent(error)
     } finally {
       this._isLoading = false
       this._hideLoader()
 
-      // Si plus rien à charger, arrêter d'observer
+      // If nothing left to load, stop observing
       if (!this._hasMore) {
         this._showEndMessage()
         this._observer.disconnect()
@@ -181,7 +181,7 @@ class InfiniteScroll {
   }
 
   /**
-   * Affiche le loader.
+   * Shows the loader.
    * @private
    */
   _showLoader() {
@@ -189,7 +189,7 @@ class InfiniteScroll {
   }
 
   /**
-   * Cache le loader.
+   * Hides the loader.
    * @private
    */
   _hideLoader() {
@@ -197,22 +197,22 @@ class InfiniteScroll {
   }
 
   /**
-   * Affiche un message de fin.
+   * Shows an end message.
    * @private
    */
   _showEndMessage() {
     const endMessage = document.createElement('p')
     endMessage.classList.add('infinite-scroll__end')
-    endMessage.textContent = 'Tous les éléments ont été chargés.'
+    endMessage.textContent = 'All items have been loaded.'
     endMessage.setAttribute('role', 'status')
 
     this._loadingIndicator.replaceWith(endMessage)
   }
 
   /**
-   * Émet un événement de chargement réussi.
+   * Emits a successful load event.
    *
-   * @param {Array} items - Les éléments chargés.
+   * @param {Array} items - The loaded items.
    * @private
    */
   _emitLoadEvent(items) {
@@ -228,9 +228,9 @@ class InfiniteScroll {
   }
 
   /**
-   * Émet un événement d'erreur.
+   * Emits an error event.
    *
-   * @param {Error} error - L'erreur survenue.
+   * @param {Error} error - The error that occurred.
    * @private
    */
   _emitErrorEvent(error) {
@@ -242,23 +242,23 @@ class InfiniteScroll {
   }
 
   /**
-   * Recharge depuis le début.
+   * Reloads from the beginning.
    */
   reset() {
     this._currentPage = 1
     this._hasMore = true
     this._isLoading = false
 
-    // Réactiver l'observer si déconnecté
+    // Reactivate observer if disconnected
     if (this._sentinel && !this._observer) {
       this._setupObserver()
     }
   }
 
   /**
-   * Met à jour l'état hasMore.
+   * Updates the hasMore state.
    *
-   * @param {boolean} hasMore - S'il reste des éléments.
+   * @param {boolean} hasMore - Whether there are more elements.
    */
   setHasMore(hasMore) {
     this._hasMore = hasMore
@@ -270,7 +270,7 @@ class InfiniteScroll {
   }
 
   /**
-   * Détruit l'instance et nettoie les ressources.
+   * Destroys the instance and cleans up resources.
    */
   destroy() {
     if (this._observer) {
@@ -290,9 +290,9 @@ class InfiniteScroll {
   }
 
   /**
-   * Retourne les informations de pagination.
+   * Returns pagination information.
    *
-   * @returns {Object} Les infos de pagination.
+   * @returns {Object} The pagination info.
    */
   getInfo() {
     return {

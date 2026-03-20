@@ -1,9 +1,9 @@
 /**
- * Classe pour créer et gérer le filtre média.
+ * Class to create and manage the media filter.
  *
  * @description
- * Cette classe crée un composant dropdown accessible permettant
- * de trier les médias selon différents critères.
+ * This class creates an accessible dropdown component allowing
+ * users to sort media according to different criteria.
  */
 class MediaFilter {
   constructor() {
@@ -16,12 +16,12 @@ class MediaFilter {
   }
 
   /**
-   * Crée le HTML du filtre média avec accessibilité améliorée.
+   * Creates the media filter HTML with enhanced accessibility.
    * @returns {HTMLElement}
    */
   createMediaFilter() {
     const filter = `
-        <p class="filter-title" id="sort-label">Trier par</p>
+        <p class="filter-title" id="sort-label">Sort by</p>
         <div class="filter-media" role="presentation">
             <button
                 class="filter-button"
@@ -30,21 +30,21 @@ class MediaFilter {
                 aria-haspopup="listbox"
                 aria-expanded="false"
                 aria-controls="filter-dropdown">
-                    <span class="filter-selected">Popularité</span>
+                    <span class="filter-selected">Popularity</span>
                     <span class="filter-order-indicator" aria-hidden="true"></span>
                     <span class="filter-arrow" aria-hidden="true"></span>
             </button>
             <ul class="filter-dropdown" role="listbox" id="filter-dropdown" tabindex="-1">
-                <li role="option" data-value="Popularité" aria-selected="true" tabindex="0">
-                    <span class="filter-option">Popularité</span>
+                <li role="option" data-value="Popularity" aria-selected="true" tabindex="0">
+                    <span class="filter-option">Popularity</span>
                     <span class="filter-option-order" aria-hidden="true">↓</span>
                 </li>
                 <li role="option" data-value="Date" aria-selected="false" tabindex="0">
                     <span class="filter-option">Date</span>
                     <span class="filter-option-order" aria-hidden="true"></span>
                 </li>
-                <li role="option" data-value="Titre" aria-selected="false" tabindex="0">
-                    <span class="filter-option">Titre</span>
+                <li role="option" data-value="Title" aria-selected="false" tabindex="0">
+                    <span class="filter-option">Title</span>
                     <span class="filter-option-order" aria-hidden="true"></span>
                 </li>
             </ul>
@@ -60,10 +60,10 @@ class MediaFilter {
 }
 
 /**
- * Classe pour gérer le bouton et les interactions du filtre média.
+ * Class to manage the button and interactions of the media filter.
  *
  * @description
- * Gère l'ouverture/fermeture du dropdown et délègue aux autres classes.
+ * Handles opening/closing the dropdown and delegates to other classes.
  */
 class MediaFilterButton {
   constructor() {
@@ -75,32 +75,32 @@ class MediaFilterButton {
   }
 
   /**
-   * Attache tous les événements nécessaires.
+   * Attaches all necessary events.
    */
   attachEvents() {
-    // Clic sur le bouton
+    // Click on the button
     this.$selectBtn.addEventListener('click', () => {
       this.toggleDropdown()
     })
 
-    // Navigation clavier sur le bouton
+    // Keyboard navigation on the button
     this.$selectBtn.addEventListener('keydown', (e) => {
       this._handleButtonKeydown(e)
     })
 
-    // Fermer si clic en dehors
+    // Close if clicked outside
     document.addEventListener('click', (e) => {
       if (!this.$filterMedia.contains(e.target) && this._isOpen) {
         this.closeDropdown()
       }
     })
 
-    // Initialiser le gestionnaire de dropdown
+    // Initialize the dropdown manager
     new MediaFilterDropdown(this)
   }
 
   /**
-   * Gère les événements clavier sur le bouton.
+   * Handles keyboard events on the button.
    * @param {KeyboardEvent} e
    * @private
    */
@@ -123,7 +123,7 @@ class MediaFilterButton {
   }
 
   /**
-   * Ouvre ou ferme le dropdown.
+   * Opens or closes the dropdown.
    */
   toggleDropdown() {
     if (this._isOpen) {
@@ -134,14 +134,14 @@ class MediaFilterButton {
   }
 
   /**
-   * Ouvre le dropdown.
+   * Opens the dropdown.
    */
   openDropdown() {
     this._isOpen = true
     this.$filterMedia.classList.add('active')
     this.$selectBtn.setAttribute('aria-expanded', 'true')
 
-    // Focus sur la première option
+    // Focus on the first option
     const firstOption = this.$dropdown.querySelector('[role="option"]')
     if (firstOption) {
       firstOption.focus()
@@ -149,7 +149,7 @@ class MediaFilterButton {
   }
 
   /**
-   * Ferme le dropdown.
+   * Closes the dropdown.
    */
   closeDropdown() {
     this._isOpen = false
@@ -159,7 +159,7 @@ class MediaFilterButton {
   }
 
   /**
-   * Vérifie si le dropdown est ouvert.
+   * Checks if the dropdown is open.
    * @returns {boolean}
    */
   isOpen() {
@@ -168,15 +168,15 @@ class MediaFilterButton {
 }
 
 /**
- * Classe pour gérer les interactions du dropdown.
+ * Class to manage dropdown interactions.
  *
  * @description
- * Gère la sélection des options et la navigation clavier complète.
- * Implémente les patterns ARIA pour l'accessibilité.
+ * Handles option selection and complete keyboard navigation.
+ * Implements ARIA patterns for accessibility.
  */
 class MediaFilterDropdown {
   /**
-   * @param {MediaFilterButton} buttonManager - Le gestionnaire du bouton parent.
+   * @param {MediaFilterButton} buttonManager - The parent button manager.
    */
   constructor(buttonManager) {
     this._buttonManager = buttonManager
@@ -192,26 +192,26 @@ class MediaFilterDropdown {
   }
 
   /**
-   * Applique le tri initial (Popularité descendant).
+   * Applies the initial sort (Popularity descending).
    * @private
    */
   _applyInitialSort() {
-    new SortFilters('Popularité')
-    this._updateOrderIndicator('Popularité')
+    new SortFilters('Popularity')
+    this._updateOrderIndicator('Popularity')
   }
 
   /**
-   * Attache les événements sur les options du dropdown.
+   * Attaches events on the dropdown options.
    */
   attachEvents() {
     this.$options.forEach((option, index) => {
-      // Clic sur une option
+      // Click on an option
       option.addEventListener('click', (e) => {
         e.stopPropagation()
         this._selectOption(option, index)
       })
 
-      // Navigation clavier
+      // Keyboard navigation
       option.addEventListener('keydown', (e) => {
         this._handleOptionKeydown(e, index)
       })
@@ -219,14 +219,14 @@ class MediaFilterDropdown {
   }
 
   /**
-   * Gère la navigation clavier dans les options.
+   * Handles keyboard navigation in the options.
    *
    * @description
-   * CONCEPT CLÉ : Navigation clavier accessible
-   * - ArrowDown/ArrowUp : Naviguer entre les options
-   * - Enter/Space : Sélectionner l'option
-   * - Escape : Fermer le dropdown
-   * - Home/End : Aller au début/fin
+   * KEY CONCEPT: Accessible keyboard navigation
+   * - ArrowDown/ArrowUp: Navigate between options
+   * - Enter/Space: Select the option
+   * - Escape: Close the dropdown
+   * - Home/End: Go to beginning/end
    *
    * @param {KeyboardEvent} e
    * @param {number} currentIndex
@@ -239,14 +239,14 @@ class MediaFilterDropdown {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
-        // Aller à l'option suivante, revenir au début si à la fin
+        // Go to next option, loop back to start if at end
         newIndex = (currentIndex + 1) % optionsArray.length
         optionsArray[newIndex].focus()
         break
 
       case 'ArrowUp':
         e.preventDefault()
-        // Aller à l'option précédente, aller à la fin si au début
+        // Go to previous option, go to end if at start
         newIndex =
           currentIndex === 0 ? optionsArray.length - 1 : currentIndex - 1
         optionsArray[newIndex].focus()
@@ -274,57 +274,57 @@ class MediaFilterDropdown {
         break
 
       case 'Tab':
-        // Fermer le dropdown quand on tab en dehors
+        // Close the dropdown when tabbing out
         this._buttonManager.closeDropdown()
         break
     }
   }
 
   /**
-   * Sélectionne une option et applique le tri.
-   * @param {HTMLElement} option - L'élément option sélectionné.
-   * @param {number} index - L'index de l'option.
+   * Selects an option and applies the sort.
+   * @param {HTMLElement} option - The selected option element.
+   * @param {number} index - The option index.
    * @private
    */
   _selectOption(option, index) {
     const value = option.dataset.value
 
-    // Mettre à jour l'affichage du bouton
+    // Update the button display
     this.$selectedValue.textContent = value
 
-    // Mettre à jour les attributs ARIA
+    // Update ARIA attributes
     this.$options.forEach((opt) => {
       opt.setAttribute('aria-selected', 'false')
     })
     option.setAttribute('aria-selected', 'true')
 
-    // Appliquer le tri
+    // Apply the sort
     new SortFilters(value)
 
-    // Mettre à jour l'indicateur d'ordre
+    // Update the order indicator
     this._updateOrderIndicator(value)
 
-    // Fermer le dropdown
+    // Close the dropdown
     this._buttonManager.closeDropdown()
 
     this._selectedIndex = index
   }
 
   /**
-   * Met à jour l'indicateur d'ordre de tri.
-   * @param {string} sortType - Le type de tri actuel.
+   * Updates the sort order indicator.
+   * @param {string} sortType - The current sort type.
    * @private
    */
   _updateOrderIndicator(sortType) {
     const order = SortFilters.getCurrentOrder(sortType)
     const arrow = order === 'desc' ? '↓' : '↑'
 
-    // Mettre à jour l'indicateur dans le bouton
+    // Update the indicator in the button
     if (this.$orderIndicator) {
       this.$orderIndicator.textContent = arrow
     }
 
-    // Mettre à jour les indicateurs dans les options
+    // Update the indicators in the options
     this.$options.forEach((opt) => {
       const orderSpan = opt.querySelector('.filter-option-order')
       if (opt.dataset.value === sortType) {

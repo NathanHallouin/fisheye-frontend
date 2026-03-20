@@ -1,33 +1,33 @@
-# Performance et Optimisation
+# Performance and Optimization
 
 ## Concept
 
-L'optimisation des performances améliore l'expérience utilisateur en réduisant les temps de chargement et en rendant l'interface plus réactive.
+Performance optimization improves user experience by reducing load times and making the interface more responsive.
 
 ---
 
 ## Debounce
 
-Retarde l'exécution d'une fonction jusqu'à ce que l'utilisateur arrête de déclencher l'événement.
+Delays the execution of a function until the user stops triggering the event.
 
 ### Concept
 
 ```
-Sans debounce:  ─┬─┬─┬─┬─┬─┬─┬─┬─┬─> Appels à chaque frappe
-Avec debounce:  ─┬─┬─┬─┬─┬─┬─┬─┬─┬─────────> Un seul appel après 300ms
-                                   └─ délai ─┘
+Without debounce:  ─┬─┬─┬─┬─┬─┬─┬─┬─┬─> Calls on every keystroke
+With debounce:     ─┬─┬─┬─┬─┬─┬─┬─┬─┬─────────> Single call after 300ms
+                                      └─ delay ─┘
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
+**File**: [scripts/utils/debounce.js](../../scripts/utils/debounce.js)
 
 ```javascript
 /**
- * Crée une version debounced d'une fonction.
- * @param {Function} fn - Fonction à débouncer
- * @param {number} delay - Délai en millisecondes
- * @returns {Function} Fonction debounced
+ * Creates a debounced version of a function.
+ * @param {Function} fn - Function to debounce
+ * @param {number} delay - Delay in milliseconds
+ * @returns {Function} Debounced function
  */
 export function debounce(fn, delay) {
   let timeoutId
@@ -39,9 +39,9 @@ export function debounce(fn, delay) {
 }
 ```
 
-### Utilisation
+### Usage
 
-**Fichier**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
+**File**: [scripts/templates/SearchBar.js](../../scripts/templates/SearchBar.js)
 
 ```javascript
 class SearchBar {
@@ -66,34 +66,34 @@ class SearchBar {
 }
 ```
 
-### Cas d'usage
+### Use Cases
 
-- Recherche en temps réel
-- Redimensionnement de fenêtre
-- Sauvegarde automatique
+- Real-time search
+- Window resizing
+- Auto-save
 
 ---
 
 ## Throttle
 
-Limite le nombre d'appels d'une fonction sur une période donnée.
+Limits the number of function calls over a given period.
 
 ### Concept
 
 ```
-Sans throttle:   ─┬─┬─┬─┬─┬─┬─┬─┬─┬─> Tous les appels
-Avec throttle:   ─┬───────┬───────┬─> Un appel tous les 100ms
-                  └─100ms─┘       │
+Without throttle:   ─┬─┬─┬─┬─┬─┬─┬─┬─┬─> All calls
+With throttle:      ─┬───────┬───────┬─> One call every 100ms
+                     └─100ms─┘       │
 ```
 
-### Implémentation
+### Implementation
 
 ```javascript
 /**
- * Crée une version throttled d'une fonction.
- * @param {Function} fn - Fonction à throttler
- * @param {number} limit - Intervalle minimum en ms
- * @returns {Function} Fonction throttled
+ * Creates a throttled version of a function.
+ * @param {Function} fn - Function to throttle
+ * @param {number} limit - Minimum interval in ms
+ * @returns {Function} Throttled function
  */
 function throttle(fn, limit) {
   let inThrottle = false
@@ -116,19 +116,19 @@ window.addEventListener('scroll', throttledScroll)
 
 | Aspect | Debounce | Throttle |
 |--------|----------|----------|
-| Timing | Après le dernier appel | À intervalles réguliers |
-| Usage | Recherche, resize | Scroll, drag |
-| Garantie | Un appel après pause | Un appel par intervalle |
+| Timing | After the last call | At regular intervals |
+| Usage | Search, resize | Scroll, drag |
+| Guarantee | One call after pause | One call per interval |
 
 ---
 
 ## Lazy Loading
 
-Charge les ressources seulement quand elles sont nécessaires.
+Loads resources only when they are needed.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
+**File**: [scripts/utils/LazyLoader.js](../../scripts/utils/LazyLoader.js)
 
 ```javascript
 class LazyLoader {
@@ -145,7 +145,7 @@ class LazyLoader {
     this._observer = new IntersectionObserver(
       (entries) => this._onIntersect(entries),
       {
-        rootMargin: '200px',  // Précharger 200px avant
+        rootMargin: '200px',  // Preload 200px before
         threshold: 0.01
       }
     )
@@ -172,17 +172,17 @@ class LazyLoader {
     if (!src) return
 
     try {
-      // Précharger en mémoire
+      // Preload in memory
       await this._preload(src)
 
-      // Appliquer quand prêt
+      // Apply when ready
       img.src = src
       img.removeAttribute('data-src')
       img.classList.remove('lazy')
       img.classList.add('loaded')
     } catch (error) {
       img.classList.add('error')
-      console.error(`Erreur de chargement: ${src}`)
+      console.error(`Loading error: ${src}`)
     }
   }
 
@@ -197,18 +197,18 @@ class LazyLoader {
 }
 ```
 
-### Usage dans les templates
+### Usage in Templates
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
 createCard() {
   const img = document.createElement('img')
-  img.dataset.src = this._photographer.portrait  // data-src au lieu de src
-  img.alt = `Portrait de ${this._photographer.name}`
+  img.dataset.src = this._photographer.portrait  // data-src instead of src
+  img.alt = `Portrait of ${this._photographer.name}`
   img.classList.add('user-card__portrait')
 
-  // Enregistrer pour lazy loading
+  // Register for lazy loading
   const lazyLoader = LazyLoader.getInstance()
   lazyLoader.observe(img)
 
@@ -220,11 +220,11 @@ createCard() {
 
 ## Caching
 
-Évite les requêtes redondantes en stockant les résultats.
+Avoids redundant requests by storing results.
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 class CacheManager {
@@ -241,19 +241,19 @@ class CacheManager {
     this._cache = new Map()
     this._ttl = ttl  // Time To Live: 5 minutes
 
-    // Nettoyage périodique
+    // Periodic cleanup
     setInterval(() => this._cleanup(), 60000)
   }
 
   async get(key, fetchFn, ttl = this._ttl) {
     const cached = this._cache.get(key)
 
-    // Retourner le cache si valide
+    // Return cache if valid
     if (cached && this._isValid(cached, ttl)) {
       return cached.promise
     }
 
-    // Sinon, fetch et cache
+    // Otherwise, fetch and cache
     const promise = fetchFn()
     this._cache.set(key, {
       promise,
@@ -261,7 +261,7 @@ class CacheManager {
       ttl
     })
 
-    // Gérer les erreurs
+    // Handle errors
     promise.catch(() => {
       this._cache.delete(key)
     })
@@ -294,15 +294,15 @@ class CacheManager {
 
 ### Memoization
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 /**
- * Décore une fonction avec du caching automatique.
- * @param {Function} fn - Fonction à memoizer
- * @param {Function} keyGenerator - Générateur de clé
- * @param {number} ttl - Durée de vie
- * @returns {Function} Fonction memoized
+ * Decorates a function with automatic caching.
+ * @param {Function} fn - Function to memoize
+ * @param {Function} keyGenerator - Key generator
+ * @param {number} ttl - Time to live
+ * @returns {Function} Memoized function
  */
 memoize(fn, keyGenerator = (...args) => args.join(':'), ttl = this._ttl) {
   return async (...args) => {
@@ -316,7 +316,7 @@ const cache = CacheManager.getInstance()
 const fetchPhotographer = cache.memoize(
   (id) => fetch(`/api/photographers/${id}`).then(r => r.json()),
   (id) => `photographer:${id}`,
-  60000  // Cache 1 minute
+  60000  // Cache for 1 minute
 )
 ```
 
@@ -324,12 +324,12 @@ const fetchPhotographer = cache.memoize(
 
 ## Event Delegation
 
-Un seul listener pour gérer de nombreux éléments.
+A single listener to handle many elements.
 
-### Problème
+### Problem
 
 ```javascript
-// Mauvais - N listeners
+// Bad - N listeners
 cards.forEach(card => {
   card.addEventListener('click', handleClick)
 })
@@ -338,22 +338,22 @@ cards.forEach(card => {
 ### Solution
 
 ```javascript
-// Bon - 1 listener
+// Good - 1 listener
 container.addEventListener('click', (e) => {
   const card = e.target.closest('.card')
   if (card) handleClick(card)
 })
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/utils/LikeManager.js](../../scripts/utils/LikeManager.js)
+**File**: [scripts/utils/LikeManager.js](../../scripts/utils/LikeManager.js)
 
 ```javascript
 class LikeManager {
   constructor($container) {
     this.$container = $container
-    // Un seul listener pour tous les boutons
+    // A single listener for all buttons
     this.$container.addEventListener('click', (e) => this._handleClick(e))
   }
 
@@ -371,32 +371,32 @@ class LikeManager {
 
 ## DocumentFragment
 
-Réduit les reflows en groupant les modifications DOM.
+Reduces reflows by grouping DOM modifications.
 
-### Problème
+### Problem
 
 ```javascript
-// Mauvais - N reflows
+// Bad - N reflows
 items.forEach(item => {
-  container.appendChild(createCard(item))  // Reflow à chaque ajout
+  container.appendChild(createCard(item))  // Reflow on each add
 })
 ```
 
 ### Solution
 
 ```javascript
-// Bon - 1 reflow
+// Good - 1 reflow
 const fragment = document.createDocumentFragment()
 items.forEach(item => {
   fragment.appendChild(createCard(item))
 })
-container.appendChild(fragment)  // Un seul reflow
+container.appendChild(fragment)  // Single reflow
 ```
 
-### Alternative avec innerHTML
+### Alternative with innerHTML
 
 ```javascript
-// Vider puis remplir - 1 reflow
+// Clear then fill - 1 reflow
 container.innerHTML = ''
 items.forEach(item => {
   container.appendChild(createCard(item))
@@ -405,23 +405,23 @@ items.forEach(item => {
 
 ---
 
-## Récapitulatif des techniques
+## Techniques Summary
 
-| Technique | Problème résolu | Fichier |
-|-----------|-----------------|---------|
-| Debounce | Trop d'appels sur input | debounce.js |
-| Throttle | Trop d'appels sur scroll | - |
-| Lazy loading | Chargement initial lent | LazyLoader.js |
-| Caching | Requêtes redondantes | CacheManager.js |
-| Memoization | Calculs répétés | CacheManager.js |
-| Event delegation | Trop de listeners | LikeManager.js |
-| DocumentFragment | Trop de reflows | - |
+| Technique | Problem Solved | File |
+|-----------|----------------|------|
+| Debounce | Too many calls on input | debounce.js |
+| Throttle | Too many calls on scroll | - |
+| Lazy loading | Slow initial loading | LazyLoader.js |
+| Caching | Redundant requests | CacheManager.js |
+| Memoization | Repeated calculations | CacheManager.js |
+| Event delegation | Too many listeners | LikeManager.js |
+| DocumentFragment | Too many reflows | - |
 
 ---
 
-## Mesurer les performances
+## Measuring Performance
 
-### Console timing
+### Console Timing
 
 ```javascript
 console.time('operation')
@@ -435,14 +435,14 @@ console.timeEnd('operation')  // operation: 45.123ms
 const start = performance.now()
 // ... code
 const duration = performance.now() - start
-console.log(`Durée: ${duration}ms`)
+console.log(`Duration: ${duration}ms`)
 ```
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un gestionnaire de scroll avec throttle et lazy loading :
+Create a scroll manager with throttle and lazy loading:
 
 ```javascript
 class ScrollManager {

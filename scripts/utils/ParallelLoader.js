@@ -1,43 +1,43 @@
 /**
- * Utilitaire pour le chargement parallèle de ressources.
+ * Utility for parallel resource loading.
  *
  * @description
- * Charge plusieurs ressources en parallèle en utilisant Promise.all()
- * ou Promise.allSettled() selon les besoins.
+ * Loads multiple resources in parallel using Promise.all()
+ * or Promise.allSettled() depending on needs.
  *
- * CONCEPTS CLÉS :
+ * KEY CONCEPTS:
  *
  * 1. Promise.all(promises)
- *    - Attend que TOUTES les promesses soient résolues
- *    - Échoue dès qu'UNE promesse échoue (fail-fast)
- *    - Retourne un tableau de résultats dans le même ordre
+ *    - Waits for ALL promises to be resolved
+ *    - Fails as soon as ONE promise fails (fail-fast)
+ *    - Returns an array of results in the same order
  *
  * 2. Promise.allSettled(promises)
- *    - Attend que TOUTES les promesses soient terminées (résolues OU rejetées)
- *    - Ne "fail" jamais - retourne toujours un tableau
- *    - Chaque résultat a { status: 'fulfilled'|'rejected', value|reason }
+ *    - Waits for ALL promises to complete (resolved OR rejected)
+ *    - Never "fails" - always returns an array
+ *    - Each result has { status: 'fulfilled'|'rejected', value|reason }
  *
  * 3. Promise.race(promises)
- *    - Retourne dès que la PREMIÈRE promesse se termine
- *    - Utile pour les timeouts
+ *    - Returns as soon as the FIRST promise completes
+ *    - Useful for timeouts
  *
  * 4. Promise.any(promises)
- *    - Retourne dès que la PREMIÈRE promesse RÉUSSIT
- *    - Échoue seulement si TOUTES échouent
+ *    - Returns as soon as the FIRST promise SUCCEEDS
+ *    - Fails only if ALL fail
  */
 class ParallelLoader {
   /**
-   * Charge plusieurs URLs en parallèle.
+   * Loads multiple URLs in parallel.
    *
    * @description
-   * CONCEPT : Promise.all()
-   * Toutes les requêtes partent en même temps.
-   * On attend que TOUTES soient terminées.
-   * Si une échoue, tout échoue (fail-fast).
+   * CONCEPT: Promise.all()
+   * All requests start at the same time.
+   * We wait for ALL to complete.
+   * If one fails, everything fails (fail-fast).
    *
-   * @param {string[]} urls - Les URLs à charger.
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object[]>} Les données chargées.
+   * @param {string[]} urls - The URLs to load.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object[]>} The loaded data.
    *
    * @example
    * const [users, posts] = await ParallelLoader.loadAll([
@@ -46,43 +46,43 @@ class ParallelLoader {
    * ])
    */
   static async loadAll(urls, options = {}) {
-    // map() crée un tableau de Promises
+    // map() creates an array of Promises
     const promises = urls.map((url) =>
       fetch(url, options).then((res) => res.json()),
     )
 
-    // Promise.all attend TOUTES les promesses
-    // Si une échoue, l'erreur est propagée
+    // Promise.all waits for ALL promises
+    // If one fails, the error is propagated
     return Promise.all(promises)
   }
 
   /**
-   * Charge plusieurs URLs avec gestion d'erreurs individuelles.
+   * Loads multiple URLs with individual error handling.
    *
    * @description
-   * CONCEPT : Promise.allSettled()
-   * Contrairement à Promise.all, ne fail pas si une requête échoue.
-   * Retourne TOUJOURS un tableau de résultats.
+   * CONCEPT: Promise.allSettled()
+   * Unlike Promise.all, doesn't fail if one request fails.
+   * ALWAYS returns an array of results.
    *
-   * Chaque résultat est soit :
+   * Each result is either:
    * - { status: 'fulfilled', value: data }
    * - { status: 'rejected', reason: error }
    *
-   * @param {string[]} urls - Les URLs à charger.
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object[]>} Résultats avec status.
+   * @param {string[]} urls - The URLs to load.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object[]>} Results with status.
    *
    * @example
    * const results = await ParallelLoader.loadAllSettled([
    *   '/api/users',
-   *   '/api/invalid-endpoint'  // Ne fait pas échouer les autres
+   *   '/api/invalid-endpoint'  // Doesn't cause others to fail
    * ])
    *
    * results.forEach((result, i) => {
    *   if (result.status === 'fulfilled') {
-   *     console.log('Succès:', result.value)
+   *     console.log('Success:', result.value)
    *   } else {
-   *     console.log('Erreur:', result.reason)
+   *     console.log('Error:', result.reason)
    *   }
    * })
    */
@@ -91,28 +91,28 @@ class ParallelLoader {
       fetch(url, options).then((res) => res.json()),
     )
 
-    // Promise.allSettled ne fail jamais
+    // Promise.allSettled never fails
     return Promise.allSettled(promises)
   }
 
   /**
-   * Charge des ressources avec un rapport de progression.
+   * Loads resources with a progress report.
    *
    * @description
-   * Combine Promise.allSettled avec un callback de progression
-   * pour suivre le chargement en temps réel.
+   * Combines Promise.allSettled with a progress callback
+   * to track loading in real time.
    *
-   * @param {string[]} urls - Les URLs à charger.
+   * @param {string[]} urls - The URLs to load.
    * @param {Function} onProgress - Callback (loaded, total, result).
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object[]>} Résultats avec status.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object[]>} Results with status.
    */
   static async loadWithProgress(urls, onProgress, options = {}) {
     let loaded = 0
     const total = urls.length
     const results = new Array(total)
 
-    // Créer les promesses avec tracking individuel
+    // Create promises with individual tracking
     const promises = urls.map(async (url, index) => {
       try {
         const response = await fetch(url, options)
@@ -123,28 +123,28 @@ class ParallelLoader {
         results[index] = { status: 'rejected', reason: error }
       } finally {
         loaded++
-        // Appeler le callback de progression
+        // Call the progress callback
         onProgress(loaded, total, results[index])
       }
     })
 
-    // Attendre toutes les promesses
+    // Wait for all promises
     await Promise.all(promises)
 
     return results
   }
 
   /**
-   * Charge la première ressource disponible.
+   * Loads the first available resource.
    *
    * @description
-   * CONCEPT : Promise.race()
-   * Retourne dès que la PREMIÈRE promesse se termine.
-   * Utile pour les systèmes de fallback ou les timeouts.
+   * CONCEPT: Promise.race()
+   * Returns as soon as the FIRST promise completes.
+   * Useful for fallback systems or timeouts.
    *
-   * @param {string[]} urls - Les URLs à essayer.
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object>} Les données de la première réponse.
+   * @param {string[]} urls - The URLs to try.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object>} The data from the first response.
    */
   static async loadFirst(urls, options = {}) {
     const promises = urls.map((url) =>
@@ -155,27 +155,27 @@ class ParallelLoader {
   }
 
   /**
-   * Charge avec un timeout.
+   * Loads with a timeout.
    *
    * @description
-   * CONCEPT : Promise.race() pour timeout
-   * On crée une "course" entre la requête et un timer.
-   * Si le timer gagne, on rejette avec une erreur de timeout.
+   * CONCEPT: Promise.race() for timeout
+   * We create a "race" between the request and a timer.
+   * If the timer wins, we reject with a timeout error.
    *
-   * @param {string} url - L'URL à charger.
-   * @param {number} timeout - Timeout en millisecondes.
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object>} Les données ou erreur timeout.
+   * @param {string} url - The URL to load.
+   * @param {number} timeout - Timeout in milliseconds.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object>} The data or timeout error.
    */
   static async loadWithTimeout(url, timeout, options = {}) {
-    // Créer une promesse qui rejette après le timeout
+    // Create a promise that rejects after timeout
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => {
-        reject(new Error(`Timeout après ${timeout}ms pour ${url}`))
+        reject(new Error(`Timeout after ${timeout}ms for ${url}`))
       }, timeout)
     })
 
-    // Race entre la requête et le timeout
+    // Race between the request and the timeout
     return Promise.race([
       fetch(url, options).then((res) => res.json()),
       timeoutPromise,
@@ -183,18 +183,18 @@ class ParallelLoader {
   }
 
   /**
-   * Charge le premier succès parmi plusieurs URLs.
+   * Loads the first success among multiple URLs.
    *
    * @description
-   * CONCEPT : Promise.any()
-   * Retourne dès qu'UNE promesse RÉUSSIT.
-   * Échoue seulement si TOUTES échouent (AggregateError).
+   * CONCEPT: Promise.any()
+   * Returns as soon as ONE promise SUCCEEDS.
+   * Fails only if ALL fail (AggregateError).
    *
-   * Utile pour les systèmes de fallback (essayer plusieurs CDN).
+   * Useful for fallback systems (trying multiple CDNs).
    *
-   * @param {string[]} urls - Les URLs à essayer.
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object>} Les données du premier succès.
+   * @param {string[]} urls - The URLs to try.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object>} The data from the first success.
    */
   static async loadFirstSuccess(urls, options = {}) {
     const promises = urls.map((url) =>
@@ -210,28 +210,28 @@ class ParallelLoader {
   }
 
   /**
-   * Charge des ressources en lots (batching).
+   * Loads resources in batches.
    *
    * @description
-   * Pour éviter de surcharger le serveur, on charge par lots
-   * de N requêtes à la fois.
+   * To avoid overloading the server, we load in batches
+   * of N requests at a time.
    *
-   * @param {string[]} urls - Les URLs à charger.
-   * @param {number} batchSize - Taille des lots.
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object[]>} Tous les résultats.
+   * @param {string[]} urls - The URLs to load.
+   * @param {number} batchSize - Batch size.
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object[]>} All results.
    */
   static async loadInBatches(urls, batchSize = 5, options = {}) {
     const results = []
 
-    // Découper en lots
+    // Split into batches
     for (let i = 0; i < urls.length; i += batchSize) {
       const batch = urls.slice(i, i + batchSize)
 
-      // Charger le lot en parallèle
+      // Load batch in parallel
       const batchResults = await this.loadAllSettled(batch, options)
 
-      // Ajouter aux résultats
+      // Add to results
       results.push(...batchResults)
     }
 
@@ -239,16 +239,16 @@ class ParallelLoader {
   }
 
   /**
-   * Retente une requête en cas d'échec.
+   * Retries a request on failure.
    *
    * @description
-   * Pattern de retry avec backoff exponentiel.
+   * Retry pattern with exponential backoff.
    *
-   * @param {string} url - L'URL à charger.
-   * @param {number} maxRetries - Nombre maximum de tentatives.
-   * @param {number} baseDelay - Délai de base entre les tentatives (ms).
-   * @param {Object} [options] - Options de fetch.
-   * @returns {Promise<Object>} Les données ou erreur après toutes les tentatives.
+   * @param {string} url - The URL to load.
+   * @param {number} maxRetries - Maximum number of attempts.
+   * @param {number} baseDelay - Base delay between attempts (ms).
+   * @param {Object} [options] - Fetch options.
+   * @returns {Promise<Object>} The data or error after all attempts.
    */
   static async loadWithRetry(
     url,
@@ -268,11 +268,11 @@ class ParallelLoader {
       } catch (error) {
         lastError = error
         console.warn(
-          `Tentative ${attempt + 1}/${maxRetries} échouée:`,
+          `Attempt ${attempt + 1}/${maxRetries} failed:`,
           error.message,
         )
 
-        // Attendre avant la prochaine tentative (backoff exponentiel)
+        // Wait before next attempt (exponential backoff)
         if (attempt < maxRetries - 1) {
           const delay = baseDelay * Math.pow(2, attempt)
           await new Promise((resolve) => setTimeout(resolve, delay))
@@ -284,20 +284,20 @@ class ParallelLoader {
   }
 
   /**
-   * Extrait les valeurs réussies d'un résultat allSettled.
+   * Extracts successful values from an allSettled result.
    *
-   * @param {Object[]} results - Résultats de Promise.allSettled.
-   * @returns {*[]} Les valeurs des promesses réussies.
+   * @param {Object[]} results - Results from Promise.allSettled.
+   * @returns {*[]} The values of fulfilled promises.
    */
   static extractFulfilled(results) {
     return results.filter((r) => r.status === 'fulfilled').map((r) => r.value)
   }
 
   /**
-   * Extrait les erreurs d'un résultat allSettled.
+   * Extracts errors from an allSettled result.
    *
-   * @param {Object[]} results - Résultats de Promise.allSettled.
-   * @returns {Error[]} Les raisons des promesses rejetées.
+   * @param {Object[]} results - Results from Promise.allSettled.
+   * @returns {Error[]} The reasons of rejected promises.
    */
   static extractRejected(results) {
     return results.filter((r) => r.status === 'rejected').map((r) => r.reason)

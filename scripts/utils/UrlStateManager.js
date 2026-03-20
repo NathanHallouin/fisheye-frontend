@@ -1,48 +1,48 @@
 /**
- * Gestionnaire d'état URL avec History API.
+ * URL state manager with History API.
  *
  * @description
- * Permet de synchroniser l'état de l'application avec l'URL du navigateur.
- * Cela permet :
- * - Des URLs partageables (ex: ?tags=portrait,travel&search=paris)
- * - La navigation arrière/avant du navigateur
- * - La restauration de l'état au chargement de la page
+ * Allows synchronizing the application state with the browser URL.
+ * This enables:
+ * - Shareable URLs (e.g., ?tags=portrait,travel&search=paris)
+ * - Browser back/forward navigation
+ * - State restoration on page load
  *
- * CONCEPTS CLÉS :
+ * KEY CONCEPTS:
  *
  * 1. URLSearchParams
- *    API pour manipuler les paramètres de requête d'une URL.
- *    Plus propre que de manipuler les strings manuellement.
+ *    API to manipulate URL query parameters.
+ *    Cleaner than manipulating strings manually.
  *
  * 2. history.pushState()
- *    Ajoute une entrée dans l'historique du navigateur SANS recharger la page.
- *    Permet de changer l'URL visible tout en restant sur la même page.
+ *    Adds an entry to the browser history WITHOUT reloading the page.
+ *    Allows changing the visible URL while staying on the same page.
  *
  * 3. history.replaceState()
- *    Remplace l'entrée actuelle de l'historique (pas d'ajout).
- *    Utile pour mettre à jour l'URL sans polluer l'historique.
+ *    Replaces the current history entry (no addition).
+ *    Useful for updating the URL without polluting the history.
  *
  * 4. popstate event
- *    Déclenché quand l'utilisateur navigue avec les boutons arrière/avant.
- *    Permet de réagir aux changements d'historique.
+ *    Triggered when the user navigates with back/forward buttons.
+ *    Allows reacting to history changes.
  */
 class UrlStateManager {
   /**
-   * Instance unique (Singleton).
+   * Unique instance (Singleton).
    * @type {UrlStateManager|null}
    */
   static _instance = null
 
   /**
-   * Nom de l'événement émis lors des changements d'état.
+   * Name of the event emitted on state changes.
    * @type {string}
    */
   static STATE_CHANGE_EVENT = 'url-state-changed'
 
   /**
-   * Retourne l'instance unique du UrlStateManager.
+   * Returns the unique instance of UrlStateManager.
    *
-   * @returns {UrlStateManager} L'instance unique.
+   * @returns {UrlStateManager} The unique instance.
    */
   static getInstance() {
     if (!UrlStateManager._instance) {
@@ -52,8 +52,8 @@ class UrlStateManager {
   }
 
   /**
-   * Crée une instance de UrlStateManager.
-   * Initialise l'écoute du popstate.
+   * Creates a UrlStateManager instance.
+   * Initializes popstate listening.
    */
   constructor() {
     this._state = this._parseCurrentUrl()
@@ -61,41 +61,41 @@ class UrlStateManager {
   }
 
   /**
-   * Initialise l'écouteur de l'événement popstate.
+   * Initializes the popstate event listener.
    *
    * @description
-   * CONCEPT : popstate event
-   * Cet événement est déclenché quand l'utilisateur clique sur
-   * les boutons arrière/avant du navigateur.
-   * ATTENTION : popstate n'est PAS déclenché par pushState/replaceState.
+   * CONCEPT: popstate event
+   * This event is triggered when the user clicks
+   * the browser's back/forward buttons.
+   * NOTE: popstate is NOT triggered by pushState/replaceState.
    *
    * @private
    */
   _initPopStateListener() {
     window.addEventListener('popstate', (event) => {
-      // event.state contient l'objet passé à pushState/replaceState
-      // Si null, on parse l'URL actuelle
+      // event.state contains the object passed to pushState/replaceState
+      // If null, parse the current URL
       this._state = event.state || this._parseCurrentUrl()
       this._emitChange()
     })
   }
 
   /**
-   * Parse l'URL actuelle et extrait les paramètres.
+   * Parses the current URL and extracts parameters.
    *
    * @description
-   * CONCEPT : URLSearchParams
-   * Permet de lire et manipuler les paramètres de l'URL facilement.
+   * CONCEPT: URLSearchParams
+   * Allows reading and manipulating URL parameters easily.
    *
    * @example
    * // URL: ?tags=portrait,travel&search=paris
-   * // Retourne: { tags: ['portrait', 'travel'], search: 'paris' }
+   * // Returns: { tags: ['portrait', 'travel'], search: 'paris' }
    *
-   * @returns {Object} L'état extrait de l'URL.
+   * @returns {Object} The state extracted from the URL.
    * @private
    */
   _parseCurrentUrl() {
-    // window.location.search contient la query string (ex: "?tags=portrait")
+    // window.location.search contains the query string (e.g., "?tags=portrait")
     const params = new URLSearchParams(window.location.search)
 
     return {
@@ -107,10 +107,10 @@ class UrlStateManager {
   }
 
   /**
-   * Parse un paramètre de type tableau (valeurs séparées par virgules).
+   * Parses an array-type parameter (comma-separated values).
    *
-   * @param {string|null} value - La valeur du paramètre.
-   * @returns {Array<string>} Le tableau de valeurs.
+   * @param {string|null} value - The parameter value.
+   * @returns {Array<string>} The array of values.
    * @private
    */
   _parseArrayParam(value) {
@@ -125,49 +125,49 @@ class UrlStateManager {
   }
 
   /**
-   * Construit une URL avec les paramètres d'état.
+   * Builds a URL with state parameters.
    *
    * @description
-   * CONCEPT : URLSearchParams pour construire une URL
-   * Plus sûr que la concaténation de strings (encodage automatique).
+   * CONCEPT: URLSearchParams to build a URL
+   * Safer than string concatenation (automatic encoding).
    *
-   * @param {Object} state - L'état à encoder dans l'URL.
-   * @returns {string} L'URL construite.
+   * @param {Object} state - The state to encode in the URL.
+   * @returns {string} The built URL.
    * @private
    */
   _buildUrl(state) {
     const params = new URLSearchParams()
 
-    // Ajouter les tags s'il y en a
+    // Add tags if there are any
     if (state.tags && state.tags.length > 0) {
       params.set('tags', state.tags.join(','))
     }
 
-    // Ajouter la recherche si non vide
+    // Add search if not empty
     if (state.search && state.search.trim() !== '') {
       params.set('search', state.search.trim())
     }
 
-    // Ajouter le tri si défini
+    // Add sort if defined
     if (state.sort && state.sort !== '') {
       params.set('sort', state.sort)
     }
 
-    // Ajouter l'ordre si différent de la valeur par défaut
+    // Add order if different from default value
     if (state.order && state.order !== 'asc') {
       params.set('order', state.order)
     }
 
-    // Construire l'URL finale
+    // Build the final URL
     const queryString = params.toString()
-    // window.location.pathname = le chemin sans les paramètres (ex: "/index.html")
+    // window.location.pathname = the path without parameters (e.g., "/index.html")
     return queryString
       ? `${window.location.pathname}?${queryString}`
       : window.location.pathname
   }
 
   /**
-   * Émet un événement personnalisé pour notifier les changements d'état.
+   * Emits a custom event to notify state changes.
    *
    * @private
    */
@@ -179,22 +179,22 @@ class UrlStateManager {
   }
 
   /**
-   * Met à jour l'état et l'URL.
+   * Updates the state and URL.
    *
    * @description
-   * CONCEPT : history.pushState(state, title, url)
-   * - state : Un objet JavaScript associé à cette entrée d'historique
-   * - title : Ignoré par la plupart des navigateurs (passer '')
-   * - url : La nouvelle URL à afficher
+   * CONCEPT: history.pushState(state, title, url)
+   * - state: A JavaScript object associated with this history entry
+   * - title: Ignored by most browsers (pass '')
+   * - url: The new URL to display
    *
-   * pushState AJOUTE une entrée à l'historique.
-   * L'utilisateur pourra revenir en arrière.
+   * pushState ADDS an entry to the history.
+   * The user will be able to go back.
    *
-   * @param {Object} newState - Le nouvel état partiel.
-   * @param {boolean} [replace=false] - Si true, utilise replaceState au lieu de pushState.
+   * @param {Object} newState - The new partial state.
+   * @param {boolean} [replace=false] - If true, use replaceState instead of pushState.
    */
   setState(newState, replace = false) {
-    // Fusionner avec l'état actuel
+    // Merge with current state
     this._state = {
       ...this._state,
       ...newState,
@@ -203,60 +203,60 @@ class UrlStateManager {
     const url = this._buildUrl(this._state)
 
     if (replace) {
-      // replaceState remplace l'entrée actuelle (pas de nouvelle entrée)
-      // Utile pour les mises à jour fréquentes (ex: pendant la frappe)
+      // replaceState replaces the current entry (no new entry)
+      // Useful for frequent updates (e.g., while typing)
       history.replaceState(this._state, '', url)
     } else {
-      // pushState ajoute une nouvelle entrée
-      // L'utilisateur pourra revenir en arrière
+      // pushState adds a new entry
+      // The user will be able to go back
       history.pushState(this._state, '', url)
     }
   }
 
   /**
-   * Met à jour un seul paramètre de l'état.
+   * Updates a single state parameter.
    *
-   * @param {string} key - La clé du paramètre.
-   * @param {*} value - La nouvelle valeur.
-   * @param {boolean} [replace=false] - Si true, utilise replaceState.
+   * @param {string} key - The parameter key.
+   * @param {*} value - The new value.
+   * @param {boolean} [replace=false] - If true, use replaceState.
    */
   setParam(key, value, replace = false) {
     this.setState({ [key]: value }, replace)
   }
 
   /**
-   * Retourne l'état actuel.
+   * Returns the current state.
    *
-   * @returns {Object} Une copie de l'état actuel.
+   * @returns {Object} A copy of the current state.
    */
   getState() {
     return { ...this._state }
   }
 
   /**
-   * Retourne un paramètre spécifique de l'état.
+   * Returns a specific state parameter.
    *
-   * @param {string} key - La clé du paramètre.
-   * @returns {*} La valeur du paramètre.
+   * @param {string} key - The parameter key.
+   * @returns {*} The parameter value.
    */
   getParam(key) {
     return this._state[key]
   }
 
   /**
-   * Vérifie si un tag est actif.
+   * Checks if a tag is active.
    *
-   * @param {string} tag - Le tag à vérifier.
-   * @returns {boolean} True si le tag est actif.
+   * @param {string} tag - The tag to check.
+   * @returns {boolean} True if the tag is active.
    */
   hasTag(tag) {
     return this._state.tags.includes(tag)
   }
 
   /**
-   * Ajoute un tag à l'état.
+   * Adds a tag to the state.
    *
-   * @param {string} tag - Le tag à ajouter.
+   * @param {string} tag - The tag to add.
    */
   addTag(tag) {
     if (!this.hasTag(tag)) {
@@ -267,9 +267,9 @@ class UrlStateManager {
   }
 
   /**
-   * Retire un tag de l'état.
+   * Removes a tag from the state.
    *
-   * @param {string} tag - Le tag à retirer.
+   * @param {string} tag - The tag to remove.
    */
   removeTag(tag) {
     this.setState({
@@ -278,9 +278,9 @@ class UrlStateManager {
   }
 
   /**
-   * Inverse l'état d'un tag (ajoute si absent, retire si présent).
+   * Toggles a tag state (adds if absent, removes if present).
    *
-   * @param {string} tag - Le tag à inverser.
+   * @param {string} tag - The tag to toggle.
    */
   toggleTag(tag) {
     if (this.hasTag(tag)) {
@@ -291,7 +291,7 @@ class UrlStateManager {
   }
 
   /**
-   * Réinitialise tous les filtres.
+   * Resets all filters.
    */
   clearFilters() {
     this.setState({
@@ -303,42 +303,42 @@ class UrlStateManager {
   }
 
   /**
-   * Écoute les changements d'état URL.
+   * Listens to URL state changes.
    *
-   * @param {Function} callback - La fonction à appeler lors des changements.
-   * @returns {Function} Une fonction pour arrêter l'écoute.
+   * @param {Function} callback - The function to call on changes.
+   * @returns {Function} A function to stop listening.
    */
   onChange(callback) {
     const handler = (event) => callback(event.detail)
     document.addEventListener(UrlStateManager.STATE_CHANGE_EVENT, handler)
 
-    // Retourner une fonction de nettoyage
+    // Return a cleanup function
     return () => {
       document.removeEventListener(UrlStateManager.STATE_CHANGE_EVENT, handler)
     }
   }
 
   /**
-   * Génère une URL partageable avec l'état actuel.
+   * Generates a shareable URL with the current state.
    *
-   * @returns {string} L'URL complète partageable.
+   * @returns {string} The complete shareable URL.
    */
   getShareableUrl() {
     return window.location.origin + this._buildUrl(this._state)
   }
 
   /**
-   * Copie l'URL partageable dans le presse-papiers.
+   * Copies the shareable URL to the clipboard.
    *
    * @async
-   * @returns {Promise<boolean>} True si la copie a réussi.
+   * @returns {Promise<boolean>} True if copy succeeded.
    */
   async copyShareableUrl() {
     try {
       await navigator.clipboard.writeText(this.getShareableUrl())
       return true
     } catch (error) {
-      console.error("Impossible de copier l'URL:", error)
+      console.error('Unable to copy URL:', error)
       return false
     }
   }

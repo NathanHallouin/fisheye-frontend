@@ -1,31 +1,31 @@
-# Destructuring (Déstructuration)
+# Destructuring
 
 ## Concept
 
-La déstructuration permet d'extraire des valeurs de tableaux ou des propriétés d'objets dans des variables distinctes avec une syntaxe concise.
+Destructuring allows you to extract values from arrays or properties from objects into distinct variables with a concise syntax.
 
-## Syntaxe
+## Syntax
 
-### Déstructuration d'objets
+### Object Destructuring
 
 ```javascript
 const user = { name: 'Alice', age: 25, city: 'Paris' }
 
-// Extraction de propriétés
+// Property extraction
 const { name, age } = user
 console.log(name)  // 'Alice'
 console.log(age)   // 25
 
-// Avec renommage
+// With renaming
 const { name: userName } = user
 console.log(userName)  // 'Alice'
 
-// Avec valeur par défaut
+// With default value
 const { role = 'user' } = user
-console.log(role)  // 'user' (n'existe pas dans l'objet)
+console.log(role)  // 'user' (doesn't exist in the object)
 ```
 
-### Déstructuration de tableaux
+### Array Destructuring
 
 ```javascript
 const colors = ['red', 'green', 'blue']
@@ -34,7 +34,7 @@ const [first, second] = colors
 console.log(first)   // 'red'
 console.log(second)  // 'green'
 
-// Ignorer des éléments
+// Skip elements
 const [, , third] = colors
 console.log(third)  // 'blue'
 
@@ -44,22 +44,22 @@ console.log(head)  // 'red'
 console.log(rest)  // ['green', 'blue']
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Déstructuration dans les paramètres de fonction
+### Destructuring in Function Parameters
 
-**Fichier**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
+**File**: [scripts/utils/EventBus.js](../../scripts/utils/EventBus.js)
 
 ```javascript
 on(eventName, callback, options = {}) {
   const { once = false, priority = 0 } = options
 
-  // Utilisation de once et priority avec valeurs par défaut
+  // Using once and priority with default values
   this._target.addEventListener(eventName, wrappedCallback, { once })
 }
 ```
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 memoize(fn, keyGenerator = (...args) => args.join(':'), ttl = this._ttl) {
@@ -70,9 +70,9 @@ memoize(fn, keyGenerator = (...args) => args.join(':'), ttl = this._ttl) {
 }
 ```
 
-### Déstructuration dans les boucles
+### Destructuring in Loops
 
-**Fichier**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
+**File**: [scripts/utils/CacheManager.js](../../scripts/utils/CacheManager.js)
 
 ```javascript
 _cleanup() {
@@ -85,9 +85,9 @@ _cleanup() {
 }
 ```
 
-### Déstructuration de tableaux avec reduce
+### Array Destructuring with reduce
 
-**Fichier**: [scripts/utils/StatsCalculator.js](../../scripts/utils/StatsCalculator.js)
+**File**: [scripts/utils/StatsCalculator.js](../../scripts/utils/StatsCalculator.js)
 
 ```javascript
 getMostLikedPhotographer() {
@@ -103,9 +103,9 @@ getMostLikedPhotographer() {
 }
 ```
 
-### Déstructuration dans les imports
+### Destructuring in Imports
 
-**Fichier**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
+**File**: [scripts/templates/ShareButton.js](../../scripts/templates/ShareButton.js)
 
 ```javascript
 async _share() {
@@ -117,9 +117,9 @@ async _share() {
 }
 ```
 
-## Patterns avancés
+## Advanced Patterns
 
-### 1. Déstructuration imbriquée
+### 1. Nested Destructuring
 
 ```javascript
 const photographer = {
@@ -135,18 +135,18 @@ console.log(city)     // 'Paris'
 console.log(country)  // 'France'
 ```
 
-### 2. Valeurs par défaut combinées
+### 2. Combined Default Values
 
 ```javascript
-function createCard({ title = 'Sans titre', likes = 0 } = {}) {
+function createCard({ title = 'Untitled', likes = 0 } = {}) {
   return { title, likes }
 }
 
 createCard({ title: 'Photo' })  // { title: 'Photo', likes: 0 }
-createCard()                     // { title: 'Sans titre', likes: 0 }
+createCard()                     // { title: 'Untitled', likes: 0 }
 ```
 
-### 3. Swap de variables
+### 3. Variable Swap
 
 ```javascript
 let a = 1, b = 2
@@ -154,7 +154,7 @@ let a = 1, b = 2
 console.log(a, b)  // 2, 1
 ```
 
-### 4. Rest dans la déstructuration
+### 4. Rest in Destructuring
 
 ```javascript
 const { name, ...rest } = { name: 'Alice', age: 25, city: 'Paris' }
@@ -162,77 +162,77 @@ console.log(name)  // 'Alice'
 console.log(rest)  // { age: 25, city: 'Paris' }
 ```
 
-## Cas d'usage dans le projet
+## Use Cases in the Project
 
-| Pattern | Exemple | Fichier |
-|---------|---------|---------|
-| Options avec défauts | `{ once = false } = options` | EventBus.js |
-| Boucle sur Map | `for (const [key, value] of map)` | CacheManager.js |
-| Extraction d'objet | `const { title, url } = data` | ShareButton.js |
-| Reduce avec tuple | `[id, likes] = best` | StatsCalculator.js |
+| Pattern | Example | File |
+|---------|---------|------|
+| Options with defaults | `{ once = false } = options` | EventBus.js |
+| Loop over Map | `for (const [key, value] of map)` | CacheManager.js |
+| Object extraction | `const { title, url } = data` | ShareButton.js |
+| Reduce with tuple | `[id, likes] = best` | StatsCalculator.js |
 
-## Comparaison avant/après
+## Before/After Comparison
 
-### Sans déstructuration
+### Without Destructuring
 
 ```javascript
 function processUser(user) {
   const name = user.name
   const age = user.age
-  const city = user.city || 'Inconnu'
+  const city = user.city || 'Unknown'
 
-  return `${name}, ${age} ans, ${city}`
+  return `${name}, ${age} years old, ${city}`
 }
 ```
 
-### Avec déstructuration
+### With Destructuring
 
 ```javascript
-function processUser({ name, age, city = 'Inconnu' }) {
-  return `${name}, ${age} ans, ${city}`
+function processUser({ name, age, city = 'Unknown' }) {
+  return `${name}, ${age} years old, ${city}`
 }
 ```
 
-## Bonnes pratiques
+## Best Practices
 
-1. **Utiliser des valeurs par défaut** - Éviter les undefined
-2. **Déstructurer dans les paramètres** - Code plus lisible
-3. **Ne pas sur-déstructurer** - Si vous n'utilisez qu'une propriété, gardez `obj.prop`
-4. **Nommer clairement** - Renommer si le nom original n'est pas clair
+1. **Use default values** - Avoid undefined
+2. **Destructure in parameters** - More readable code
+3. **Don't over-destructure** - If you only use one property, keep `obj.prop`
+4. **Name clearly** - Rename if the original name isn't clear
 
 ```javascript
-// Bon - Renommage pour clarté
+// Good - Renaming for clarity
 const { name: photographerName } = response.data.photographer
 
-// Bon - Valeurs par défaut
+// Good - Default values
 const { timeout = 5000, retries = 3 } = options
 
-// À éviter - Déstructuration excessive
+// Avoid - Excessive destructuring
 const { a: { b: { c: { d } } } } = deepObject
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Refactorer cette fonction avec la déstructuration :
+Refactor this function with destructuring:
 
 ```javascript
-// Avant
+// Before
 function displayPhotographer(photographer) {
   const name = photographer.name
   const city = photographer.city
   const country = photographer.country
   const price = photographer.price || 0
 
-  return `${name} - ${city}, ${country} - ${price}€/jour`
+  return `${name} - ${city}, ${country} - ${price}€/day`
 }
 
-// Après
+// After
 function displayPhotographer({ name, city, country, price = 0 }) {
-  return `${name} - ${city}, ${country} - ${price}€/jour`
+  return `${name} - ${city}, ${country} - ${price}€/day`
 }
 
-// Ou avec location imbriquée
+// Or with nested location
 function displayPhotographer({ name, location: { city, country }, price = 0 }) {
-  return `${name} - ${city}, ${country} - ${price}€/jour`
+  return `${name} - ${city}, ${country} - ${price}€/day`
 }
 ```

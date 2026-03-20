@@ -2,30 +2,30 @@
 
 ## Concept
 
-Le **State Management** centralise l'état de l'application dans un "store" unique. Le pattern Redux implémente un flux de données unidirectionnel : les composants dispatchent des actions, les reducers modifient l'état, et les subscribers sont notifiés.
+**State Management** centralizes the application state in a single "store". The Redux pattern implements a unidirectional data flow: components dispatch actions, reducers modify the state, and subscribers are notified.
 
-## Les 3 principes de Redux
+## The 3 Redux Principles
 
-1. **Single Source of Truth** : Tout l'état dans un seul store
-2. **State is Read-Only** : On ne modifie jamais l'état directement
-3. **Changes via Pure Functions** : Les reducers sont des fonctions pures
+1. **Single Source of Truth**: All state in a single store
+2. **State is Read-Only**: Never modify state directly
+3. **Changes via Pure Functions**: Reducers are pure functions
 
-## Flux de données
+## Data Flow
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   UI Event   │ ──> │   dispatch   │ ──> │   Reducer    │
-└──────────────┘     └──────────────┘     └──────────────┘
-                                                  │
++--------------+     +--------------+     +--------------+
+|   UI Event   | --> |   dispatch   | --> |   Reducer    |
++--------------+     +--------------+     +--------------+
+                                                  |
                                                   v
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  Update UI   │ <── │  Subscribers │ <── │  New State   │
-└──────────────┘     └──────────────┘     └──────────────┘
++--------------+     +--------------+     +--------------+
+|  Update UI   | <-- |  Subscribers | <-- |  New State   |
++--------------+     +--------------+     +--------------+
 ```
 
-## Implémentation dans Fisheye
+## Implementation in Fisheye
 
-### Fichier: `scripts/utils/Store.js`
+### File: `scripts/utils/Store.js`
 
 ```javascript
 class Store {
@@ -45,15 +45,15 @@ class Store {
     this.dispatch({ type: '@@INIT' })
   }
 
-  // Retourne une copie de l'état (immutabilité)
+  // Returns a copy of the state (immutability)
   getState() {
     return { ...this._state }
   }
 
-  // Dispatch une action pour modifier l'état
+  // Dispatch an action to modify the state
   dispatch(action) {
     if (!action || typeof action.type !== 'string') {
-      throw new Error('Action doit avoir un type')
+      throw new Error('Action must have a type')
     }
 
     const prevState = this._state
@@ -66,7 +66,7 @@ class Store {
     return action
   }
 
-  // S'abonner aux changements
+  // Subscribe to changes
   subscribe(callback) {
     this._subscribers.add(callback)
     return () => this._subscribers.delete(callback)
@@ -79,16 +79,16 @@ class Store {
 }
 ```
 
-## Actions et Reducers
+## Actions and Reducers
 
 ```javascript
-// Une action est un objet avec type et payload
+// An action is an object with type and payload
 const action = {
   type: 'LIKE_MEDIA',
   payload: { mediaId: 123 }
 }
 
-// Un reducer est une fonction pure (state, action) => newState
+// A reducer is a pure function (state, action) => newState
 function likesReducer(state = { liked: [] }, action) {
   switch (action.type) {
     case 'LIKE_MEDIA':
@@ -107,7 +107,7 @@ function likesReducer(state = { liked: [] }, action) {
 }
 ```
 
-## Helpers utiles
+## Useful Helpers
 
 ### combineReducers
 
@@ -127,7 +127,7 @@ function combineReducers(reducers) {
   }
 }
 
-// Utilisation
+// Usage
 const rootReducer = combineReducers({
   likes: likesReducer,
   filters: filtersReducer,
@@ -144,7 +144,7 @@ function createAction(type) {
   return actionCreator
 }
 
-// Utilisation
+// Usage
 const likeMedia = createAction('LIKE_MEDIA')
 store.dispatch(likeMedia({ mediaId: 123 }))
 ```
@@ -152,7 +152,7 @@ store.dispatch(likeMedia({ mediaId: 123 }))
 ### subscribeToSelector
 
 ```javascript
-// N'écouter qu'une partie de l'état
+// Listen only to a part of the state
 subscribeToSelector(selector, callback) {
   let previousValue = selector(this._state)
 
@@ -165,7 +165,7 @@ subscribeToSelector(selector, callback) {
   })
 }
 
-// Utilisation
+// Usage
 store.subscribeToSelector(
   (state) => state.likes.liked,
   (liked) => updateLikesUI(liked)
@@ -179,12 +179,12 @@ store.subscribeToSelector(
 function loggerMiddleware(action, state, next) {
   console.group(`[Store] ${action.type}`)
   console.log('Payload:', action.payload)
-  console.log('État:', state)
+  console.log('State:', state)
   console.groupEnd()
   return next(action)
 }
 
-// Thunk middleware (actions async)
+// Thunk middleware (async actions)
 function thunkMiddleware(action, state, next) {
   if (typeof action === 'function') {
     return action(
@@ -195,7 +195,7 @@ function thunkMiddleware(action, state, next) {
   return next(action)
 }
 
-// Utilisation des thunks
+// Using thunks
 const fetchPhotographers = () => async (dispatch, getState) => {
   dispatch({ type: 'FETCH_START' })
   try {
@@ -209,21 +209,21 @@ const fetchPhotographers = () => async (dispatch, getState) => {
 store.dispatch(fetchPhotographers())
 ```
 
-## Avantages
+## Advantages
 
-1. **Prédictibilité** : L'état change uniquement via dispatch
-2. **Debugging** : Historique des actions, time-travel debugging
-3. **Testabilité** : Les reducers sont des fonctions pures
-4. **Découplage** : Les composants ne se connaissent pas
+1. **Predictability**: State changes only via dispatch
+2. **Debugging**: Action history, time-travel debugging
+3. **Testability**: Reducers are pure functions
+4. **Decoupling**: Components don't know about each other
 
-## Bonnes pratiques
+## Best Practices
 
-- Garder les reducers purs (pas d'effets de bord)
-- Ne jamais muter l'état, toujours retourner un nouvel objet
-- Utiliser des selectors pour accéder à l'état
-- Normaliser l'état (structures plates)
+- Keep reducers pure (no side effects)
+- Never mutate state, always return a new object
+- Use selectors to access state
+- Normalize state (flat structures)
 
-## Voir aussi
+## See Also
 
 - [Observer Pattern](08-observer-pattern.md)
 - [Redux Documentation](https://redux.js.org/)

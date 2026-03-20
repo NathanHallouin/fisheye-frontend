@@ -1,10 +1,10 @@
 /**
- * Classe représentant une lightbox pour afficher des images et vidéos en plein écran.
- * Gère l'affichage, la navigation, l'accessibilité et la fermeture de la lightbox.
+ * Class representing a lightbox for displaying images and videos in fullscreen.
+ * Handles display, navigation, accessibility and closing of the lightbox.
  */
 class Lightbox {
   /**
-   * Crée une instance de Lightbox.
+   * Creates an instance of Lightbox.
    */
   constructor() {
     this.$body = document.querySelector('body')
@@ -19,14 +19,14 @@ class Lightbox {
   }
 
   /**
-   * Tableau statique contenant les données des médias à afficher dans la lightbox.
+   * Static array containing the media data to display in the lightbox.
    * @type {Array<{title: string, picture: string, formatPicture: string}>}
    */
   static data = []
 
   /**
-   * Crée la lightbox et l'affiche dans le DOM.
-   * @param {number} index - L'index du média à afficher dans la lightbox.
+   * Creates the lightbox and displays it in the DOM.
+   * @param {number} index - The index of the media to display in the lightbox.
    */
   createLightbox(index) {
     const lightboxCreate = `
@@ -57,12 +57,12 @@ class Lightbox {
     this.createMediaFormat(index)
     this.openLightbox()
 
-    // Écouter les changements de fullscreen
+    // Listen for fullscreen changes
     document.addEventListener('fullscreenchange', this._fullscreenChangeHandler)
   }
 
   /**
-   * Ouvre la lightbox, gère l'accessibilité et le focus.
+   * Opens the lightbox, manages accessibility and focus.
    */
   openLightbox() {
     const $lightbox = document.querySelector('.lightbox-container')
@@ -74,15 +74,15 @@ class Lightbox {
   }
 
   /**
-   * Ferme la lightbox, restaure l'état du DOM et retire les écouteurs d'événements.
+   * Closes the lightbox, restores the DOM state and removes event listeners.
    */
   async closeLightbox() {
-    // Quitter le fullscreen si actif
+    // Exit fullscreen if active
     if (this._getFullscreenElement()) {
       try {
         await this._exitFullscreen()
       } catch (error) {
-        // Ignorer l'erreur
+        // Ignore the error
       }
     }
 
@@ -90,7 +90,7 @@ class Lightbox {
     if ($lightbox) {
       $lightbox.remove()
     } else {
-      console.error('L élément n a pas été trouvé.')
+      console.error('The element was not found.')
     }
     this.$body.classList.remove('no-scroll')
     this.$mainDom.setAttribute('aria-hidden', 'false')
@@ -99,8 +99,8 @@ class Lightbox {
   }
 
   /**
-   * Gère les événements clavier dans la lightbox (navigation, fermeture, tabulation).
-   * @param {KeyboardEvent} e - L'événement clavier déclenché.
+   * Handles keyboard events in the lightbox (navigation, closing, tabulation).
+   * @param {KeyboardEvent} e - The triggered keyboard event.
    */
   handleKeyPress(e) {
     const $lightbox = document.querySelector('.lightbox-container')
@@ -139,8 +139,8 @@ class Lightbox {
   }
 
   /**
-   * Gère l'ouverture de la lightbox sur un média donné.
-   * @param {HTMLElement} data - L'élément média sur lequel l'utilisateur a cliqué.
+   * Handles opening the lightbox on a given media.
+   * @param {HTMLElement} data - The media element the user clicked on.
    */
   listenerLightbox(data) {
     const allMedia = document.querySelectorAll('.media-card__img')
@@ -157,7 +157,7 @@ class Lightbox {
   }
 
   /**
-   * Affiche le média précédent dans la lightbox.
+   * Displays the previous media in the lightbox.
    */
   prevMedia() {
     const prevBtn = document.querySelector('.lightbox-prev')
@@ -172,7 +172,7 @@ class Lightbox {
   }
 
   /**
-   * Affiche le média suivant dans la lightbox.
+   * Displays the next media in the lightbox.
    */
   nextMedia() {
     const nextBtn = document.querySelector('.lightbox-next')
@@ -187,9 +187,9 @@ class Lightbox {
   }
 
   /**
-   * Crée et affiche le format du média (image ou vidéo) dans la lightbox.
-   * @param {number} index - L'index du média à afficher.
-   * @throws Affiche une erreur dans la console si le format est inconnu.
+   * Creates and displays the media format (image or video) in the lightbox.
+   * @param {number} index - The index of the media to display.
+   * @throws Logs an error to the console if the format is unknown.
    */
   createMediaFormat(index) {
     const $lightboxTitle = document.querySelector('.lightbox-title')
@@ -217,12 +217,12 @@ class Lightbox {
       `
       $lightboxIMG.innerHTML = createPicture
     } else {
-      throw console.log('Format inconnu ni video ou image')
+      throw console.log('Unknown format: neither video nor image')
     }
   }
 
   /**
-   * Attache l'instance de la lightbox à l'objet global window pour un accès global.
+   * Attaches the lightbox instance to the global window object for global access.
    */
   attachWindow() {
     window.lightbox = this
@@ -233,8 +233,8 @@ class Lightbox {
   // ============================================
 
   /**
-   * Vérifie si l'API Fullscreen est supportée.
-   * @returns {boolean} True si supportée.
+   * Checks if the Fullscreen API is supported.
+   * @returns {boolean} True if supported.
    */
   _isFullscreenSupported() {
     return !!(
@@ -246,8 +246,8 @@ class Lightbox {
   }
 
   /**
-   * Retourne l'élément actuellement en plein écran.
-   * @returns {Element|null} L'élément en fullscreen ou null.
+   * Returns the element currently in fullscreen.
+   * @returns {Element|null} The fullscreen element or null.
    */
   _getFullscreenElement() {
     return (
@@ -259,9 +259,9 @@ class Lightbox {
   }
 
   /**
-   * Demande le passage en plein écran pour un élément.
-   * @param {Element} element - L'élément à mettre en plein écran.
-   * @returns {Promise} Promise résolue quand le fullscreen est activé.
+   * Requests fullscreen mode for an element.
+   * @param {Element} element - The element to put in fullscreen.
+   * @returns {Promise} Promise resolved when fullscreen is activated.
    */
   _requestFullscreen(element) {
     if (element.requestFullscreen) {
@@ -277,8 +277,8 @@ class Lightbox {
   }
 
   /**
-   * Quitte le mode plein écran.
-   * @returns {Promise} Promise résolue quand le fullscreen est désactivé.
+   * Exits fullscreen mode.
+   * @returns {Promise} Promise resolved when fullscreen is deactivated.
    */
   _exitFullscreen() {
     if (document.exitFullscreen) {
@@ -294,11 +294,11 @@ class Lightbox {
   }
 
   /**
-   * Bascule le mode plein écran.
+   * Toggles fullscreen mode.
    */
   async toggleFullscreen() {
     if (!this._isFullscreenSupported()) {
-      console.warn('Fullscreen API non supportée')
+      console.warn('Fullscreen API not supported')
       return
     }
 
@@ -312,12 +312,12 @@ class Lightbox {
         }
       }
     } catch (error) {
-      console.error('Erreur fullscreen:', error)
+      console.error('Fullscreen error:', error)
     }
   }
 
   /**
-   * Gère les changements d'état du fullscreen.
+   * Handles fullscreen state changes.
    * @private
    */
   _handleFullscreenChange() {

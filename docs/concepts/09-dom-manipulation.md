@@ -1,19 +1,19 @@
-# Manipulation du DOM
+# DOM Manipulation
 
 ## Concept
 
-Le DOM (Document Object Model) est l'interface qui permet à JavaScript d'interagir avec le HTML. La manipulation du DOM consiste à créer, modifier et supprimer des éléments de la page.
+The DOM (Document Object Model) is the interface that allows JavaScript to interact with HTML. DOM manipulation consists of creating, modifying, and deleting page elements.
 
-## Sélection d'éléments
+## Selecting Elements
 
 ### querySelector / querySelectorAll
 
 ```javascript
-// Sélectionner un élément
+// Select an element
 const element = document.querySelector('.my-class')
 const elementById = document.querySelector('#my-id')
 
-// Sélectionner plusieurs éléments
+// Select multiple elements
 const elements = document.querySelectorAll('.card')
 ```
 
@@ -23,9 +23,9 @@ const elements = document.querySelectorAll('.card')
 const modal = document.getElementById('contact-modal')
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 class App {
@@ -37,7 +37,7 @@ class App {
 }
 ```
 
-**Fichier**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
+**File**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
 
 ```javascript
 const $modal = document.getElementById('contact-modal')
@@ -45,18 +45,18 @@ const $form = $modal.querySelector('form')
 const $closeBtn = $modal.querySelector('.modal__close')
 ```
 
-## Création d'éléments
+## Creating Elements
 
 ### document.createElement()
 
-C'est la méthode privilégiée dans Fisheye pour créer des éléments DOM.
+This is the preferred method in Fisheye for creating DOM elements.
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
 class PhotographerCard {
   createCard() {
-    // Créer les éléments
+    // Create elements
     const article = document.createElement('article')
     const link = document.createElement('a')
     const img = document.createElement('img')
@@ -65,13 +65,13 @@ class PhotographerCard {
     const tagline = document.createElement('p')
     const price = document.createElement('p')
 
-    // Configurer les attributs
+    // Configure attributes
     article.classList.add('user-card')
     link.href = `./photographer.html?user=${encodeURIComponent(this._photographer.name)}`
-    link.setAttribute('aria-label', `Lien vers ${this._photographer.name}`)
+    link.setAttribute('aria-label', `Link to ${this._photographer.name}`)
 
     img.src = this._photographer.portrait
-    img.alt = `Portrait de ${this._photographer.name}`
+    img.alt = `Portrait of ${this._photographer.name}`
     img.classList.add('user-card__portrait')
 
     title.textContent = this._photographer.name
@@ -83,10 +83,10 @@ class PhotographerCard {
     tagline.textContent = this._photographer.tagline
     tagline.classList.add('user-card__tagline')
 
-    price.textContent = `${this._photographer.price}€/jour`
+    price.textContent = `${this._photographer.price}€/day`
     price.classList.add('user-card__price')
 
-    // Assembler la structure
+    // Assemble the structure
     link.appendChild(img)
     link.appendChild(title)
     article.appendChild(link)
@@ -99,26 +99,26 @@ class PhotographerCard {
 }
 ```
 
-### innerHTML (cas spécifiques)
+### innerHTML (specific cases)
 
-Pour les templates HTML complexes et statiques, innerHTML peut être utilisé.
+For complex and static HTML templates, innerHTML can be used.
 
-**Fichier**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
+**File**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
 
 ```javascript
 _createLightbox() {
   const $lightbox = document.createElement('div')
   $lightbox.innerHTML = `
-    <div class="lightbox" role="dialog" aria-label="Visionneuse d'images">
-      <button class="lightbox__close" aria-label="Fermer">
-        <span class="sr-only">Fermer</span>
+    <div class="lightbox" role="dialog" aria-label="Image viewer">
+      <button class="lightbox__close" aria-label="Close">
+        <span class="sr-only">Close</span>
       </button>
-      <button class="lightbox__prev" aria-label="Précédent">
-        <span class="sr-only">Précédent</span>
+      <button class="lightbox__prev" aria-label="Previous">
+        <span class="sr-only">Previous</span>
       </button>
       <div class="lightbox__content"></div>
-      <button class="lightbox__next" aria-label="Suivant">
-        <span class="sr-only">Suivant</span>
+      <button class="lightbox__next" aria-label="Next">
+        <span class="sr-only">Next</span>
       </button>
     </div>
   `
@@ -126,7 +126,7 @@ _createLightbox() {
 }
 ```
 
-## Modification d'éléments
+## Modifying Elements
 
 ### classList
 
@@ -137,7 +137,7 @@ element.classList.toggle('open')
 element.classList.contains('active')  // true/false
 ```
 
-**Fichier**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
+**File**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
 
 ```javascript
 _updateUI() {
@@ -150,39 +150,39 @@ _updateUI() {
 ### textContent vs innerHTML
 
 ```javascript
-// textContent - Sécurisé, pour le texte simple
+// textContent - Safe, for simple text
 element.textContent = photographer.name
 
-// innerHTML - Pour le HTML (attention XSS!)
-element.innerHTML = '<strong>Texte</strong>'
+// innerHTML - For HTML (beware of XSS!)
+element.innerHTML = '<strong>Text</strong>'
 ```
 
 ### setAttribute / removeAttribute
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
-link.setAttribute('aria-label', `Lien vers ${this._photographer.name}`)
+link.setAttribute('aria-label', `Link to ${this._photographer.name}`)
 link.setAttribute('role', 'link')
 img.removeAttribute('data-src')
 ```
 
 ### dataset (data-* attributes)
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
 // HTML: <img data-src="image.jpg" data-photographer-id="123">
 
-// Lecture
+// Reading
 const src = img.dataset.src
 const id = img.dataset.photographerId
 
-// Écriture
+// Writing
 img.dataset.loaded = 'true'
 ```
 
-## Insertion d'éléments
+## Inserting Elements
 
 ### appendChild
 
@@ -192,14 +192,14 @@ parent.appendChild(child)
 
 ### insertBefore
 
-**Fichier**: [scripts/App.js](../../scripts/App.js)
+**File**: [scripts/App.js](../../scripts/App.js)
 
 ```javascript
 _initSearchBar() {
   const searchBar = new SearchBar(this._photographers, (filtered) => {
     this._displayPhotographers(filtered)
   })
-  // Insérer avant le premier enfant
+  // Insert before the first child
   this.$main.insertBefore(searchBar.render(), this.$main.firstChild)
 }
 ```
@@ -207,14 +207,14 @@ _initSearchBar() {
 ### remove()
 
 ```javascript
-element.remove()  // Supprime l'élément du DOM
+element.remove()  // Removes the element from the DOM
 ```
 
-## Gestion des styles
+## Style Management
 
 ### style property
 
-**Fichier**: [scripts/templates/StatsDashboard.js](../../scripts/templates/StatsDashboard.js)
+**File**: [scripts/templates/StatsDashboard.js](../../scripts/templates/StatsDashboard.js)
 
 ```javascript
 const progressBar = document.createElement('div')
@@ -222,24 +222,24 @@ progressBar.classList.add('progress-bar')
 progressBar.style.width = `${percentage}%`
 ```
 
-### Classes CSS (recommandé)
+### CSS Classes (recommended)
 
 ```javascript
-// Préférer les classes CSS aux styles inline
+// Prefer CSS classes over inline styles
 element.classList.add('hidden')  // .hidden { display: none; }
 element.classList.add('active')  // .active { ... }
 ```
 
-## Focus et accessibilité
+## Focus and Accessibility
 
-**Fichier**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
+**File**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
 
 ```javascript
 function openModal() {
   $modal.style.display = 'block'
   $modal.setAttribute('aria-hidden', 'false')
 
-  // Focus sur le premier champ
+  // Focus on the first field
   const firstInput = $modal.querySelector('input')
   firstInput.focus()
 }
@@ -248,14 +248,14 @@ function closeModal() {
   $modal.style.display = 'none'
   $modal.setAttribute('aria-hidden', 'true')
 
-  // Rendre le focus à l'élément déclencheur
+  // Return focus to the trigger element
   $triggerButton.focus()
 }
 ```
 
-## Patterns courants dans Fisheye
+## Common Patterns in Fisheye
 
-### Pattern de création de carte
+### Card Creation Pattern
 
 ```javascript
 class MediaCard {
@@ -292,14 +292,14 @@ class MediaCard {
 }
 ```
 
-### Pattern de vidage et remplissage
+### Clear and Fill Pattern
 
 ```javascript
 _displayPhotographers(photographers) {
-  // Vider le conteneur
+  // Clear the container
   this.$photographerSection.innerHTML = ''
 
-  // Remplir avec les nouvelles cartes
+  // Fill with new cards
   photographers.forEach((photographer) => {
     const card = new PhotographerCard(photographer)
     this.$photographerSection.appendChild(card.createCard())
@@ -307,35 +307,35 @@ _displayPhotographers(photographers) {
 }
 ```
 
-## Bonnes pratiques
+## Best Practices
 
-### 1. Préférer createElement à innerHTML
+### 1. Prefer createElement over innerHTML
 
 ```javascript
-// Bon - createElement
+// Good - createElement
 const p = document.createElement('p')
 p.textContent = userData.name
 
-// Risqué - innerHTML avec données utilisateur
+// Risky - innerHTML with user data
 container.innerHTML = `<p>${userData.name}</p>`  // XSS possible!
 ```
 
-### 2. Utiliser textContent pour le texte
+### 2. Use textContent for text
 
 ```javascript
-element.textContent = text  // Sûr
-element.innerHTML = text    // Risqué si text vient de l'utilisateur
+element.textContent = text  // Safe
+element.innerHTML = text    // Risky if text comes from user
 ```
 
-### 3. Grouper les modifications DOM
+### 3. Group DOM modifications
 
 ```javascript
-// Mauvais - multiple reflows
+// Bad - multiple reflows
 items.forEach(item => {
   container.appendChild(createCard(item))
 })
 
-// Bon - DocumentFragment
+// Good - DocumentFragment
 const fragment = document.createDocumentFragment()
 items.forEach(item => {
   fragment.appendChild(createCard(item))
@@ -343,18 +343,18 @@ items.forEach(item => {
 container.appendChild(fragment)
 ```
 
-### 4. Convention de nommage $
+### 4. $ Naming Convention
 
-Dans Fisheye, les variables DOM sont préfixées par `$` :
+In Fisheye, DOM variables are prefixed with `$`:
 
 ```javascript
 this.$wrapper = document.querySelector('.wrapper')
 this.$modal = document.getElementById('modal')
 ```
 
-## Exercice pratique
+## Practical Exercise
 
-Créer une fonction qui génère une liste de photographes :
+Create a function that generates a list of photographers:
 
 ```javascript
 function createPhotographerList(photographers) {
@@ -371,7 +371,7 @@ function createPhotographerList(photographers) {
 
     const $price = document.createElement('span')
     $price.classList.add('photographer-list__price')
-    $price.textContent = `${photographer.price}€/jour`
+    $price.textContent = `${photographer.price}€/day`
 
     $item.appendChild($name)
     $item.appendChild($price)

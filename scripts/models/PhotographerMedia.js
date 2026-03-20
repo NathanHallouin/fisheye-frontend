@@ -1,6 +1,6 @@
 class PhotographerMedia {
   /**
-   * @param {Object} data - Les données du média.
+   * @param {Object} data - The media data.
    */
   constructor(data) {
     this._date = data.date
@@ -14,31 +14,31 @@ class PhotographerMedia {
   }
 
   /**
-   * @returns {string} La date du média.
+   * @returns {string} The media date.
    */
   get date() {
     return this._date
   }
 
   /**
-   * @returns {number} L'identifiant du média.
+   * @returns {number} The media identifier.
    */
   get id() {
     return this._id
   }
 
   /**
-   * @returns {string} Le format du média ('image' ou 'video').
+   * @returns {string} The media format ('image' or 'video').
    */
   get formatPicture() {
     return this._formatPicture
   }
 
   /**
-   * @returns {string} Le chemin du fichier média.
+   * @returns {string} The media file path.
    */
   get picture() {
-    // On force l'extension .webp pour les images, sinon on garde la vidéo
+    // Force .webp extension for images, otherwise keep the video
     if (this._formatPicture === 'image') {
       const base = this._picture.replace(/\.[^/.]+$/, '')
       return `./assets/media/${this._photographerId}/${base}.webp`
@@ -47,28 +47,28 @@ class PhotographerMedia {
   }
 
   /**
-   * @returns {number} Le nombre de likes du média.
+   * @returns {number} The number of likes for the media.
    */
   get likes() {
     return this._likes
   }
 
   /**
-   * @returns {number} L'identifiant du photographe.
+   * @returns {number} The photographer identifier.
    */
   get photographerId() {
     return this.photographerId
   }
 
   /**
-   * @returns {number} Le prix du média.
+   * @returns {number} The media price.
    */
   get price() {
     return this._price
   }
 
   /**
-   * @returns {string} Le titre du média.
+   * @returns {string} The media title.
    */
   get title() {
     return this._title

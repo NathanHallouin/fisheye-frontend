@@ -1,34 +1,34 @@
-# Accessibilité (A11Y)
+# Accessibility (A11Y)
 
 ## Concept
 
-L'accessibilité web garantit que les sites sont utilisables par tous, y compris les personnes utilisant des technologies d'assistance (lecteurs d'écran, navigation au clavier, etc.).
+Web accessibility ensures that websites are usable by everyone, including people using assistive technologies (screen readers, keyboard navigation, etc.).
 
-## Principes WCAG
+## WCAG Principles
 
-1. **Perceptible** - L'information doit être présentée de manière perceptible
-2. **Utilisable** - Les composants doivent être utilisables
-3. **Compréhensible** - L'information doit être compréhensible
-4. **Robuste** - Le contenu doit être robuste pour diverses technologies
+1. **Perceivable** - Information must be presented in a perceivable way
+2. **Operable** - Components must be operable
+3. **Understandable** - Information must be understandable
+4. **Robust** - Content must be robust for various technologies
 
 ---
 
-## Attributs ARIA
+## ARIA Attributes
 
 ### aria-label
 
-Fournit un label accessible quand le texte visible ne suffit pas.
+Provides an accessible label when visible text is not sufficient.
 
-**Fichier**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
+**File**: [scripts/templates/PhotographerCard.js](../../scripts/templates/PhotographerCard.js)
 
 ```javascript
 createCard() {
   const link = document.createElement('a')
   link.href = `./photographer.html?user=${encodeURIComponent(this._photographer.name)}`
-  link.setAttribute('aria-label', `Lien vers le profil de ${this._photographer.name}`)
+  link.setAttribute('aria-label', `Link to ${this._photographer.name}'s profile`)
 
   const img = document.createElement('img')
-  img.alt = `Portrait de ${this._photographer.name}`
+  img.alt = `Portrait of ${this._photographer.name}`
 
   return article
 }
@@ -36,9 +36,9 @@ createCard() {
 
 ### aria-pressed
 
-Indique l'état d'un bouton toggle.
+Indicates the state of a toggle button.
 
-**Fichier**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
+**File**: [scripts/templates/FavoriteButton.js](../../scripts/templates/FavoriteButton.js)
 
 ```javascript
 _updateUI() {
@@ -50,7 +50,7 @@ _updateUI() {
 createButton() {
   const $button = document.createElement('button')
   $button.classList.add('favorite-btn')
-  $button.setAttribute('aria-label', `Ajouter ${this._photographerName} aux favoris`)
+  $button.setAttribute('aria-label', `Add ${this._photographerName} to favorites`)
   $button.setAttribute('aria-pressed', 'false')
   return $button
 }
@@ -58,7 +58,7 @@ createButton() {
 
 ### aria-hidden
 
-Cache un élément des technologies d'assistance.
+Hides an element from assistive technologies.
 
 ```javascript
 const decorativeIcon = document.createElement('span')
@@ -68,9 +68,9 @@ decorativeIcon.setAttribute('aria-hidden', 'true')
 
 ### aria-expanded
 
-Indique si un élément déroulant est ouvert.
+Indicates whether a dropdown element is open.
 
-**Fichier**: [scripts/templates/MediaFilter.js](../../scripts/templates/MediaFilter.js)
+**File**: [scripts/templates/MediaFilter.js](../../scripts/templates/MediaFilter.js)
 
 ```javascript
 _toggle() {
@@ -82,7 +82,7 @@ _toggle() {
 
 ### role
 
-Définit le rôle sémantique d'un élément.
+Defines the semantic role of an element.
 
 ```javascript
 const $modal = document.createElement('div')
@@ -96,31 +96,31 @@ $listbox.setAttribute('role', 'listbox')
 
 ---
 
-## Texte alternatif des images
+## Alternative Text for Images
 
-### Images informatives
+### Informative images
 
 ```javascript
-img.alt = `Portrait de ${photographer.name}`
-img.alt = `Photo ${media.title} par ${photographer.name}`
+img.alt = `Portrait of ${photographer.name}`
+img.alt = `Photo ${media.title} by ${photographer.name}`
 ```
 
-### Images décoratives
+### Decorative images
 
 ```javascript
-img.alt = ''  // Vide pour les images décoratives
+img.alt = ''  // Empty for decorative images
 img.setAttribute('role', 'presentation')
 ```
 
-### Implémentation dans Fisheye
+### Implementation in Fisheye
 
-**Fichier**: [scripts/templates/CreateImageCard.js](../../scripts/templates/CreateImageCard.js)
+**File**: [scripts/templates/CreateImageCard.js](../../scripts/templates/CreateImageCard.js)
 
 ```javascript
 createCard() {
   const img = document.createElement('img')
   img.src = this._media.picture
-  img.alt = `${this._media.title}, vue agrandie`
+  img.alt = `${this._media.title}, enlarged view`
   img.classList.add('media-card__image')
   return img
 }
@@ -128,18 +128,18 @@ createCard() {
 
 ---
 
-## Navigation au clavier
+## Keyboard Navigation
 
-### Focus visible
+### Visible focus
 
 ```css
-/* Ne jamais supprimer le focus outline sans alternative */
+/* Never remove focus outline without an alternative */
 :focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Alternative avec focus-visible */
+/* Alternative with focus-visible */
 :focus:not(:focus-visible) {
   outline: none;
 }
@@ -149,16 +149,16 @@ createCard() {
 }
 ```
 
-### Gestion du focus
+### Focus management
 
-**Fichier**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
+**File**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
 
 ```javascript
 function openModal() {
   $modal.style.display = 'block'
   $modal.setAttribute('aria-hidden', 'false')
 
-  // Focus sur le premier élément interactif
+  // Focus on the first interactive element
   const firstInput = $modal.querySelector('input, button')
   firstInput.focus()
 }
@@ -167,14 +167,14 @@ function closeModal() {
   $modal.style.display = 'none'
   $modal.setAttribute('aria-hidden', 'true')
 
-  // Rendre le focus à l'élément déclencheur
+  // Return focus to the trigger element
   $triggerButton.focus()
 }
 ```
 
-### Focus trap (piège à focus)
+### Focus trap
 
-**Fichier**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
+**File**: [scripts/utils/lightbox.js](../../scripts/utils/lightbox.js)
 
 ```javascript
 _trapFocus(e) {
@@ -203,13 +203,13 @@ _trapFocus(e) {
 }
 ```
 
-### Raccourcis clavier
+### Keyboard shortcuts
 
-**Fichier**: [scripts/utils/KeyboardShortcutManager.js](../../scripts/utils/KeyboardShortcutManager.js)
+**File**: [scripts/utils/KeyboardShortcutManager.js](../../scripts/utils/KeyboardShortcutManager.js)
 
 ```javascript
 _initDefaultShortcuts() {
-  // Escape pour fermer les modals
+  // Escape to close modals
   this.register('escape', () => {
     const openModal = document.querySelector('[role="dialog"]:not([aria-hidden="true"])')
     if (openModal) {
@@ -217,7 +217,7 @@ _initDefaultShortcuts() {
     }
   })
 
-  // Navigation avec J/K
+  // Navigation with J/K
   this.register('j', () => this._navigateNext(), 'gallery')
   this.register('k', () => this._navigatePrev(), 'gallery')
 }
@@ -225,9 +225,9 @@ _initDefaultShortcuts() {
 
 ---
 
-## Classe .sr-only
+## .sr-only Class
 
-Texte visible uniquement pour les lecteurs d'écran.
+Text visible only to screen readers.
 
 ### CSS
 
@@ -250,21 +250,21 @@ Texte visible uniquement pour les lecteurs d'écran.
 ```javascript
 const $closeBtn = document.createElement('button')
 $closeBtn.classList.add('lightbox__close')
-$closeBtn.setAttribute('aria-label', 'Fermer la lightbox')
+$closeBtn.setAttribute('aria-label', 'Close lightbox')
 
 const $srText = document.createElement('span')
 $srText.classList.add('sr-only')
-$srText.textContent = 'Fermer'
+$srText.textContent = 'Close'
 $closeBtn.appendChild($srText)
 
-// Le bouton a une icône visible + texte pour lecteurs d'écran
+// The button has a visible icon + text for screen readers
 ```
 
 ---
 
-## Formulaires accessibles
+## Accessible Forms
 
-**Fichier**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
+**File**: [scripts/utils/contactForm.js](../../scripts/utils/contactForm.js)
 
 ```javascript
 function createFormField(id, label, type = 'text', required = false) {
@@ -285,7 +285,7 @@ function createFormField(id, label, type = 'text', required = false) {
     $input.setAttribute('aria-required', 'true')
   }
 
-  // Message d'erreur
+  // Error message
   const $error = document.createElement('span')
   $error.id = `${id}-error`
   $error.classList.add('form-field__error')
@@ -301,7 +301,7 @@ function createFormField(id, label, type = 'text', required = false) {
 }
 ```
 
-### Validation accessible
+### Accessible validation
 
 ```javascript
 function showError($input, message) {
@@ -319,19 +319,19 @@ function clearError($input) {
 
 ---
 
-## Live regions
+## Live Regions
 
-Annoncent les changements dynamiques.
+Announce dynamic changes.
 
 ```javascript
-// Créer une région live
+// Create a live region
 const $liveRegion = document.createElement('div')
 $liveRegion.setAttribute('aria-live', 'polite')
 $liveRegion.setAttribute('aria-atomic', 'true')
 $liveRegion.classList.add('sr-only')
 document.body.appendChild($liveRegion)
 
-// Annoncer un changement
+// Announce a change
 function announce(message) {
   $liveRegion.textContent = ''
   setTimeout(() => {
@@ -340,31 +340,31 @@ function announce(message) {
 }
 
 // Usage
-announce('3 photographes trouvés')
-announce('Image suivante: Coucher de soleil')
+announce('3 photographers found')
+announce('Next image: Sunset')
 ```
 
 ---
 
-## Checklist d'accessibilité
+## Accessibility Checklist
 
-| Élément | Vérification |
+| Element | Verification |
 |---------|--------------|
-| Images | `alt` descriptif ou vide si décorative |
-| Liens | Texte ou `aria-label` descriptif |
-| Boutons | Texte ou `aria-label` |
-| Formulaires | Labels associés avec `for` |
+| Images | Descriptive `alt` or empty if decorative |
+| Links | Descriptive text or `aria-label` |
+| Buttons | Text or `aria-label` |
+| Forms | Labels associated with `for` |
 | Modals | `role="dialog"`, focus trap |
-| États | `aria-pressed`, `aria-expanded`, `aria-selected` |
-| Erreurs | `aria-invalid`, `aria-describedby` |
-| Navigation | Possible au clavier |
-| Focus | Visible et logique |
+| States | `aria-pressed`, `aria-expanded`, `aria-selected` |
+| Errors | `aria-invalid`, `aria-describedby` |
+| Navigation | Keyboard accessible |
+| Focus | Visible and logical |
 
 ---
 
-## Exercice pratique
+## Practical Exercise
 
-Créer un composant d'alerte accessible :
+Create an accessible alert component:
 
 ```javascript
 class AccessibleAlert {
@@ -390,7 +390,7 @@ class AccessibleAlert {
 
     const $closeBtn = document.createElement('button')
     $closeBtn.classList.add('alert__close')
-    $closeBtn.setAttribute('aria-label', 'Fermer l\'alerte')
+    $closeBtn.setAttribute('aria-label', 'Close alert')
     $closeBtn.innerHTML = '<span aria-hidden="true">&times;</span>'
     $closeBtn.addEventListener('click', () => this._close($alert))
 
@@ -398,7 +398,7 @@ class AccessibleAlert {
     $alert.appendChild($closeBtn)
     this.$container.appendChild($alert)
 
-    // Auto-fermeture après 5s
+    // Auto-close after 5s
     setTimeout(() => this._close($alert), 5000)
   }
 
@@ -409,5 +409,5 @@ class AccessibleAlert {
 
 // Usage
 const alert = new AccessibleAlert()
-alert.show('Photographe ajouté aux favoris!', 'success')
+alert.show('Photographer added to favorites!', 'success')
 ```

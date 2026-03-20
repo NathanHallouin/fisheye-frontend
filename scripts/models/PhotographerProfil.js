@@ -1,6 +1,6 @@
 class PhotographerProfil {
   /**
-   * @param {Object} data - Les données du photographe.
+   * @param {Object} data - The photographer data.
    */
   constructor(data) {
     this._id = data.id
@@ -15,24 +15,24 @@ class PhotographerProfil {
   }
 
   /**
-   * @returns {number} L'identifiant unique du photographe.
+   * @returns {number} The unique identifier of the photographer.
    */
   get id() {
     return this._id
   }
 
   /**
-   * @returns {string} Le nom du photographe.
+   * @returns {string} The photographer's name.
    */
   get name() {
     return this._name
   }
 
   /**
-   * @returns {string} Le chemin du portrait du photographe.
+   * @returns {string} The path to the photographer's portrait.
    */
   get portrait() {
-    // On force l'extension .webp car les fichiers existent en .webp
+    // Force .webp extension because files exist in .webp format
     const base = this._portrait
       ? this._portrait.replace(/\.[^/.]+$/, '')
       : 'account'
@@ -40,51 +40,51 @@ class PhotographerProfil {
   }
 
   /**
-   * @returns {string} La ville du photographe.
+   * @returns {string} The photographer's city.
    */
   get city() {
     return this._city
   }
 
   /**
-   * @returns {string} Le pays du photographe.
+   * @returns {string} The photographer's country.
    */
   get country() {
     return this._country
   }
 
   /**
-   * @returns {string} La phrase d'accroche du photographe.
+   * @returns {string} The photographer's tagline.
    */
   get tagline() {
     return this._tagline
   }
 
   /**
-   * @returns {number} Le prix du photographe.
+   * @returns {number} The photographer's price.
    */
   get price() {
     return this._price
   }
 
   /**
-   * @returns {string} L'URL de la page du photographe.
+   * @returns {string} The URL of the photographer's page.
    */
   get url() {
     return `./${this._url}?user=${this._name}`
   }
 
   /**
-   * @returns {Array<string>} Les tags du photographe.
+   * @returns {Array<string>} The photographer's tags.
    */
   get tags() {
     return this._tags
   }
 
   /**
-   * Vérifie si le photographe possède un tag spécifique.
-   * @param {string} tag - Le tag à vérifier.
-   * @returns {boolean} True si le photographe possède le tag.
+   * Checks if the photographer has a specific tag.
+   * @param {string} tag - The tag to check.
+   * @returns {boolean} True if the photographer has the tag.
    */
   hasTag(tag) {
     return this._tags.includes(tag.toLowerCase())

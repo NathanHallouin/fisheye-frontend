@@ -1,51 +1,51 @@
 /**
- * Crée une fonction debounced qui retarde l'exécution.
+ * Creates a debounced function that delays execution.
  *
  * @description
- * Le debounce est une technique d'optimisation qui limite le nombre d'appels
- * à une fonction. La fonction ne s'exécute qu'après un délai d'inactivité.
+ * Debounce is an optimization technique that limits the number of calls
+ * to a function. The function only executes after a period of inactivity.
  *
- * Cas d'usage typiques :
- * - Recherche en temps réel (éviter une requête à chaque frappe)
- * - Redimensionnement de fenêtre
+ * Typical use cases:
+ * - Real-time search (avoid a request on every keystroke)
+ * - Window resizing
  * - Scroll events
  *
- * CONCEPT CLÉ : Closure
- * La fonction retournée "capture" les variables timeoutId, fn et delay
- * dans sa closure, les gardant accessibles entre les appels.
+ * KEY CONCEPT: Closure
+ * The returned function "captures" the variables timeoutId, fn and delay
+ * in its closure, keeping them accessible between calls.
  *
- * @param {Function} fn - La fonction à exécuter après le délai.
- * @param {number} delay - Le délai en millisecondes.
- * @returns {Function} La fonction debounced.
+ * @param {Function} fn - The function to execute after the delay.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {Function} The debounced function.
  *
  * @example
  * const debouncedSearch = debounce((query) => {
- *   console.log('Recherche:', query)
+ *   console.log('Search:', query)
  * }, 300)
  *
- * // Appels rapides successifs
- * debouncedSearch('a')    // Annulé
- * debouncedSearch('ab')   // Annulé
- * debouncedSearch('abc')  // Exécuté après 300ms
+ * // Rapid successive calls
+ * debouncedSearch('a')    // Cancelled
+ * debouncedSearch('ab')   // Cancelled
+ * debouncedSearch('abc')  // Executed after 300ms
  */
 function debounce(fn, delay) {
-  // Cette variable persiste entre les appels grâce à la closure
+  // This variable persists between calls thanks to the closure
   let timeoutId = null
 
-  // Retourne une nouvelle fonction qui "enveloppe" la fonction originale
+  // Returns a new function that "wraps" the original function
   return function (...args) {
-    // 'this' et 'args' sont capturés pour préserver le contexte
+    // 'this' and 'args' are captured to preserve context
 
-    // Annuler le timeout précédent s'il existe
-    // Ceci "remet le compteur à zéro" à chaque appel
+    // Cancel the previous timeout if it exists
+    // This "resets the counter" on each call
     if (timeoutId) {
       clearTimeout(timeoutId)
     }
 
-    // Programmer l'exécution après le délai
-    // Si aucun nouvel appel n'arrive pendant 'delay' ms, la fonction s'exécute
+    // Schedule the execution after the delay
+    // If no new call arrives during 'delay' ms, the function executes
     timeoutId = setTimeout(() => {
-      // apply() permet de passer le contexte (this) et les arguments
+      // apply() allows passing the context (this) and arguments
       fn.apply(this, args)
     }, delay)
   }
