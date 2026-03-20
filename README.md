@@ -5,7 +5,7 @@
 <h1 align="center">Fisheye</h1>
 
 <p align="center">
-  <strong>Plateforme de portfolios pour photographes professionnels</strong>
+  <strong>Professional Photographer Portfolio Platform</strong>
 </p>
 
 <p align="center">
@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-  <a href="#-fonctionnalités">Fonctionnalités</a> •
-  <a href="#-démo">Démo</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-demo">Demo</a> •
   <a href="#-installation">Installation</a> •
   <a href="#-architecture">Architecture</a> •
   <a href="#-documentation">Documentation</a>
@@ -26,42 +26,42 @@
 
 ---
 
-## A propos
+## About
 
-Fisheye est une application web qui met en valeur le travail de photographes professionnels à travers des portfolios élégants et interactifs. Conçue entièrement en **JavaScript vanilla** (sans framework), elle démontre les bonnes pratiques du développement web moderne tout en offrant une expérience utilisateur fluide et accessible.
+Fisheye is a web application that showcases professional photographers' work through elegant and interactive portfolios. Built entirely with **vanilla JavaScript** (no frameworks), it demonstrates modern web development best practices while delivering a smooth and accessible user experience.
 
-### Pourquoi ce projet ?
+### Why this project?
 
-Ce projet a été développé dans un contexte d'apprentissage pour explorer et maîtriser les concepts fondamentaux de JavaScript moderne, incluant :
+This project was developed as a learning exercise to explore and master core concepts of modern JavaScript, including:
 
-- **Architecture modulaire** sans dépendance externe
+- **Modular architecture** without external dependencies
 - **Design Patterns** (Factory, Singleton, Observer, Strategy)
-- **APIs Web modernes** (Fetch, IntersectionObserver, Web Workers)
-- **Accessibilité** (WCAG 2.1, navigation clavier, ARIA)
+- **Modern Web APIs** (Fetch, IntersectionObserver, Web Workers)
+- **Accessibility** (WCAG 2.1, keyboard navigation, ARIA)
 - **Performance** (lazy loading, caching, debounce/throttle)
 
 ---
 
-## Fonctionnalités
+## Features
 
 <table>
   <tr>
     <td width="50%">
-      <h3>Navigation & Recherche</h3>
+      <h3>Navigation & Search</h3>
       <ul>
-        <li>Recherche instantanée avec debounce</li>
-        <li>Filtrage par catégories (tags)</li>
-        <li>Tri multi-critères (popularité, date, titre)</li>
-        <li>URLs partageables avec état des filtres</li>
+        <li>Instant search with debounce</li>
+        <li>Category filtering (tags)</li>
+        <li>Multi-criteria sorting (popularity, date, title)</li>
+        <li>Shareable URLs with filter state</li>
       </ul>
     </td>
     <td width="50%">
-      <h3>Galerie & Médias</h3>
+      <h3>Gallery & Media</h3>
       <ul>
-        <li>Lightbox immersive avec mode plein écran</li>
-        <li>Support photos et vidéos</li>
-        <li>Lazy loading intelligent</li>
-        <li>Infinite scroll fluide</li>
+        <li>Immersive lightbox with fullscreen mode</li>
+        <li>Photo and video support</li>
+        <li>Smart lazy loading</li>
+        <li>Smooth infinite scroll</li>
       </ul>
     </td>
   </tr>
@@ -69,19 +69,19 @@ Ce projet a été développé dans un contexte d'apprentissage pour explorer et 
     <td width="50%">
       <h3>Interactions</h3>
       <ul>
-        <li>Système de likes optimiste</li>
-        <li>Gestion des favoris</li>
-        <li>Drag & Drop pour réorganiser</li>
-        <li>Raccourcis clavier complets</li>
+        <li>Optimistic like system</li>
+        <li>Favorites management</li>
+        <li>Drag & Drop to reorganize</li>
+        <li>Complete keyboard shortcuts</li>
       </ul>
     </td>
     <td width="50%">
       <h3>Performance</h3>
       <ul>
-        <li>Cache intelligent des données</li>
-        <li>Web Workers pour le tri</li>
-        <li>Optimisation scroll/input</li>
-        <li>Pause auto des vidéos (Page Visibility)</li>
+        <li>Smart data caching</li>
+        <li>Web Workers for sorting</li>
+        <li>Scroll/input optimization</li>
+        <li>Auto video pause (Page Visibility)</li>
       </ul>
     </td>
   </tr>
@@ -89,45 +89,45 @@ Ce projet a été développé dans un contexte d'apprentissage pour explorer et 
 
 ---
 
-## Démo
+## Demo
 
-### Page d'accueil
-Découvrez tous les photographes avec filtres par spécialité.
+### Homepage
+Discover all photographers with specialty filters.
 
-### Page photographe
-Explorez la galerie d'un artiste, likez ses photos, et contactez-le.
+### Photographer Page
+Explore an artist's gallery, like their photos, and contact them.
 
 ### Lightbox
-Visualisez les médias en plein écran avec navigation au clavier.
+View media in fullscreen with keyboard navigation.
 
 ---
 
 ## Installation
 
 ```bash
-# Cloner le repository
+# Clone the repository
 git clone https://github.com/NathanHallouin/fisheye-frontend.git
 
-# Accéder au dossier
+# Navigate to folder
 cd fisheye-frontend
 
-# Installer les dépendances de développement
+# Install dev dependencies
 npm install
 
-# Lancer un serveur local (ex: avec Live Server ou Python)
-# Option 1: Extension VSCode Live Server
+# Start a local server (e.g., Live Server or Python)
+# Option 1: VSCode Live Server extension
 # Option 2: Python
 python -m http.server 5500
 
-# Ouvrir http://localhost:5500 dans votre navigateur
+# Open http://localhost:5500 in your browser
 ```
 
-### Scripts disponibles
+### Available Scripts
 
-| Commande | Description |
-|----------|-------------|
-| `npm run lint` | Vérification du code avec ESLint |
-| `npm run format` | Formatage avec Prettier |
+| Command | Description |
+|---------|-------------|
+| `npm run lint` | Check code with ESLint |
+| `npm run format` | Format with Prettier |
 
 ---
 
@@ -136,58 +136,58 @@ python -m http.server 5500
 ```
 fisheye-frontend/
 │
-├── assets/                 # Ressources statiques
-│   ├── images/            # Images UI et logo
-│   ├── media/             # Photos et vidéos des photographes
-│   └── photographers/     # Portraits des photographes
+├── assets/                 # Static resources
+│   ├── images/            # UI images and logo
+│   ├── media/             # Photographers' photos and videos
+│   └── photographers/     # Photographer portraits
 │
-├── css/                    # Feuilles de style
-│   ├── style.css          # Styles globaux
-│   ├── photographer.css   # Page photographe
-│   └── stats.css          # Page statistiques
+├── css/                    # Stylesheets
+│   ├── style.css          # Global styles
+│   ├── photographer.css   # Photographer page
+│   └── stats.css          # Stats page
 │
 ├── data/
-│   └── photographers.json # Base de données JSON
+│   └── photographers.json # JSON database
 │
 ├── docs/
-│   └── concepts/          # Documentation technique (21 concepts JS)
+│   └── concepts/          # Technical documentation (21 JS concepts)
 │
 ├── scripts/
-│   ├── api/               # Couche d'accès aux données
-│   ├── db/                # Gestion données locales
+│   ├── api/               # Data access layer
+│   ├── db/                # Local data management
 │   ├── factories/         # Factory Pattern
-│   ├── models/            # Classes métier
-│   ├── pages/             # Contrôleurs de pages
-│   ├── templates/         # Composants UI
-│   ├── utils/             # Utilitaires
+│   ├── models/            # Business classes
+│   ├── pages/             # Page controllers
+│   ├── templates/         # UI components
+│   ├── utils/             # Utilities
 │   └── workers/           # Web Workers
 │
-├── index.html             # Page d'accueil
-├── photographer.html      # Page photographe
-├── favorites.html         # Page favoris
-└── stats.html             # Tableau de bord
+├── index.html             # Homepage
+├── photographer.html      # Photographer page
+├── favorites.html         # Favorites page
+└── stats.html             # Dashboard
 ```
 
-### Patterns utilisés
+### Design Patterns Used
 
-| Pattern | Utilisation |
-|---------|-------------|
-| **Factory** | Création de médias (photo/vidéo) et cartes |
-| **Singleton** | Gestionnaires (Cache, Toast, EventBus) |
-| **Observer** | Communication entre composants |
-| **Strategy** | Algorithmes de tri interchangeables |
-| **Decorator** | Logging et memoization |
+| Pattern | Usage |
+|---------|-------|
+| **Factory** | Media creation (photo/video) and cards |
+| **Singleton** | Managers (Cache, Toast, EventBus) |
+| **Observer** | Component communication |
+| **Strategy** | Interchangeable sorting algorithms |
+| **Decorator** | Logging and memoization |
 
 ---
 
 ## Documentation
 
-Une documentation complète des **21 concepts JavaScript** utilisés est disponible :
+Complete documentation of **21 JavaScript concepts** used is available:
 
 <details>
-<summary><strong>ES6+ Fondamentaux</strong></summary>
+<summary><strong>ES6+ Fundamentals</strong></summary>
 
-- [Classes ES6](docs/concepts/01-classes-es6.md)
+- [ES6 Classes](docs/concepts/01-classes-es6.md)
 - [Getters & Setters](docs/concepts/02-getters-setters.md)
 - [Template Literals](docs/concepts/03-template-literals.md)
 - [Arrow Functions](docs/concepts/04-arrow-functions.md)
@@ -197,7 +197,7 @@ Une documentation complète des **21 concepts JavaScript** utilisés est disponi
 </details>
 
 <details>
-<summary><strong>Asynchrone & DOM</strong></summary>
+<summary><strong>Async & DOM</strong></summary>
 
 - [Array Methods](docs/concepts/07-array-methods.md)
 - [Async/Await](docs/concepts/08-async-await.md)
@@ -217,7 +217,7 @@ Une documentation complète des **21 concepts JavaScript** utilisés est disponi
 </details>
 
 <details>
-<summary><strong>Avancé</strong></summary>
+<summary><strong>Advanced</strong></summary>
 
 - [Error Handling](docs/concepts/15-error-handling.md)
 - [Closures](docs/concepts/16-closures.md)
@@ -231,29 +231,29 @@ Une documentation complète des **21 concepts JavaScript** utilisés est disponi
 
 ---
 
-## Accessibilité
+## Accessibility
 
-L'application respecte les standards **WCAG 2.1** :
+The application follows **WCAG 2.1** standards:
 
-- Navigation clavier complète (Tab, Enter, Escape, flèches)
-- Attributs ARIA sur tous les éléments interactifs
-- Focus visible et gestion du focus trap dans les modales
-- Textes alternatifs descriptifs pour les images
-- Contraste suffisant et responsive design
+- Full keyboard navigation (Tab, Enter, Escape, arrows)
+- ARIA attributes on all interactive elements
+- Visible focus and focus trap management in modals
+- Descriptive alt text for images
+- Sufficient contrast and responsive design
 
 ---
 
-## Raccourcis clavier
+## Keyboard Shortcuts
 
-| Raccourci | Action |
-|-----------|--------|
-| `?` | Afficher l'aide |
-| `Ctrl+K` | Ouvrir la recherche |
-| `Escape` | Fermer modal/lightbox |
-| `J` / `K` | Média suivant/précédent |
-| `L` | Liker le média |
-| `←` / `→` | Navigation lightbox |
-| `F` | Mode plein écran |
+| Shortcut | Action |
+|----------|--------|
+| `?` | Show help |
+| `Ctrl+K` | Open search |
+| `Escape` | Close modal/lightbox |
+| `J` / `K` | Next/previous media |
+| `L` | Like media |
+| `←` / `→` | Lightbox navigation |
+| `F` | Fullscreen mode |
 
 ---
 
@@ -269,12 +269,12 @@ L'application respecte les standards **WCAG 2.1** :
 
 ---
 
-## Licence
+## License
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 <p align="center">
-  Fait avec ❤️ pour l'apprentissage du JavaScript moderne
+  Made with ❤️ for learning modern JavaScript
 </p>
